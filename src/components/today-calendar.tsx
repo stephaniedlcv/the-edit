@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-type CalendarCategory = "personal" | "holiday";
+type CalendarCategory = "personal" | "holiday" | "workout";
 
 type CalendarEvent = {
   id: string;
@@ -32,7 +32,16 @@ const CATEGORY_STYLE: Record<
     bg: "rgba(214,169,61,0.12)",
     chipBg: "rgba(214,169,61,0.16)",
   },
+  workout: {
+    label: "Workouts",
+    dot: "#5F8A6B",
+    bar: "#5F8A6B",
+    bg: "rgba(95,138,107,0.1)",
+    chipBg: "rgba(95,138,107,0.14)",
+  },
 };
+
+const CATEGORY_ORDER: CalendarCategory[] = ["personal", "workout", "holiday"];
 
 type ApiResult =
   | { configured: false; events: [] }
@@ -45,6 +54,11 @@ type FetchState =
 
 const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const HOUR_HEIGHT = 56;
+
+function utcDateAsLocal(iso: string): Date {
+  const d = new Date(iso);
+  return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+}
 
 function startOfDay(d: Date): Date {
   const copy = new Date(d);
@@ -156,8 +170,8 @@ export function TodayCalendar() {
       id: e.id,
       title: e.title,
       location: e.location,
-      start: new Date(e.start),
-      end: new Date(e.end),
+      start: e.allDay ? utcDateAsLocal(e.start) : new Date(e.start),
+      end: e.allDay ? utcDateAsLocal(e.end) : new Date(e.end),
       allDay: e.allDay,
       category: e.category,
     }));
@@ -232,7 +246,7 @@ export function TodayCalendar() {
             {usingExample ? "Example" : "Apple Calendar"}
           </span>
           <div className="flex items-center gap-3">
-            {(["personal", "holiday"] as CalendarCategory[]).map((c) => (
+            {CATEGORY_ORDER.map((c) => (
               <span
                 key={c}
                 className="flex items-center gap-1.5 text-[0.58rem] font-medium uppercase tracking-[0.12em] text-[var(--coffee)]"
@@ -282,7 +296,7 @@ export function TodayCalendar() {
               </span>
               <span className="flex h-1 items-center justify-center gap-0.5">
                 {dayCategories && dayCategories.size > 0
-                  ? (["personal", "holiday"] as CalendarCategory[])
+                  ? CATEGORY_ORDER
                       .filter((c) => dayCategories.has(c))
                       .map((c) => (
                         <span

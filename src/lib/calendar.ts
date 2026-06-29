@@ -1,7 +1,7 @@
 import "server-only";
 import ical from "node-ical";
 
-export type CalendarCategory = "personal" | "holiday";
+export type CalendarCategory = "personal" | "holiday" | "workout";
 
 export type CalendarEvent = {
   id: string;
@@ -152,6 +152,11 @@ export async function getCalendarEvents(
   const holidayUrl = process.env.APPLE_HOLIDAYS_ICS_URL;
   if (holidayUrl) {
     sources.push({ url: normalizeUrl(holidayUrl), category: "holiday" });
+  }
+
+  const workoutUrl = process.env.APPLE_WORKOUTS_ICS_URL;
+  if (workoutUrl) {
+    sources.push({ url: normalizeUrl(workoutUrl), category: "workout" });
   }
 
   if (sources.length === 0) {
