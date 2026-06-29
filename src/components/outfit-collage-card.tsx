@@ -51,6 +51,7 @@ function renderPiece(piece: OutfitPiece, index: number) {
         category={formatSlot(piece.slot)}
         className="h-full"
         compact
+        glass
       />
     </div>
   );

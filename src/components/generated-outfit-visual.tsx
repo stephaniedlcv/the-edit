@@ -62,6 +62,7 @@ function OutfitVisualPiece({
         category={formatCategory(item.category)}
         className="h-full"
         compact
+        glass
       />
     </div>
   );
