@@ -1,1 +1,2 @@
 - [node-ical with Next.js Turbopack](node-ical-nextjs.md) — node-ical throws "BigInt is not a function" at import unless added to serverExternalPackages in next.config.
+- [ICS all-day timezone drift](ics-all-day-timezone.md) — all-day ICS events render a day early in negative-UTC tz; anchor by UTC y/m/d components, not timed events.
