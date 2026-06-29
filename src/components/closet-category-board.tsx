@@ -647,7 +647,7 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
                     "font-display text-[1.55rem] leading-none transition",
                     isActive
                       ? "italic text-[var(--espresso)]"
-                      : "text-[var(--caramel-soft)] group-hover:text-[var(--espresso)]",
+                      : "text-[var(--caramel)] group-hover:text-[var(--espresso)]",
                   ].join(" ")}
                 >
                   {filter.label}
@@ -656,7 +656,7 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
                       "ml-1.5 align-super text-[0.8rem] font-semibold leading-none not-italic transition",
                       isActive
                         ? "text-[var(--espresso)]"
-                        : "text-[var(--caramel-soft)] group-hover:text-[var(--espresso)]",
+                        : "text-[var(--caramel)] group-hover:text-[var(--espresso)]",
                     ].join(" ")}
                   >
                     {count}
@@ -667,8 +667,8 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
                   className={[
                     "mt-2 block h-px transition",
                     isActive
-                      ? "w-full bg-[var(--espresso)]"
-                      : "w-0 bg-[var(--caramel)] group-hover:w-full",
+                      ? "w-full bg-[var(--gold)]"
+                      : "w-0 bg-[var(--gold)] group-hover:w-full",
                   ].join(" ")}
                 />
               </button>
@@ -677,7 +677,7 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
         </div>
       </div>
 
-      <div className="mb-8 rounded-[2px] bg-[var(--paper-2)] p-5 shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_12px_40px_rgba(26,16,8,0.06)]">
+      <div className="mb-8 rounded-[2px] bg-[var(--paper-2)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.04),0_14px_40px_rgba(0,0,0,0.28)]">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-9">
           <label className="grid gap-2">
             <span className="eyebrow">
@@ -897,7 +897,7 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
           ))}
         </div>
       ) : (
-        <div className="rounded-[2px] bg-[var(--paper-2)] p-10 text-center shadow-[0_0_0_1px_rgba(26,16,8,0.05)]">
+        <div className="rounded-[2px] bg-[var(--paper-2)] p-10 text-center shadow-[0_0_0_1px_rgba(255,255,255,0.05)]">
           <p className="font-display text-3xl text-[var(--espresso)]">
             No pieces match these filters.
           </p>

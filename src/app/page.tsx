@@ -142,7 +142,7 @@ export default function HomePage() {
         {/* Calendar + Agenda */}
         <div className="mt-8 grid gap-6 lg:grid-cols-[0.38fr_0.62fr]">
           {/* Calendar Signal */}
-          <aside className="rounded-[2px] bg-[var(--paper-2)] px-6 py-7 shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_16px_50px_rgba(26,16,8,0.06)]">
+          <aside className="rounded-[2px] bg-[var(--paper-2)] px-6 py-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.04),0_20px_60px_rgba(0,0,0,0.3)]">
             <p className="eyebrow mb-4">Calendar Signal</p>
 
             <h2 className="font-display text-[2.2rem] leading-none text-[var(--espresso)]">
@@ -175,7 +175,7 @@ export default function HomePage() {
           </aside>
 
           {/* Agenda */}
-          <div className="overflow-hidden rounded-[2px] bg-[var(--paper-2)] shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_16px_50px_rgba(26,16,8,0.06)]">
+          <div className="overflow-hidden rounded-[2px] bg-[var(--paper-2)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.04),0_20px_60px_rgba(0,0,0,0.3)]">
             <div className="flex items-center justify-between gap-4 border-b border-[var(--line)] px-6 py-5">
               <div>
                 <p className="eyebrow mb-2">Apple Calendar Preview</p>
@@ -241,7 +241,7 @@ export default function HomePage() {
                     </div>
                     <div className="relative pl-6">
                       <span className="absolute left-[-0.28rem] top-2 h-2.5 w-2.5 rounded-full border-2 border-[var(--paper-2)] bg-[var(--gold)]" />
-                      <div className="rounded-[2px] bg-[rgba(253,250,245,0.7)] px-4 py-4 shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_12px_30px_rgba(26,16,8,0.04)]">
+                      <div className="rounded-[2px] bg-[rgba(44,28,12,0.7)] px-4 py-4 shadow-[0_0_0_1px_rgba(255,255,255,0.06),0_12px_30px_rgba(0,0,0,0.25)]">
                         <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
                           <div>
                             <p className="text-[0.95rem] font-medium text-[var(--espresso)]">
@@ -268,23 +268,23 @@ export default function HomePage() {
       {/* Today's Outfit + Closet Intelligence */}
       <section className="grid gap-6 border-b border-[var(--line)] py-10 md:py-12 lg:grid-cols-[1.2fr_0.8fr]">
         {/* Today's Outfit */}
-        <div className="overflow-hidden rounded-[2px] bg-[var(--paper-2)] shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_16px_50px_rgba(26,16,8,0.06)]">
+        <div className="overflow-hidden rounded-[2px] bg-[var(--paper-2)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.04),0_20px_60px_rgba(0,0,0,0.3)]">
           <div className="grid gap-0 md:grid-cols-[0.95fr_1.05fr]">
             <div
               className="relative min-h-[22rem] overflow-hidden border-b border-[var(--line)] md:border-b-0 md:border-r md:min-h-[26rem]"
               style={{
                 background:
-                  "linear-gradient(170deg, rgba(255,252,248,0.97) 0%, rgba(237,227,212,0.75) 100%)",
+                  "linear-gradient(170deg, #2C1C0C 0%, #1A1008 70%, #120C06 100%)",
               }}
             >
-              <div className="absolute right-4 top-4 rounded-full bg-[rgba(253,250,245,0.9)] px-3 py-1.5 text-[0.5rem] font-semibold uppercase tracking-[0.2em] text-[var(--espresso)] shadow-[0_4px_16px_rgba(26,16,8,0.1)]">
+              <div className="absolute right-4 top-4 rounded-full bg-[rgba(18,10,4,0.8)] px-3 py-1.5 text-[0.5rem] font-semibold uppercase tracking-[0.2em] text-[var(--gold)] shadow-[0_4px_16px_rgba(0,0,0,0.35)] backdrop-blur-sm border border-[rgba(255,255,255,0.07)]">
                 Today&apos;s look
               </div>
 
               {todayOutfit.pieces.slice(0, 5).map((piece) => (
                 <div
                   key={piece.id}
-                  className="absolute rounded-[22px] bg-[rgba(176,144,96,0.14)] shadow-[0_16px_36px_rgba(26,16,8,0.06)]"
+                  className="absolute rounded-[22px] bg-[rgba(200,151,58,0.12)] shadow-[0_16px_36px_rgba(0,0,0,0.3)]"
                   style={{
                     top: piece.top,
                     left: piece.left,
@@ -293,9 +293,9 @@ export default function HomePage() {
                     transform: `rotate(${piece.rotate ?? 0}deg)`,
                   }}
                 >
-                  <div className="absolute inset-3 rounded-[16px] border border-white/35" />
+                  <div className="absolute inset-3 rounded-[16px] border border-white/10" />
                   <div className="flex h-full items-center justify-center px-4 text-center">
-                    <span className="font-display text-[0.95rem] leading-tight text-[rgba(26,16,8,0.5)]">
+                    <span className="font-display text-[0.95rem] leading-tight text-[rgba(242,228,200,0.45)]">
                       {piece.name}
                     </span>
                   </div>
@@ -351,7 +351,7 @@ export default function HomePage() {
         </div>
 
         {/* Closet Intelligence */}
-        <aside className="rounded-[2px] bg-[var(--paper-2)] px-6 py-7 shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_16px_50px_rgba(26,16,8,0.06)]">
+        <aside className="rounded-[2px] bg-[var(--paper-2)] px-6 py-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.04),0_20px_60px_rgba(0,0,0,0.3)]">
           <p className="eyebrow mb-4">Closet Intelligence</p>
 
           <h2 className="font-display text-[2.2rem] leading-none text-[var(--espresso)]">
@@ -384,7 +384,7 @@ export default function HomePage() {
           <Link
             key={stat.label}
             href={stat.href}
-            className="group block rounded-[2px] bg-[var(--paper-2)] px-6 py-7 no-underline transition duration-300 hover:-translate-y-1 shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_16px_50px_rgba(26,16,8,0.06)] hover:shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_24px_64px_rgba(26,16,8,0.1)]"
+            className="group block rounded-[2px] bg-[var(--paper-2)] px-6 py-7 no-underline transition duration-300 hover:-translate-y-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.04),0_20px_60px_rgba(0,0,0,0.3)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_0_1px_rgba(255,255,255,0.06),0_28px_72px_rgba(0,0,0,0.45)]"
           >
             <p className="eyebrow mb-4">{stat.label}</p>
 

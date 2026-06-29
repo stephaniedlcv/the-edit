@@ -109,7 +109,7 @@ export function BuyOrderFilter({
   const totalCount = items.length;
 
   return (
-    <div className="mb-12 rounded-[2px] bg-[var(--paper-2)] px-6 py-8 shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_16px_50px_rgba(26,16,8,0.06)] md:px-8">
+    <div className="mb-12 rounded-[2px] bg-[var(--paper-2)] px-6 py-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.04),0_20px_60px_rgba(0,0,0,0.3)] md:px-8">
       <div className="mb-8 flex items-end justify-between gap-8">
         <div>
           <p className="eyebrow mb-3">Shopping Discipline</p>

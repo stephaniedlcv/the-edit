@@ -67,7 +67,7 @@ export default function PlannerPage() {
           {modeStats.map((stat) => (
             <article
               key={stat.label}
-              className="rounded-[2px] bg-[var(--paper-2)] px-6 py-7 shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_16px_50px_rgba(26,16,8,0.06)]"
+              className="rounded-[2px] bg-[var(--paper-2)] px-6 py-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.04),0_20px_60px_rgba(0,0,0,0.3)]"
             >
               <p className="font-display text-[4.5rem] leading-none text-[var(--espresso)]">
                 {stat.value}
@@ -96,7 +96,7 @@ export default function PlannerPage() {
           {outfitLogWeek.map((entry) => (
             <article
               key={entry.id}
-              className="grid gap-5 rounded-[2px] bg-[var(--paper-2)] p-5 shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_16px_50px_rgba(26,16,8,0.06)] md:grid-cols-[9rem_1fr_16rem]"
+              className="grid gap-5 rounded-[2px] bg-[var(--paper-2)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.04),0_20px_60px_rgba(0,0,0,0.3)] md:grid-cols-[9rem_1fr_16rem]"
             >
               <div>
                 <p className="eyebrow mb-2">{entry.date}</p>
@@ -133,7 +133,7 @@ export default function PlannerPage() {
                 </div>
               </div>
 
-              <aside className="rounded-[2px] bg-[var(--paper)] p-5 shadow-[inset_0_0_0_1px_rgba(26,16,8,0.05)]">
+              <aside className="rounded-[2px] bg-[var(--paper)] p-5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]">
                 <p className="eyebrow mb-3">Weather signal</p>
                 <p className="text-[0.88rem] leading-[1.75] text-[var(--ink-soft)]">
                   {entry.weatherNote}
