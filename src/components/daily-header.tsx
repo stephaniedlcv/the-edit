@@ -80,18 +80,18 @@ function styleVerdict(w: WeatherState): { line: string; aside: string } {
 }
 
 export function DailyHeader() {
-  const [greeting, setGreeting] = useState("Good day");
-  const [weather, setWeather] = useState<WeatherState>(initialWeather);
-
-  useEffect(() => {
-    setGreeting(getGreeting(new Date().getHours()));
-  }, []);
+  const [greeting] = useState(() => getGreeting(new Date().getHours()));
+  const [weather, setWeather] = useState<WeatherState>(() => {
+    if (typeof navigator !== "undefined" && !navigator.geolocation) {
+      return { ...initialWeather, status: "error" };
+    }
+    return initialWeather;
+  });
 
   useEffect(() => {
     let cancelled = false;
 
     if (typeof navigator === "undefined" || !navigator.geolocation) {
-      setWeather((w) => ({ ...w, status: "error" }));
       return;
     }
 

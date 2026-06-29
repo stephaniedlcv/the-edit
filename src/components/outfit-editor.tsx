@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { GeneratedOutfitVisual } from "@/components/generated-outfit-visual";
 import type { WardrobeItem } from "@/types/wardrobe";
 
@@ -201,26 +201,18 @@ export function OutfitEditor({ items, closetItems, lookMetadata }: OutfitEditorP
 
   const generatedSelection = useMemo(() => buildGeneratedSelection(items), [items]);
 
-  const [selection, setSelection] = useState<SelectionState>(generatedSelection);
+  const [selection, setSelection] = useState<SelectionState>(() => {
+    try {
+      if (typeof window === "undefined") return generatedSelection;
+      const saved = localStorage.getItem(storageKey);
+      if (!saved) return generatedSelection;
+      return normalizeSavedSelection(JSON.parse(saved), generatedSelection, closetItems);
+    } catch {
+      return generatedSelection;
+    }
+  });
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "reset" | "error">("idle");
   const [saveError, setSaveError] = useState<string | null>(null);
-
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(storageKey);
-
-      if (!saved) {
-        setSelection(generatedSelection);
-        return;
-      }
-
-      setSelection(
-        normalizeSavedSelection(JSON.parse(saved), generatedSelection, closetItems),
-      );
-    } catch {
-      setSelection(generatedSelection);
-    }
-  }, [closetItems, generatedSelection, storageKey]);
 
   const editedItems = useMemo(() => {
     const seen = new Set<string>();

@@ -78,7 +78,7 @@ export default async function HomePage() {
 
   // --- Real wardrobe stats ---
   const supabase = getSupabaseServerClient();
-  let ownedCount = items.length || mockOwnedItems.length;
+  const ownedCount = items.length || mockOwnedItems.length;
   let wishlistCount = mockWishlistItems.length;
   let savedLooksCount = outfitLooks.length;
 

@@ -63,13 +63,6 @@ function normalizeText(value: unknown, fallback = "") {
     : fallback;
 }
 
-function normalizeTextArray(value: unknown) {
-  if (!Array.isArray(value)) return [];
-
-  return value.filter(
-    (item): item is string => typeof item === "string" && item.trim().length > 0,
-  );
-}
 
 function normalizeSavedPieces(value: unknown): SavedOutfitPiece[] {
   if (!Array.isArray(value)) return [];

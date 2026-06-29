@@ -334,9 +334,6 @@ function uniqueItems(items: Array<WardrobeItem | undefined>): WardrobeItem[] {
   return result
 }
 
-function getFirstUseful(items: WardrobeItem[], occasion: OccasionLevel): WardrobeItem | undefined {
-  return sortByUsefulness(items, occasion)[0]
-}
 
 function getSupportItems(
   baseItems: WardrobeItem[],

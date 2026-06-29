@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Replit internal / generated folders — not part of THE EDIT source:
+    ".local/**",
+    "node_modules/**",
+    "dist/**",
   ]),
 ]);
 
