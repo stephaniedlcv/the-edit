@@ -80,18 +80,24 @@ function styleVerdict(w: WeatherState): { line: string; aside: string } {
 }
 
 export function DailyHeader() {
-  const [greeting] = useState(() => getGreeting(new Date().getHours()));
-  const [weather, setWeather] = useState<WeatherState>(() => {
-    if (typeof navigator !== "undefined" && !navigator.geolocation) {
-      return { ...initialWeather, status: "error" };
-    }
-    return initialWeather;
-  });
+  // "Good day" is a safe SSR-neutral initial value; updated to real greeting on mount.
+  const [greeting, setGreeting] = useState("Good day");
+  const [weather, setWeather] = useState<WeatherState>(initialWeather);
+
+  useEffect(() => {
+    // Intentional two-step render: "Good day" is the SSR-safe placeholder;
+    // the real greeting updates on mount after hydration to avoid mismatch.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setGreeting(getGreeting(new Date().getHours()));
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
 
     if (typeof navigator === "undefined" || !navigator.geolocation) {
+      // Browser capability detection — only runs client-side after hydration.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setWeather((w) => ({ ...w, status: "error" }));
       return;
     }
 
