@@ -12,10 +12,20 @@ export type CalendarEvent = {
 
 function normalizeUrl(raw: string): string {
   const trimmed = raw.trim();
-  if (trimmed.startsWith("webcal://")) {
-    return "https://" + trimmed.slice("webcal://".length);
+  const normalized = trimmed.startsWith("webcal://")
+    ? "https://" + trimmed.slice("webcal://".length)
+    : trimmed;
+
+  let parsed: URL;
+  try {
+    parsed = new URL(normalized);
+  } catch {
+    throw new Error("Invalid calendar URL");
   }
-  return trimmed;
+  if (parsed.protocol !== "https:") {
+    throw new Error("Calendar URL must use https or webcal");
+  }
+  return parsed.toString();
 }
 
 function getDurationMs(ev: ical.VEvent): number {
