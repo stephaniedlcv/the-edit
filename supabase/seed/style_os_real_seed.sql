@@ -1,4 +1,4 @@
--- Style OS / The Stephanie Edit
+-- THE EDIT / Closet OS
 -- Real initial seed v1
 -- Run this manually in Supabase SQL Editor after running the foundation migration.
 

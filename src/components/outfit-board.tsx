@@ -60,7 +60,7 @@ export function OutfitBoard() {
         contained={false}
         eyebrow="Styled Looks"
         title="Outfit board"
-        description="Collage-first outfit building for Stephanie Style OS. This is the Alta-inspired visual layer now, with space to evolve later into an on-you AI styling view based on your real body and proportions."
+        description="Collage-first outfit building for THE EDIT. This is the Alta-inspired visual layer now, with space to evolve later into an on-you AI styling view based on your real body and proportions."
         asideEyebrow="Current mode"
         asideText="Transparent collage styling, before AI try-on."
       />

@@ -1,4 +1,4 @@
-# Stephanie Style OS
+# THE EDIT
 
 AI-powered Personal Style Operating System.
 

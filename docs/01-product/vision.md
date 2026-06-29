@@ -1,3 +1,3 @@
 # Vision
 
-Style OS is a private AI stylist that learns from one person over time.
+THE EDIT is a private AI closet OS that learns from one person over time.

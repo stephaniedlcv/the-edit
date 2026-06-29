@@ -1,4 +1,4 @@
--- Style OS / The Stephanie Edit
+-- THE EDIT / Closet OS
 -- Supabase foundation v1
 
 create extension if not exists pgcrypto;

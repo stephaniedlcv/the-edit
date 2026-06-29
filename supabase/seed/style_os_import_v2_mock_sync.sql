@@ -1,4 +1,4 @@
--- Style OS / The Stephanie Edit
+-- THE EDIT / Closet OS
 -- Import v2: sync missing mock owned items into Supabase
 -- Run manually in Supabase SQL Editor after style_os_real_seed.sql.
 
