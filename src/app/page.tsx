@@ -78,7 +78,7 @@ const weatherData = [
 
 export default function HomePage() {
   return (
-    <main className="mx-auto max-w-6xl px-5 pb-16 md:px-10 md:pb-20">
+    <div className="mx-auto max-w-5xl px-5 pb-16 pt-8 md:px-10 md:pb-20 md:pt-12">
       <PageHeader
         contained={false}
         eyebrow="Daily Edit"
@@ -402,6 +402,6 @@ export default function HomePage() {
           </Link>
         ))}
       </section>
-    </main>
+    </div>
   );
 }
