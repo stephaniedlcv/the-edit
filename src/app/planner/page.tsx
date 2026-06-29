@@ -50,16 +50,16 @@ export default function PlannerPage() {
   return (
     <main className="pb-16 md:pb-20">
       <PageHeader
-        eyebrow="Planner"
+        eyebrow="Planner — Preview"
         title={
           <>
             Wear it,{" "}
             <em className="text-[var(--coffee)]">then track it.</em>
           </>
         }
-        description="A calendar-based planner for planning looks, recording what you wore, and avoiding repeat formulas when you want variety."
-        asideEyebrow="Calendar Mode"
-        asideText="Week view is the default command center for Planner v1."
+        description="A preview of the Planner — showing the week layout, status tracking, and formula structure. Live Apple Calendar and real outfit logs are not connected yet."
+        asideEyebrow="Preview Mode"
+        asideText="Sample data only. Real planner entries coming in a future sprint."
       />
 
       <section className="mx-auto max-w-6xl px-6 py-10 md:px-10">

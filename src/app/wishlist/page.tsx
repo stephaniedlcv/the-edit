@@ -2,10 +2,11 @@ import { PageHeader } from "@/components/page-header";
 import { WishlistPriorityBoard } from "@/components/wishlist-priority-board";
 import { getWishlistItems } from "@/lib/wishlist/data";
 
+export const dynamic = "force-dynamic";
 
 export default async function WishlistPage() {
-  const mockWishlistItems = await getWishlistItems();
-  const priceWatchCount = mockWishlistItems.filter((item) => item.priceWatch).length;
+  const items = await getWishlistItems();
+  const priceWatchCount = items.filter((item) => item.priceWatch).length;
   return (
     <>
       <PageHeader
@@ -21,7 +22,7 @@ export default async function WishlistPage() {
         asideText={`${String(priceWatchCount).padStart(2, "0")} pieces are on price watch.`}
       />
 
-      <WishlistPriorityBoard />
+      <WishlistPriorityBoard items={items} />
     </>
   );
 }

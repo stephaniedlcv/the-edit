@@ -8,7 +8,6 @@ import {
 } from "@/components/buy-order-filter";
 import { WishlistCard } from "@/components/wishlist-card";
 import type { WishlistItem } from "@/types/wardrobe";
-import { mockWishlistItems } from "@/lib/mock-wishlist-items";
 
 function sortWishlistItems(items: WishlistItem[]) {
   return [...items].sort((a, b) => {
@@ -39,17 +38,36 @@ function filteredTitle(activeFilter: BuyOrderFilterId) {
   return "Selected pieces";
 }
 
-export function WishlistPriorityBoard() {
+type WishlistPriorityBoardProps = {
+  items: WishlistItem[];
+};
+
+export function WishlistPriorityBoard({ items }: WishlistPriorityBoardProps) {
   const [activeFilter, setActiveFilter] = useState<BuyOrderFilterId>("all");
 
   const filteredItems = sortWishlistItems(
-    mockWishlistItems.filter((item) => matchesFilter(item, activeFilter)),
+    items.filter((item) => matchesFilter(item, activeFilter)),
   );
+
+  if (items.length === 0) {
+    return (
+      <section className="mx-auto max-w-6xl px-6 pb-16 pt-10 md:px-10 md:pb-20 md:pt-12">
+        <div className="rounded-[3px] border border-dashed border-[var(--line)] bg-[var(--paper-2)] p-14 text-center">
+          <p className="font-display text-3xl text-[var(--espresso)]">
+            Your wishlist is empty.
+          </p>
+          <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-[var(--ink-soft)]">
+            Add a wishlist piece when you identify a new closet priority — pieces you&apos;d buy based on closet impact, not impulse.
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="mx-auto max-w-6xl px-6 pb-16 pt-10 md:px-10 md:pb-20 md:pt-12">
       <BuyOrderFilter
-        items={mockWishlistItems}
+        items={items}
         active={activeFilter}
         onChange={setActiveFilter}
       />

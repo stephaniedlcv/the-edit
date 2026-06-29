@@ -6,10 +6,9 @@ import { TodayCalendar } from "@/components/today-calendar";
 import { TodayOutfit } from "@/components/today-outfit";
 import { getWardrobeItems } from "@/lib/wardrobe/data";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
-import { mockOwnedItems } from "@/lib/mock-owned-items";
-import { mockWishlistItems } from "@/lib/mock-wishlist-items";
-import { outfitLooks } from "@/lib/mock-outfits";
 import type { WardrobeCategory } from "@/types/wardrobe";
+
+export const dynamic = "force-dynamic";
 
 const CATEGORY_LABELS: Record<WardrobeCategory, string> = {
   outerwear:  "Outerwear",
@@ -78,18 +77,20 @@ export default async function HomePage() {
 
   // --- Real wardrobe stats ---
   const supabase = getSupabaseServerClient();
-  const ownedCount = items.length || mockOwnedItems.length;
-  let wishlistCount = mockWishlistItems.length;
-  let savedLooksCount = outfitLooks.length;
+  const ownedCount = items.length;
+  let wishlistCount = 0;
+  let savedLooksCount = 0;
 
   if (supabase) {
     const [wishlistRes, savedRes] = await Promise.all([
       supabase
         .from("wishlist_items")
-        .select("id", { count: "exact", head: true }),
+        .select("id", { count: "exact", head: true })
+        .eq("is_archived", false),
       supabase
         .from("saved_outfits")
-        .select("id", { count: "exact", head: true }),
+        .select("id", { count: "exact", head: true })
+        .neq("status", "deleted"),
     ]);
     if (wishlistRes.count !== null) wishlistCount = wishlistRes.count;
     if (savedRes.count !== null)    savedLooksCount = savedRes.count;

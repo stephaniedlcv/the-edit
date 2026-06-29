@@ -47,7 +47,7 @@ export async function getWardrobeItems(): Promise<WardrobeItem[]> {
   const { data, error } = await supabase
     .from("wardrobe_items")
     .select("*, wardrobe_item_images(*)")
-    .eq("is_archived", false)
+    .eq("item_status", "active")
     .order("created_at", { ascending: true });
 
   if (error) {
