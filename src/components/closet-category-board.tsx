@@ -677,7 +677,7 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
         </div>
       </div>
 
-      <div className="mb-8 rounded-[2px] bg-[var(--paper-2)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.04),0_14px_40px_rgba(0,0,0,0.28)]">
+      <div className="mb-8 rounded-[2px] bg-[var(--paper-2)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_0_0_1px_rgba(36,26,18,0.05),0_14px_40px_rgba(36,26,18,0.07)]">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-9">
           <label className="grid gap-2">
             <span className="eyebrow">
@@ -897,7 +897,7 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
           ))}
         </div>
       ) : (
-        <div className="rounded-[2px] bg-[var(--paper-2)] p-10 text-center shadow-[0_0_0_1px_rgba(255,255,255,0.05)]">
+        <div className="rounded-[2px] bg-[var(--paper-2)] p-10 text-center shadow-[0_0_0_1px_rgba(36,26,18,0.05),0_16px_44px_rgba(36,26,18,0.06)]">
           <p className="font-display text-3xl text-[var(--espresso)]">
             No pieces match these filters.
           </p>

@@ -43,7 +43,7 @@ function SectionTitle({
 
 function RuleCard({ title, body }: { title: string; body: string }) {
   return (
-    <article className="rounded-[2px] bg-[var(--paper)] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.04),0_20px_60px_rgba(0,0,0,0.3)]">
+    <article className="rounded-[2px] bg-[var(--paper)] p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_0_0_1px_rgba(36,26,18,0.05),0_16px_44px_rgba(36,26,18,0.08)]">
       <h3 className="font-display text-2xl leading-none text-[var(--espresso)]">
         {title}
       </h3>
@@ -71,7 +71,7 @@ export default async function SettingsPage() {
 
       <section className="mx-auto max-w-6xl px-6 py-10 md:px-10">
         <div className="grid gap-4 md:gap-5 lg:grid-cols-[1.2fr_0.8fr]">
-          <article className="rounded-[2px] bg-[var(--paper-2)] p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.04),0_20px_60px_rgba(0,0,0,0.3)] md:p-8">
+          <article className="rounded-[2px] bg-[var(--paper-2)] p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_0_0_1px_rgba(36,26,18,0.05),0_16px_44px_rgba(36,26,18,0.08)] md:p-8">
             <p className="eyebrow mb-5">Identity</p>
             <h2 className="font-display text-[2.8rem] leading-none text-[var(--espresso)] md:text-5xl">
               {styleProfile.identity.styleSystem}
@@ -94,7 +94,7 @@ export default async function SettingsPage() {
             </div>
           </article>
 
-          <article className="rounded-[2px] bg-[var(--paper)] p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.04),0_20px_60px_rgba(0,0,0,0.3)] md:p-8">
+          <article className="rounded-[2px] bg-[var(--paper)] p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_0_0_1px_rgba(36,26,18,0.05),0_16px_44px_rgba(36,26,18,0.08)] md:p-8">
             <p className="eyebrow mb-5">Measurements</p>
             <div className="grid grid-cols-2 gap-4">
               {styleProfile.measurements.map((measurement) => (
@@ -129,7 +129,7 @@ export default async function SettingsPage() {
               return (
                 <article
                   key={color.name}
-                  className="group overflow-hidden rounded-[2px] bg-[var(--paper)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.04),0_20px_60px_rgba(0,0,0,0.3)]"
+                  className="group overflow-hidden rounded-[2px] bg-[var(--paper)] shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_0_0_1px_rgba(36,26,18,0.05),0_16px_44px_rgba(36,26,18,0.08)]"
                 >
                   <div
                     className="relative h-36 overflow-hidden"
@@ -198,7 +198,7 @@ export default async function SettingsPage() {
         </section>
 
         <section className="mt-12 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-          <article className="rounded-[2px] bg-[var(--paper-2)] p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.04),0_20px_60px_rgba(0,0,0,0.3)] md:p-8">
+          <article className="rounded-[2px] bg-[var(--paper-2)] p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_0_0_1px_rgba(36,26,18,0.05),0_16px_44px_rgba(36,26,18,0.08)] md:p-8">
             <p className="eyebrow mb-5">Capsule Goals</p>
             <ul className="space-y-4">
               {styleProfile.capsuleGoals.map((goal) => (
@@ -215,8 +215,8 @@ export default async function SettingsPage() {
           <article
             className="rounded-[2px] p-7 md:p-8"
             style={{
-              background: "linear-gradient(150deg, #2C1C0A 0%, #1A1008 60%, #100A04 100%)",
-              boxShadow: "inset 0 1px 0 rgba(200,151,58,0.18), 0 0 0 1px rgba(200,151,58,0.12), 0 30px 80px rgba(0,0,0,0.45)"
+              background: "linear-gradient(150deg, #FBF7EE 0%, #F6EFE0 60%, #F1E8D5 100%)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9), 0 0 0 1px rgba(161,122,53,0.18), 0 24px 60px rgba(36,26,18,0.10)"
             }}
           >
             <p className="mb-5 eyebrow">

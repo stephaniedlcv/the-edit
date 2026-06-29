@@ -109,7 +109,7 @@ export function BuyOrderFilter({
   const totalCount = items.length;
 
   return (
-    <div className="mb-12 rounded-[2px] bg-[var(--paper-2)] px-6 py-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.04),0_20px_60px_rgba(0,0,0,0.3)] md:px-8">
+    <div className="mb-12 rounded-[2px] bg-[var(--paper-2)] px-6 py-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_0_0_1px_rgba(36,26,18,0.05),0_16px_44px_rgba(36,26,18,0.08)] md:px-8">
       <div className="mb-8 flex items-end justify-between gap-8">
         <div>
           <p className="eyebrow mb-3">Shopping Discipline</p>
@@ -148,7 +148,7 @@ export function BuyOrderFilter({
                   className="font-display text-[1.5rem] leading-none transition-colors duration-300 md:text-[1.65rem]"
                   style={{
                     fontStyle: isActive ? "italic" : "normal",
-                    color: isActive ? "var(--espresso)" : "#c0a880",
+                    color: isActive ? "var(--espresso)" : "var(--caramel)",
                   }}
                 >
                   {filter.label}
@@ -157,7 +157,7 @@ export function BuyOrderFilter({
                 <span
                   className="font-display text-[0.82rem] leading-none"
                   style={{
-                    color: isActive ? "var(--gold)" : "#d5bc9c",
+                    color: isActive ? "var(--gold)" : "var(--ink-soft)",
                   }}
                 >
                   {count}
