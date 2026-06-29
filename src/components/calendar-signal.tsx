@@ -95,12 +95,10 @@ export function CalendarSignal() {
 
   useEffect(() => {
     const now = new Date();
-    const start = new Date(now);
-    start.setHours(0, 0, 0, 0);
-    const end = new Date(now);
-    end.setHours(23, 59, 59, 999);
+    // UTC midnight boundaries required for correct rrule expansion in node-ical
+    const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-    fetch(`/api/calendar?start=${start.toISOString()}&end=${end.toISOString()}`)
+    fetch(`/api/calendar?start=${localDate}T00:00:00.000Z&end=${localDate}T23:59:59.999Z`)
       .then((r) => (r.ok ? r.json() : { events: [] }))
       .then((data: { events?: CalEvent[] }) => {
         const todayEvents = (data.events ?? [])

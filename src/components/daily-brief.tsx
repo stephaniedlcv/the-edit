@@ -228,17 +228,14 @@ function generateBrief(events: BriefEvent[]): BriefData {
   const firstWork = todayEvents.find((e) => e.category === "personal");
   const firstGym = todayEvents.find((e) => e.category === "workout");
 
-  // Default: gym AM before work (user's established pattern).
-  // Only override if work has a clear timed start that is earlier than gym.
-  const workClearlyFirst =
+  // Order follows the real calendar: compare actual start timestamps.
+  // All-day events (no "T") are treated as midnight local = comes first.
+  const gymBeforeWork =
     hasGym &&
     hasWork &&
-    firstGym &&
-    firstWork &&
-    firstWork.start.includes("T") &&
-    firstGym.start.includes("T") &&
-    firstWork.start < firstGym.start;
-  const gymBeforeWork = hasGym && hasWork && !workClearlyFirst;
+    !!firstGym &&
+    !!firstWork &&
+    firstGym.start < firstWork.start;
 
   let headline: string;
   let recommended: string;
@@ -292,12 +289,14 @@ export function DailyBrief() {
 
   useEffect(() => {
     const now = new Date();
-    const start = new Date(now);
-    start.setHours(0, 0, 0, 0);
-    const end = new Date(now);
-    end.setHours(23, 59, 59, 999);
+    // Use LOCAL date components but UTC midnight boundaries — rrule expansion
+    // in node-ical requires the range to start at UTC midnight to correctly
+    // expand recurring events like Berlitz.
+    const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    const start = `${localDate}T00:00:00.000Z`;
+    const end = `${localDate}T23:59:59.999Z`;
 
-    fetch(`/api/calendar?start=${start.toISOString()}&end=${end.toISOString()}`)
+    fetch(`/api/calendar?start=${start}&end=${end}`)
       .then((r) => (r.ok ? r.json() : { configured: false, events: [] }))
       .then((data: { configured: boolean; events: BriefEvent[] }) => {
         setBrief(generateBrief(data.events ?? []));

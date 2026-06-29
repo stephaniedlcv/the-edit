@@ -3,11 +3,10 @@ import { DailyHeader } from "@/components/daily-header";
 import { DailyBrief } from "@/components/daily-brief";
 import { CalendarSignal } from "@/components/calendar-signal";
 import { TodayCalendar } from "@/components/today-calendar";
+import { TodayOutfit } from "@/components/today-outfit";
 import { mockOwnedItems } from "@/lib/mock-owned-items";
 import { mockWishlistItems } from "@/lib/mock-wishlist-items";
 import { outfitLooks } from "@/lib/mock-outfits";
-
-const todayOutfit = outfitLooks[0];
 
 const wardrobeStats = [
   {
@@ -65,88 +64,8 @@ export default function HomePage() {
 
       {/* Today's Outfit + Closet Intelligence */}
       <section className="grid gap-6 border-b border-[var(--line)] py-10 md:py-12 lg:grid-cols-[1.2fr_0.8fr]">
-        {/* Today's Outfit */}
-        <div className="overflow-hidden rounded-[2px] bg-[var(--paper-2)] shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_0_0_1px_rgba(36,26,18,0.05),0_16px_44px_rgba(36,26,18,0.08)]">
-          <div className="grid gap-0 md:grid-cols-[0.95fr_1.05fr]">
-            <div
-              className="relative min-h-[22rem] overflow-hidden border-b border-[var(--line)] md:border-b-0 md:border-r md:min-h-[26rem]"
-              style={{
-                background:
-                  "linear-gradient(170deg, #F4EEE4 0%, #EDE6DA 70%, #E6DDCE 100%)",
-              }}
-            >
-              <div className="absolute right-4 top-4 rounded-full bg-[rgba(255,255,255,0.85)] px-3 py-1.5 text-[0.5rem] font-semibold uppercase tracking-[0.2em] text-[var(--gold)] shadow-[0_4px_16px_rgba(36,26,18,0.12)] backdrop-blur-sm border border-[rgba(36,26,18,0.08)]">
-                Today&apos;s look
-              </div>
-
-              {todayOutfit.pieces.slice(0, 5).map((piece) => (
-                <div
-                  key={piece.id}
-                  className="absolute rounded-[22px] bg-[rgba(255,255,255,0.7)] shadow-[0_16px_36px_rgba(36,26,18,0.12)]"
-                  style={{
-                    top: piece.top,
-                    left: piece.left,
-                    width: piece.width,
-                    height: piece.height,
-                    transform: `rotate(${piece.rotate ?? 0}deg)`,
-                  }}
-                >
-                  <div className="absolute inset-3 rounded-[16px] border border-[rgba(36,26,18,0.08)]" />
-                  <div className="flex h-full items-center justify-center px-4 text-center">
-                    <span className="font-display text-[0.95rem] leading-tight text-[var(--coffee)]">
-                      {piece.name}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="px-6 py-7">
-              <p className="eyebrow mb-4">Outfit of today</p>
-
-              <h2 className="font-display text-[2.4rem] leading-[1.02] text-[var(--espresso)]">
-                {todayOutfit.title}
-              </h2>
-
-              <p className="mt-4 text-[0.9rem] leading-[1.8] text-[var(--ink-soft)]">
-                {todayOutfit.caption}
-              </p>
-
-              <div className="mt-6 border-y border-[var(--line)] py-4">
-                <p className="eyebrow mb-3">Formula</p>
-                <div className="flex flex-wrap gap-2">
-                  {todayOutfit.formula.map((item) => (
-                    <span
-                      key={item}
-                      className="rounded-full border border-[var(--line)] bg-[var(--paper)] px-3 py-1.5 text-[0.56rem] font-semibold uppercase tracking-[0.18em] text-[var(--coffee)]"
-                    >
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <p className="font-display mt-5 text-[1.02rem] italic leading-[1.55] text-[var(--coffee)]">
-                {todayOutfit.notes}
-              </p>
-
-              <div className="mt-7 flex flex-wrap gap-6 border-t border-[var(--line)] pt-5">
-                <Link
-                  href="/outfits"
-                  className="border-b border-[var(--espresso)] pb-[2px] text-[0.54rem] font-semibold uppercase tracking-[0.2em] text-[var(--espresso)] no-underline"
-                >
-                  Open board
-                </Link>
-                <Link
-                  href="/planner"
-                  className="border-b border-transparent pb-[2px] text-[0.54rem] font-semibold uppercase tracking-[0.2em] text-[var(--coffee)] no-underline transition hover:border-[var(--coffee)]"
-                >
-                  Add to log
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Today's Outfit — synced from Planner / Outfits / mock fallback */}
+        <TodayOutfit />
 
         {/* Closet Intelligence */}
         <aside className="rounded-[2px] bg-[var(--paper-2)] px-6 py-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_0_0_1px_rgba(36,26,18,0.05),0_16px_44px_rgba(36,26,18,0.08)]">
