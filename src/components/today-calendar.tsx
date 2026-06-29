@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+type CalendarCategory = "personal" | "holiday";
+
 type CalendarEvent = {
   id: string;
   title: string;
@@ -9,6 +11,27 @@ type CalendarEvent = {
   start: string;
   end: string;
   allDay: boolean;
+  category: CalendarCategory;
+};
+
+const CATEGORY_STYLE: Record<
+  CalendarCategory,
+  { label: string; dot: string; bar: string; bg: string; chipBg: string }
+> = {
+  personal: {
+    label: "Berlitz",
+    dot: "#3E6B96",
+    bar: "#3E6B96",
+    bg: "rgba(62,107,150,0.1)",
+    chipBg: "rgba(62,107,150,0.12)",
+  },
+  holiday: {
+    label: "Holidays",
+    dot: "#D6A93D",
+    bar: "#D6A93D",
+    bg: "rgba(214,169,61,0.12)",
+    chipBg: "rgba(214,169,61,0.16)",
+  },
 };
 
 type ApiResult =
@@ -56,10 +79,16 @@ function formatTime(d: Date): string {
     .replace(" ", "");
 }
 
-const EXAMPLE_EVENTS: { title: string; location: string; start: string; end: string }[] = [
-  { title: "Work / Berlitz", location: "Office", start: "09:00", end: "12:00" },
-  { title: "Lunch + errands", location: "Old San Juan", start: "12:30", end: "13:30" },
-  { title: "Gym / active block", location: "Studio", start: "18:00", end: "19:15" },
+const EXAMPLE_EVENTS: {
+  title: string;
+  location: string;
+  start: string;
+  end: string;
+  category: CalendarCategory;
+}[] = [
+  { title: "Work / Berlitz", location: "Office", start: "09:00", end: "12:00", category: "personal" },
+  { title: "Lunch + errands", location: "Old San Juan", start: "12:30", end: "13:30", category: "personal" },
+  { title: "Gym / active block", location: "Studio", start: "18:00", end: "19:15", category: "personal" },
 ];
 
 export function TodayCalendar() {
@@ -119,6 +148,7 @@ export function TodayCalendar() {
           start: s,
           end: en,
           allDay: false,
+          category: e.category,
         };
       });
     }
@@ -129,13 +159,19 @@ export function TodayCalendar() {
       start: new Date(e.start),
       end: new Date(e.end),
       allDay: e.allDay,
+      category: e.category,
     }));
   }, [state, usingExample, today]);
 
   const eventDays = useMemo(() => {
-    const set = new Set<string>();
-    parsedEvents.forEach((e) => set.add(startOfDay(e.start).toDateString()));
-    return set;
+    const map = new Map<string, Set<CalendarCategory>>();
+    parsedEvents.forEach((e) => {
+      const key = startOfDay(e.start).toDateString();
+      const set = map.get(key) ?? new Set<CalendarCategory>();
+      set.add(e.category);
+      map.set(key, set);
+    });
+    return map;
   }, [parsedEvents]);
 
   const selectedDay = usingExample ? startOfDay(today) : selected;
@@ -191,9 +227,25 @@ export function TodayCalendar() {
             {fullDateLabel}
           </p>
         </div>
-        <span className="rounded-full border border-[var(--line)] px-3 py-1.5 text-[0.52rem] font-semibold uppercase tracking-[0.2em] text-[var(--coffee)]">
-          {usingExample ? "Example" : "Apple Calendar"}
-        </span>
+        <div className="flex flex-col items-end gap-2">
+          <span className="rounded-full border border-[var(--line)] px-3 py-1.5 text-[0.52rem] font-semibold uppercase tracking-[0.2em] text-[var(--coffee)]">
+            {usingExample ? "Example" : "Apple Calendar"}
+          </span>
+          <div className="flex items-center gap-3">
+            {(["personal", "holiday"] as CalendarCategory[]).map((c) => (
+              <span
+                key={c}
+                className="flex items-center gap-1.5 text-[0.58rem] font-medium uppercase tracking-[0.12em] text-[var(--coffee)]"
+              >
+                <span
+                  className="h-2 w-2 rounded-full"
+                  style={{ backgroundColor: CATEGORY_STYLE[c].dot }}
+                />
+                {CATEGORY_STYLE[c].label}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Week strip */}
@@ -201,7 +253,7 @@ export function TodayCalendar() {
         {weekDays.map((day, index) => {
           const isToday = sameDay(day, new Date());
           const isSelected = sameDay(day, selectedDay);
-          const hasEvents = eventDays.has(day.toDateString());
+          const dayCategories = eventDays.get(day.toDateString());
           return (
             <button
               key={day.toISOString()}
@@ -228,12 +280,19 @@ export function TodayCalendar() {
               >
                 {day.getDate()}
               </span>
-              <span
-                className={[
-                  "h-1 w-1 rounded-full transition-colors",
-                  hasEvents ? "bg-[var(--gold)]" : "bg-transparent",
-                ].join(" ")}
-              />
+              <span className="flex h-1 items-center justify-center gap-0.5">
+                {dayCategories && dayCategories.size > 0
+                  ? (["personal", "holiday"] as CalendarCategory[])
+                      .filter((c) => dayCategories.has(c))
+                      .map((c) => (
+                        <span
+                          key={c}
+                          className="h-1 w-1 rounded-full"
+                          style={{ backgroundColor: CATEGORY_STYLE[c].dot }}
+                        />
+                      ))
+                  : null}
+              </span>
             </button>
           );
         })}
@@ -263,8 +322,13 @@ export function TodayCalendar() {
               {allDayEvents.map((e) => (
                 <span
                   key={e.id}
-                  className="rounded-md bg-[rgba(161,122,53,0.12)] px-2.5 py-1 text-[0.72rem] font-medium text-[var(--espresso)]"
+                  className="flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[0.72rem] font-medium text-[var(--espresso)]"
+                  style={{ backgroundColor: CATEGORY_STYLE[e.category].chipBg }}
                 >
+                  <span
+                    className="h-1.5 w-1.5 rounded-full"
+                    style={{ backgroundColor: CATEGORY_STYLE[e.category].dot }}
+                  />
                   {e.title}
                 </span>
               ))}
@@ -318,11 +382,17 @@ export function TodayCalendar() {
                     (e.end.getHours() - startHour) * 60 + e.end.getMinutes();
                   const top = (startMin / 60) * HOUR_HEIGHT;
                   const height = Math.max(((endMin - startMin) / 60) * HOUR_HEIGHT, 30);
+                  const style = CATEGORY_STYLE[e.category];
                   return (
                     <div
                       key={e.id}
-                      className="absolute left-14 right-1 z-10 overflow-hidden rounded-[6px] border-l-[3px] border-[var(--gold)] bg-[rgba(161,122,53,0.1)] px-3 py-1.5"
-                      style={{ top, height }}
+                      className="absolute left-14 right-1 z-10 overflow-hidden rounded-[6px] border-l-[3px] px-3 py-1.5"
+                      style={{
+                        top,
+                        height,
+                        borderColor: style.bar,
+                        backgroundColor: style.bg,
+                      }}
                     >
                       <p className="truncate text-[0.78rem] font-semibold leading-tight text-[var(--espresso)]">
                         {e.title}

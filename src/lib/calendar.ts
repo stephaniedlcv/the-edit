@@ -1,6 +1,8 @@
 import "server-only";
 import ical from "node-ical";
 
+export type CalendarCategory = "personal" | "holiday";
+
 export type CalendarEvent = {
   id: string;
   title: string;
@@ -8,6 +10,12 @@ export type CalendarEvent = {
   start: string;
   end: string;
   allDay: boolean;
+  category: CalendarCategory;
+};
+
+type CalendarSource = {
+  url: string;
+  category: CalendarCategory;
 };
 
 function normalizeUrl(raw: string): string {
@@ -46,18 +54,14 @@ export type CalendarResult =
   | { configured: false; events: [] }
   | { configured: true; events: CalendarEvent[] };
 
-export async function getCalendarEvents(
+async function fetchSourceEvents(
+  source: CalendarSource,
   rangeStart: Date,
   rangeEnd: Date,
-): Promise<CalendarResult> {
-  const rawUrl = process.env.APPLE_CALENDAR_ICS_URL;
-  if (!rawUrl) {
-    return { configured: false, events: [] };
-  }
-
-  const url = normalizeUrl(rawUrl);
-  const data = await ical.async.fromURL(url);
+): Promise<CalendarEvent[]> {
+  const data = await ical.async.fromURL(source.url);
   const events: CalendarEvent[] = [];
+  const { category } = source;
 
   for (const key of Object.keys(data)) {
     const item = data[key];
@@ -90,23 +94,25 @@ export async function getCalendarEvents(
           const oStart = override.start as Date;
           const oEnd = override.end as Date;
           events.push({
-            id: `${key}-${occMs}`,
+            id: `${category}-${key}-${occMs}`,
             title: (override.summary || title).toString(),
             location: override.location ? override.location.toString() : location,
             start: oStart.toISOString(),
             end: (oEnd || new Date(oStart.getTime() + durationMs)).toISOString(),
             allDay,
+            category,
           });
           continue;
         }
 
         events.push({
-          id: `${key}-${occMs}`,
+          id: `${category}-${key}-${occMs}`,
           title,
           location,
           start: occ.toISOString(),
           end: new Date(occMs + durationMs).toISOString(),
           allDay,
+          category,
         });
       }
       continue;
@@ -118,16 +124,45 @@ export async function getCalendarEvents(
 
     if (end.getTime() > rangeStart.getTime() && start.getTime() < rangeEnd.getTime()) {
       events.push({
-        id: key,
+        id: `${category}-${key}`,
         title,
         location,
         start: start.toISOString(),
         end: end.toISOString(),
         allDay,
+        category,
       });
     }
   }
 
+  return events;
+}
+
+export async function getCalendarEvents(
+  rangeStart: Date,
+  rangeEnd: Date,
+): Promise<CalendarResult> {
+  const sources: CalendarSource[] = [];
+
+  const personalUrl = process.env.APPLE_CALENDAR_ICS_URL;
+  if (personalUrl) {
+    sources.push({ url: normalizeUrl(personalUrl), category: "personal" });
+  }
+
+  const holidayUrl = process.env.APPLE_HOLIDAYS_ICS_URL;
+  if (holidayUrl) {
+    sources.push({ url: normalizeUrl(holidayUrl), category: "holiday" });
+  }
+
+  if (sources.length === 0) {
+    return { configured: false, events: [] };
+  }
+
+  const grouped = await Promise.all(
+    sources.map((source) => fetchSourceEvents(source, rangeStart, rangeEnd)),
+  );
+
+  const events = grouped.flat();
   events.sort((a, b) => a.start.localeCompare(b.start));
   return { configured: true, events };
 }
