@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AtelierPlaceholder } from "@/components/atelier-placeholder";
 import type { WardrobeItem } from "@/types/wardrobe";
+
 function getClosetScore(item: ClosetCardProps["item"]) {
   const scores = [
     item.loveScore,
@@ -9,16 +10,12 @@ function getClosetScore(item: ClosetCardProps["item"]) {
     item.capsuleValueScore,
   ].filter((score): score is number => typeof score === "number");
 
-  if (!scores.length) {
-    return null;
-  }
+  if (!scores.length) return null;
 
   const average =
     scores.reduce((total, score) => total + score, 0) / scores.length;
-
   return Number(average.toFixed(1));
 }
-
 
 type ClosetCardProps = {
   item: WardrobeItem;
@@ -33,10 +30,10 @@ function ClosetCardContent({ item }: { item: WardrobeItem }) {
   const closetScore = getClosetScore(item);
   return (
     <div className="flex h-full flex-col">
-      <div className="bg-[var(--paper-2)] p-4">
+      <div className="bg-[var(--cream)] p-3">
         {item.imageUrl ? (
           <div
-            className="h-[22rem] rounded-[3px] bg-contain bg-center bg-no-repeat"
+            className="h-[22rem] rounded-[2px] bg-contain bg-center bg-no-repeat"
             style={{ backgroundImage: `url(${item.imageUrl})` }}
             aria-label={item.name}
           />
@@ -51,39 +48,39 @@ function ClosetCardContent({ item }: { item: WardrobeItem }) {
         )}
       </div>
 
-      <div className="flex flex-1 flex-col px-6 pb-6 pt-5 text-left">
-        <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-1 flex-col px-5 pb-6 pt-5 text-left">
+        <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-[0.55rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
+            <p className="text-[0.52rem] font-semibold uppercase tracking-[0.26em] text-[var(--gold)]">
               {item.colorName} · {item.size ?? "One size"}
             </p>
-            <h3 className="font-display mt-2 min-h-[6rem] text-[2rem] leading-none text-[var(--espresso)]">
+            <h3 className="font-display mt-2 min-h-[5.5rem] text-[1.85rem] leading-[1.02] text-[var(--espresso)]">
               {item.name}
             </h3>
           </div>
-
-          <p className="shrink-0 pt-1 text-right text-[0.55rem] font-semibold uppercase tracking-[0.18em] text-[var(--coffee)]">
+          <p className="shrink-0 pt-1 text-right text-[0.5rem] font-semibold uppercase tracking-[0.2em] text-[var(--ink-soft)]">
             Curated
           </p>
         </div>
 
-        <p className="mt-5 text-[0.58rem] font-medium uppercase tracking-[0.22em] text-[var(--ink-soft)]">
-          {item.vibes.join(" / ")}
+        <p className="mt-4 text-[0.55rem] font-semibold uppercase tracking-[0.24em] text-[var(--ink-soft)]">
+          {item.vibes.join(" · ")}
         </p>
 
         {item.itemStatus && item.itemStatus !== "active" ? (
-          <div className="mt-4 rounded-[3px] border border-[var(--line)] bg-[var(--paper-2)] px-3 py-2 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[var(--coffee)]">
-            Status: {item.itemStatus}
+          <div className="mt-4 border-l-2 border-[var(--gold)] pl-3 text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-[var(--coffee)]">
+            {item.itemStatus}
           </div>
         ) : null}
 
         {closetScore !== null ? (
-          <div className="mt-4 rounded-[3px] border border-[var(--coffee)] bg-[var(--paper)] px-3 py-2 text-center">
-            <p className="text-[0.55rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
+          <div className="mt-4 py-3 text-center">
+            <p className="text-[0.52rem] font-semibold uppercase tracking-[0.24em] text-[var(--gold)]">
               Closet Score
             </p>
-            <p className="mt-1 font-serif text-xl text-[var(--espresso)]">
-              {closetScore}/10
+            <p className="font-display mt-1 text-[2rem] leading-none text-[var(--espresso)]">
+              {closetScore}
+              <span className="text-[1rem] text-[var(--ink-soft)]">/10</span>
             </p>
           </div>
         ) : null}
@@ -94,7 +91,7 @@ function ClosetCardContent({ item }: { item: WardrobeItem }) {
           ["Fit", item.fitConfidenceScore],
           ["Capsule", item.capsuleValueScore],
         ].some(([, score]) => typeof score === "number") ? (
-          <div className="mt-4 grid grid-cols-2 gap-2 text-[0.62rem] uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+          <div className="mt-3 grid grid-cols-4 gap-1 text-[0.5rem] uppercase tracking-[0.14em] text-[var(--ink-soft)]">
             {[
               ["Love", item.loveScore],
               ["Vers", item.versatilityScore],
@@ -102,25 +99,23 @@ function ClosetCardContent({ item }: { item: WardrobeItem }) {
               ["Caps", item.capsuleValueScore],
             ].map(([label, score]) =>
               typeof score === "number" ? (
-                <span
-                  key={label}
-                  className="rounded-full border border-[var(--line)] px-2 py-1 text-center"
-                >
-                  {label} {score}/10
-                </span>
+                <div key={String(label)} className="text-center">
+                  <p className="text-[0.48rem] font-semibold uppercase tracking-[0.18em] text-[var(--gold)]">
+                    {label}
+                  </p>
+                  <p className="font-display mt-0.5 text-lg leading-none text-[var(--espresso)]">
+                    {score}
+                  </p>
+                </div>
               ) : null,
             )}
           </div>
         ) : null}
 
         {item.paidPrice || item.purchaseSource || item.purchaseDate ? (
-          <div className="mt-4 rounded-[3px] border border-[var(--line)] bg-[var(--paper-2)] px-3 py-2 text-[0.62rem] uppercase tracking-[0.16em] text-[var(--ink-soft)]">
-            {item.paidPrice ? (
-              <span className="mr-3">Paid ${item.paidPrice}</span>
-            ) : null}
-            {item.purchaseSource ? (
-              <span className="mr-3">{item.purchaseSource}</span>
-            ) : null}
+          <div className="mt-4 text-[0.58rem] uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+            {item.paidPrice ? <span className="mr-3">${item.paidPrice}</span> : null}
+            {item.purchaseSource ? <span className="mr-3">{item.purchaseSource}</span> : null}
             {item.purchaseDate ? <span>{item.purchaseDate}</span> : null}
           </div>
         ) : null}
@@ -131,17 +126,17 @@ function ClosetCardContent({ item }: { item: WardrobeItem }) {
             target="_blank"
             rel="noreferrer"
             onClick={(event) => event.stopPropagation()}
-            className="mt-4 inline-flex text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--coffee)] underline-offset-4 hover:underline"
+            className="mt-4 inline-flex text-[0.56rem] font-semibold uppercase tracking-[0.22em] text-[var(--coffee)] underline-offset-4 hover:underline"
           >
             Product link
           </a>
         ) : null}
 
         <div className="mt-auto border-t border-[var(--line)] pt-5">
-          <p className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
+          <p className="text-[0.54rem] font-semibold uppercase tracking-[0.26em] text-[var(--gold)]">
             Stylist&apos;s note
           </p>
-          <p className="mt-3 text-sm leading-6 text-[var(--ink-soft)]">
+          <p className="mt-3 text-[0.88rem] leading-[1.8] text-[var(--ink-soft)]">
             {item.stylingNotes ?? item.notes}
           </p>
         </div>
@@ -151,7 +146,7 @@ function ClosetCardContent({ item }: { item: WardrobeItem }) {
 }
 
 const cardClassName =
-  "group block h-full w-full overflow-hidden rounded-[4px] border border-[var(--line)] bg-[var(--paper)] shadow-[0_18px_60px_rgba(74,47,34,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_70px_rgba(74,47,34,0.1)]";
+  "group block h-full w-full overflow-hidden rounded-[2px] bg-[var(--paper)] transition duration-300 hover:-translate-y-1 shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_16px_50px_rgba(26,16,8,0.07)] hover:shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_24px_64px_rgba(26,16,8,0.12)]";
 
 export function ClosetCard({ item, onSelect }: ClosetCardProps) {
   if (onSelect) {

@@ -109,25 +109,25 @@ export function BuyOrderFilter({
   const totalCount = items.length;
 
   return (
-    <div className="mb-12 border border-[var(--line)] bg-[var(--paper-2)] px-6 py-8 md:px-8">
+    <div className="mb-12 rounded-[2px] bg-[var(--paper-2)] px-6 py-8 shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_16px_50px_rgba(26,16,8,0.06)] md:px-8">
       <div className="mb-8 flex items-end justify-between gap-8">
         <div>
           <p className="eyebrow mb-3">Shopping Discipline</p>
-          <h2 className="font-display text-5xl leading-none text-[var(--espresso)]">
+          <h2 className="font-display text-[2.8rem] leading-none text-[var(--espresso)] md:text-5xl">
             Buy order
           </h2>
         </div>
 
         <button
           type="button"
-          className="pb-1.5 text-[0.62rem] font-medium uppercase tracking-[0.28em] text-[var(--caramel)]"
+          className="pb-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.28em] text-[var(--gold)]"
         >
           + Review Item
         </button>
       </div>
 
       <div className="border-t border-[var(--line)] pt-6">
-        <div className="flex flex-wrap items-baseline gap-x-10 gap-y-4">
+        <div className="flex flex-wrap items-baseline gap-x-8 gap-y-4 md:gap-x-10">
           {FILTERS.map((filter) => {
             const isActive = filter.id === active;
             const count = getCount(items, filter.id);
@@ -139,25 +139,25 @@ export function BuyOrderFilter({
                 onClick={() => onChange(filter.id)}
                 className="inline-flex items-start gap-1.5 pb-2 transition-colors duration-300"
                 style={{
-                  borderBottom: `1.5px solid ${
+                  borderBottom: `1px solid ${
                     isActive ? "var(--espresso)" : "transparent"
                   }`,
                 }}
               >
                 <span
-                  className="font-display text-[1.65rem] leading-none transition-colors duration-300"
+                  className="font-display text-[1.5rem] leading-none transition-colors duration-300 md:text-[1.65rem]"
                   style={{
                     fontStyle: isActive ? "italic" : "normal",
-                    color: isActive ? "var(--espresso)" : "#b6a184",
+                    color: isActive ? "var(--espresso)" : "#c0a880",
                   }}
                 >
                   {filter.label}
                 </span>
 
                 <span
-                  className="font-display text-[0.85rem] leading-none"
+                  className="font-display text-[0.82rem] leading-none"
                   style={{
-                    color: isActive ? "var(--caramel)" : "#cdb89b",
+                    color: isActive ? "var(--gold)" : "#d5bc9c",
                   }}
                 >
                   {count}
@@ -175,13 +175,13 @@ export function BuyOrderFilter({
           animation: "buyOrderFadeUp 0.5s cubic-bezier(0.22,1,0.36,1)",
         }}
       >
-        <span className="shrink-0 pt-1 text-[0.6rem] font-medium uppercase tracking-[0.3em] text-[var(--caramel)]">
+        <span className="shrink-0 pt-1 eyebrow">
           {metaFor({ activeFilter, activeCount, totalCount })}
         </span>
 
         <span className="hidden h-[26px] w-px shrink-0 bg-[var(--line)] md:block" />
 
-        <p className="font-display m-0 text-[1.65rem] italic leading-tight text-[var(--coffee)]">
+        <p className="font-display m-0 text-[1.55rem] italic leading-tight text-[var(--coffee)]">
           {activeFilter.desc}
         </p>
       </div>

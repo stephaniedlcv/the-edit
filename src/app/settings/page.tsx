@@ -43,11 +43,11 @@ function SectionTitle({
 
 function RuleCard({ title, body }: { title: string; body: string }) {
   return (
-    <article className="rounded-[4px] border border-[var(--line)] bg-[var(--paper)] p-6 shadow-[0_18px_60px_rgba(74,47,34,0.04)]">
+    <article className="rounded-[2px] bg-[var(--paper)] p-6 shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_16px_50px_rgba(26,16,8,0.06)]">
       <h3 className="font-display text-2xl leading-none text-[var(--espresso)]">
         {title}
       </h3>
-      <p className="mt-4 text-sm leading-7 text-[var(--ink-soft)]">{body}</p>
+      <p className="mt-4 text-[0.88rem] leading-[1.75] text-[var(--ink-soft)]">{body}</p>
     </article>
   );
 }
@@ -70,50 +70,31 @@ export default async function SettingsPage() {
       />
 
       <section className="mx-auto max-w-6xl px-6 py-10 md:px-10">
-        <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
-          <article className="rounded-[4px] border border-[var(--line)] bg-[var(--paper-2)] p-8">
+        <div className="grid gap-4 md:gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+          <article className="rounded-[2px] bg-[var(--paper-2)] p-7 shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_16px_50px_rgba(26,16,8,0.06)] md:p-8">
             <p className="eyebrow mb-5">Identity</p>
-            <h2 className="font-display text-5xl leading-none text-[var(--espresso)]">
+            <h2 className="font-display text-[2.8rem] leading-none text-[var(--espresso)] md:text-5xl">
               {styleProfile.identity.styleSystem}
             </h2>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <div>
-                <p className="text-[0.55rem] font-semibold uppercase tracking-[0.2em] text-[var(--caramel)]">
-                  Palette
-                </p>
-                <p className="mt-2 font-display text-2xl text-[var(--espresso)]">
-                  {styleProfile.identity.palette}
-                </p>
-              </div>
-              <div>
-                <p className="text-[0.55rem] font-semibold uppercase tracking-[0.2em] text-[var(--caramel)]">
-                  Silhouette
-                </p>
-                <p className="mt-2 font-display text-2xl text-[var(--espresso)]">
-                  {styleProfile.identity.silhouette}
-                </p>
-              </div>
-              <div>
-                <p className="text-[0.55rem] font-semibold uppercase tracking-[0.2em] text-[var(--caramel)]">
-                  Climate
-                </p>
-                <p className="mt-2 font-display text-2xl text-[var(--espresso)]">
-                  {styleProfile.identity.location}
-                </p>
-              </div>
-              <div>
-                <p className="text-[0.55rem] font-semibold uppercase tracking-[0.2em] text-[var(--caramel)]">
-                  Aesthetic
-                </p>
-                <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">
-                  {styleProfile.identity.aesthetic}
-                </p>
-              </div>
+              {[
+                { label: "Palette", value: styleProfile.identity.palette },
+                { label: "Silhouette", value: styleProfile.identity.silhouette },
+                { label: "Climate", value: styleProfile.identity.location },
+                { label: "Aesthetic", value: styleProfile.identity.aesthetic },
+              ].map((item) => (
+                <div key={item.label}>
+                  <p className="eyebrow mb-2">{item.label}</p>
+                  <p className="font-display mt-2 text-2xl text-[var(--espresso)]">
+                    {item.value}
+                  </p>
+                </div>
+              ))}
             </div>
           </article>
 
-          <article className="rounded-[4px] border border-[var(--line)] bg-[var(--paper)] p-8">
+          <article className="rounded-[2px] bg-[var(--paper)] p-7 shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_16px_50px_rgba(26,16,8,0.06)] md:p-8">
             <p className="eyebrow mb-5">Measurements</p>
             <div className="grid grid-cols-2 gap-4">
               {styleProfile.measurements.map((measurement) => (
@@ -121,13 +102,11 @@ export default async function SettingsPage() {
                   key={measurement.label}
                   className="border-b border-[var(--line)] pb-4"
                 >
-                  <p className="text-[0.55rem] font-semibold uppercase tracking-[0.18em] text-[var(--caramel)]">
-                    {measurement.label}
-                  </p>
-                  <p className="font-display mt-2 text-4xl leading-none text-[var(--espresso)]">
+                  <p className="eyebrow mb-2">{measurement.label}</p>
+                  <p className="font-display mt-2 text-[2.4rem] leading-none text-[var(--espresso)]">
                     {measurement.value}
                   </p>
-                  <p className="mt-3 text-xs leading-5 text-[var(--ink-soft)]">
+                  <p className="mt-3 text-[0.8rem] leading-[1.6] text-[var(--ink-soft)]">
                     {measurement.note}
                   </p>
                 </div>
@@ -150,24 +129,22 @@ export default async function SettingsPage() {
               return (
                 <article
                   key={color.name}
-                  className="group overflow-hidden rounded-[4px] border border-[var(--line)] bg-[var(--paper)] shadow-[0_18px_60px_rgba(74,47,34,0.04)]"
+                  className="group overflow-hidden rounded-[2px] bg-[var(--paper)] shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_16px_50px_rgba(26,16,8,0.06)]"
                 >
                   <div
                     className="relative h-36 overflow-hidden"
                     style={{
-                      background: `radial-gradient(circle at 20% 18%, rgba(255,255,255,0.38), transparent 28%), linear-gradient(135deg, rgba(255,255,255,0.26), ${tone} 48%, rgba(43,36,31,0.55))`,
+                      background: `radial-gradient(circle at 20% 18%, rgba(255,255,255,0.38), transparent 28%), linear-gradient(135deg, rgba(255,255,255,0.26), ${tone} 48%, rgba(26,16,8,0.55))`,
                     }}
                   >
-                    <div className="absolute inset-0 opacity-[0.16] [background-image:linear-gradient(90deg,rgba(255,255,255,0.55)_1px,transparent_1px),linear-gradient(0deg,rgba(255,255,255,0.35)_1px,transparent_1px)] [background-size:22px_22px]" />
+                    <div className="absolute inset-0 opacity-[0.14] [background-image:linear-gradient(90deg,rgba(255,255,255,0.55)_1px,transparent_1px),linear-gradient(0deg,rgba(255,255,255,0.35)_1px,transparent_1px)] [background-size:22px_22px]" />
                     <div className="absolute -left-8 top-5 h-28 w-28 rounded-full border border-white/35" />
                     <div className="absolute -bottom-10 -right-8 h-32 w-32 rounded-full border border-black/10" />
                     <div className="absolute bottom-4 left-5 h-px w-14 bg-white/50" />
                   </div>
 
                   <div className="p-5">
-                    <p className="text-[0.52rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-                      {color.role}
-                    </p>
+                    <p className="eyebrow mb-2">{color.role}</p>
                     <h3 className="font-display mt-2 text-2xl leading-none text-[var(--espresso)]">
                       {color.name}
                     </h3>
@@ -221,13 +198,13 @@ export default async function SettingsPage() {
         </section>
 
         <section className="mt-12 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-          <article className="rounded-[4px] border border-[var(--line)] bg-[var(--paper-2)] p-8">
+          <article className="rounded-[2px] bg-[var(--paper-2)] p-7 shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_16px_50px_rgba(26,16,8,0.06)] md:p-8">
             <p className="eyebrow mb-5">Capsule Goals</p>
             <ul className="space-y-4">
               {styleProfile.capsuleGoals.map((goal) => (
                 <li
                   key={goal}
-                  className="border-b border-[var(--line)] pb-4 text-sm leading-7 text-[var(--ink-soft)] last:border-0 last:pb-0"
+                  className="border-b border-[var(--line)] pb-4 text-[0.88rem] leading-[1.75] text-[var(--ink-soft)] last:border-0 last:pb-0"
                 >
                   {goal}
                 </li>
@@ -235,23 +212,23 @@ export default async function SettingsPage() {
             </ul>
           </article>
 
-          <article className="rounded-[4px] border border-[var(--line)] bg-[var(--espresso)] p-8 text-[var(--paper)]">
-            <p className="mb-5 text-[0.6rem] font-semibold uppercase tracking-[0.26em] text-[var(--sand)]">
+          <article className="rounded-[2px] bg-[var(--espresso)] p-7 text-[var(--paper)] md:p-8">
+            <p className="mb-5 eyebrow" style={{ color: "rgba(255,255,255,0.5)" }}>
               AI Instruction Layer
             </p>
-            <h2 className="font-display text-4xl leading-none">
+            <h2 className="font-display text-[2.4rem] leading-none md:text-4xl">
               The rules every recommendation should follow.
             </h2>
             <div className="mt-7 grid gap-4">
               {styleProfile.aiRules.map((rule, index) => (
                 <div
                   key={rule}
-                  className="grid grid-cols-[2rem_1fr] gap-4 border-t border-white/15 pt-4"
+                  className="grid grid-cols-[2rem_1fr] gap-4 border-t border-white/12 pt-4"
                 >
-                  <p className="font-display text-2xl text-[var(--sand)]">
+                  <p className="font-display text-2xl" style={{ color: "rgba(255,255,255,0.4)" }}>
                     {String(index + 1).padStart(2, "0")}
                   </p>
-                  <p className="text-sm leading-7 text-white/75">{rule}</p>
+                  <p className="text-[0.88rem] leading-[1.75] text-white/70">{rule}</p>
                 </div>
               ))}
             </div>

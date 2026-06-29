@@ -11,22 +11,22 @@ type PageHeaderProps = {
 };
 
 const shellBase =
-  "border-b border-[var(--line)] pb-10 pt-10 md:pb-12 md:pt-12";
+  "border-b border-[var(--line)] pb-9 pt-9 md:pb-14 md:pt-14";
 
 const containedShellClass = `mx-auto max-w-6xl px-6 md:px-10 ${shellBase}`;
 
 const uncontainedShellClass = shellBase;
 
 const headerGridClass =
-  "grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-end";
+  "grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end";
 
 const titleClass =
-  "font-display max-w-4xl text-5xl leading-[0.98] text-[var(--espresso)] md:text-6xl";
+  "font-display text-[2.8rem] leading-[0.96] text-[var(--espresso)] md:text-5xl lg:text-6xl";
 
 const descriptionClass =
-  "mt-6 max-w-2xl text-[1.04rem] leading-8 text-[var(--ink-soft)]";
+  "mt-5 max-w-2xl text-[1.02rem] leading-8 text-[var(--ink-soft)]";
 
-const childrenClass = "mt-9 border-t border-[var(--line)] pt-7";
+const childrenClass = "mt-8 border-t border-[var(--line)] pt-7";
 
 export function PageHeader({
   eyebrow,
@@ -42,9 +42,7 @@ export function PageHeader({
       <div className={headerGridClass}>
         <div>
           <p className="eyebrow mb-4">{eyebrow}</p>
-
           <h1 className={titleClass}>{title}</h1>
-
           {description ? (
             <p className={descriptionClass}>{description}</p>
           ) : null}
@@ -53,13 +51,12 @@ export function PageHeader({
         {asideEyebrow || asideText ? (
           <div className="lg:text-right">
             {asideEyebrow ? (
-              <p className="text-[0.62rem] font-medium uppercase tracking-[0.28em] text-[var(--caramel)]">
+              <p className="text-[0.6rem] font-semibold uppercase tracking-[0.32em] text-[var(--gold)]">
                 {asideEyebrow}
               </p>
             ) : null}
-
             {asideText ? (
-              <p className="font-display mt-4 text-[1.35rem] italic leading-[1.35] text-[var(--coffee)]">
+              <p className="font-display mt-3 text-[1.28rem] italic leading-[1.4] text-[var(--coffee)]">
                 {asideText}
               </p>
             ) : null}

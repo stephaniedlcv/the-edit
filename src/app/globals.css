@@ -1,25 +1,27 @@
 @import "tailwindcss";
 
 /* ===========================================================
-   THE EDIT — Editorial Warm Espresso
-   Cream base, espresso/caramel palette, serif headline,
-   top navigation, boutique atelier layout.
+   THE EDIT — Premium Atelier
+   Crisp ivory base, deep espresso, champagne accents.
+   Editorial serif headlines, fixed bottom nav on mobile.
    =========================================================== */
 
 :root {
-  --page: #cbbfae;
-  --paper: #f5eee4;
-  --paper-2: #fbf6ee;
-  --espresso: #241711;
-  --coffee: #5b4636;
-  --caramel: #a9794e;
-  --caramel-soft: #c39b6f;
-  --ink: #251914;
-  --ink-soft: #7b6554;
-  --line: #e1d4c2;
-  --cream: #eadcc8;
+  --page: #d6cbbe;
+  --paper: #f8f3ec;
+  --paper-2: #fdfaf5;
+  --espresso: #1a1008;
+  --coffee: #4a3728;
+  --caramel: #9a6f47;
+  --caramel-soft: #b8906a;
+  --ink: #1a1008;
+  --ink-soft: #6b5647;
+  --line: #e8ddd0;
+  --cream: #ede3d4;
   --camel: #c4aa84;
-  --brown: #94714d;
+  --brown: #7a5c3e;
+  --gold: #b09060;
+  --gold-soft: #c8a87a;
 
   --background: var(--page);
   --foreground: var(--ink);
@@ -46,15 +48,15 @@ body {
 .font-display {
   font-family: var(--font-serif), Georgia, "Times New Roman", serif;
   font-weight: 400;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
 }
 
 .eyebrow {
-  font-size: 0.72rem;
-  font-weight: 500;
+  font-size: 0.66rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.34em;
-  color: var(--caramel);
+  letter-spacing: 0.38em;
+  color: var(--gold);
 }
 
 .hairline {
@@ -64,22 +66,46 @@ body {
 
 .editorial-shell {
   background: var(--paper);
-  border: 1px solid rgba(255, 255, 255, 0.54);
   box-shadow:
-    0 42px 100px rgba(36, 23, 17, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.58);
+    0 0 0 1px rgba(255, 255, 255, 0.6),
+    0 60px 120px rgba(26, 16, 8, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
 }
 
 .nav-link {
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.22em;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--coffee);
-  transition: color 180ms ease, opacity 180ms ease;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: color 160ms ease;
+  position: relative;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--espresso);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .nav-link:hover {
+  color: var(--espresso);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  transform: scaleX(1);
+}
+
+.nav-link.active {
   color: var(--espresso);
 }
 
@@ -88,18 +114,18 @@ body {
 }
 
 .shadow-soft {
-  box-shadow: 0 28px 70px -38px rgba(31, 22, 17, 0.4);
+  box-shadow: 0 32px 80px -40px rgba(26, 16, 8, 0.32);
 }
 
 .lift {
   transition:
-    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.35s ease;
+    transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.38s ease;
 }
 
 .lift:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 34px 70px rgba(36, 23, 17, 0.14);
+  transform: translateY(-4px);
+  box-shadow: 0 40px 80px rgba(26, 16, 8, 0.12);
 }
 
 .image-frame {
@@ -107,10 +133,10 @@ body {
   display: grid;
   place-items: center;
   overflow: hidden;
-  border-radius: 0.7rem;
+  border-radius: 0.5rem;
   background:
-    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.18), transparent 34%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent),
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.22), transparent 36%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.14), transparent),
     var(--cream);
 }
 
@@ -118,8 +144,8 @@ body {
   content: "";
   position: absolute;
   inset: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 0.55rem;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  border-radius: 0.4rem;
   pointer-events: none;
 }
 
@@ -127,17 +153,17 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(36, 23, 17, 0.18), transparent 46%);
+  background: linear-gradient(to top, rgba(26, 16, 8, 0.14), transparent 48%);
   pointer-events: none;
 }
 
 .image-placeholder-label {
   position: relative;
   z-index: 1;
-  color: rgba(255, 255, 255, 0.78);
-  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.6rem;
   font-weight: 600;
-  letter-spacing: 0.26em;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
 }
 
@@ -146,21 +172,21 @@ body {
   z-index: 2;
   top: 0.85rem;
   right: 0.85rem;
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  background: rgba(251, 246, 238, 0.84);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(253, 250, 245, 0.88);
   color: var(--espresso);
   border-radius: 999px;
-  padding: 0.45rem 0.7rem;
-  font-size: 0.58rem;
+  padding: 0.42rem 0.72rem;
+  font-size: 0.56rem;
   font-weight: 600;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  box-shadow: 0 12px 30px rgba(36, 23, 17, 0.16);
-  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 24px rgba(26, 16, 8, 0.14);
+  backdrop-filter: blur(10px);
   transition:
-    transform 180ms ease,
-    background 180ms ease,
-    color 180ms ease;
+    transform 160ms ease,
+    background 160ms ease,
+    color 160ms ease;
 }
 
 .image-action:hover {
@@ -171,11 +197,12 @@ body {
 
 .pin-card {
   break-inside: avoid;
-  border-radius: 0.9rem;
+  border-radius: 0.75rem;
   overflow: hidden;
   background: var(--paper-2);
-  border: 1px solid var(--line);
-  box-shadow: 0 24px 70px rgba(36, 23, 17, 0.1);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8),
+    0 20px 60px rgba(26, 16, 8, 0.08);
 }
 
 .outfit-collage {
@@ -190,10 +217,91 @@ body {
 }
 
 .price-dot {
-  width: 0.42rem;
-  height: 0.42rem;
+  width: 0.4rem;
+  height: 0.4rem;
   border-radius: 999px;
-  background: var(--caramel);
+  background: var(--gold);
+}
+
+/* Premium card — no visible border, only shadow */
+.atelier-card {
+  background: var(--paper-2);
+  border-radius: 2px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9),
+    0 0 0 1px rgba(26, 16, 8, 0.04),
+    0 20px 60px rgba(26, 16, 8, 0.07);
+  transition:
+    transform 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.36s ease;
+}
+
+.atelier-card:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9),
+    0 0 0 1px rgba(26, 16, 8, 0.04),
+    0 28px 72px rgba(26, 16, 8, 0.12);
+}
+
+/* Bottom nav mobile */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: rgba(253, 250, 245, 0.94);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-top: 1px solid rgba(26, 16, 8, 0.07);
+  box-shadow: 0 -8px 40px rgba(26, 16, 8, 0.06);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.75rem 0.5rem;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: color 160ms ease;
+  min-width: 0;
+  flex: 1;
+}
+
+.bottom-nav-item.active {
+  color: var(--espresso);
+}
+
+.bottom-nav-item svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  flex-shrink: 0;
+}
+
+.bottom-nav-label {
+  font-size: 0.54rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Active indicator dot */
+.bottom-nav-item.active .bottom-nav-dot {
+  background: var(--espresso);
+}
+
+.bottom-nav-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 999px;
+  background: transparent;
+  margin-top: 1px;
+  transition: background 160ms ease;
 }
 
 ::selection {
@@ -204,11 +312,16 @@ body {
 @keyframes buyOrderFadeUp {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(10px);
   }
 
   to {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

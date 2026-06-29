@@ -677,10 +677,10 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
         </div>
       </div>
 
-      <div className="mb-8 rounded-[4px] border border-[var(--line)] bg-[var(--paper-2)] p-5">
+      <div className="mb-8 rounded-[2px] bg-[var(--paper-2)] p-5 shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_12px_40px_rgba(26,16,8,0.06)]">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-9">
           <label className="grid gap-2">
-            <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
+            <span className="eyebrow">
               Category
             </span>
             <select
@@ -699,7 +699,7 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
           </label>
 
           <label className="grid gap-2">
-            <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
+            <span className="eyebrow">
               Type
             </span>
             <select
@@ -720,7 +720,7 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
           </label>
 
           <label className="grid gap-2">
-            <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
+            <span className="eyebrow">
               Color family
             </span>
             <select
@@ -739,7 +739,7 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
           </label>
 
           <label className="grid gap-2">
-            <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
+            <span className="eyebrow">
               Color name
             </span>
             <select
@@ -758,7 +758,7 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
           </label>
 
           <label className="grid gap-2">
-            <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
+            <span className="eyebrow">
               Pattern type
             </span>
             <select
@@ -777,7 +777,7 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
           </label>
 
           <label className="grid gap-2">
-            <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
+            <span className="eyebrow">
               Pattern subtype
             </span>
             <select
@@ -800,7 +800,7 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
           </label>
 
           <label className="grid gap-2">
-            <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
+            <span className="eyebrow">
               Status
             </span>
             <select
@@ -820,7 +820,7 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
           </label>
 
           <label className="grid gap-2">
-            <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
+            <span className="eyebrow">
               Sort
             </span>
             <select
@@ -836,7 +836,7 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
           </label>
 
           <label className="grid gap-2">
-            <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
+            <span className="eyebrow">
               Styling
             </span>
             <select
@@ -867,25 +867,23 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
       </div>
 
       <div className="mb-6 border-t border-[var(--line)] pt-7">
-        <p className="text-[0.68rem] font-medium uppercase tracking-[0.28em] text-[var(--caramel)]">
-          {formatCategory(selectedCategory)}
-        </p>
+        <p className="eyebrow mb-3">{formatCategory(selectedCategory)}</p>
 
-        <h3 className="font-display mt-3 text-4xl text-[var(--espresso)]">
+        <h3 className="font-display text-[2.4rem] leading-none text-[var(--espresso)] md:text-4xl">
           {selectedFilter?.label ?? "Closet"}
         </h3>
 
-        <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--ink-soft)]">
+        <p className="mt-3 max-w-2xl text-[0.88rem] leading-[1.75] text-[var(--ink-soft)]">
           {selectedCategoryDescription(selectedCategory)}
         </p>
 
-        <p className="mt-4 text-[0.62rem] font-medium uppercase tracking-[0.28em] text-[var(--caramel)]">
+        <p className="mt-4 eyebrow">
           {String(visibleItems.length).padStart(2, "0")} pieces
         </p>
       </div>
 
       {visibleItems.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {visibleItems.map((item) => (
             <ClosetCard
               key={item.id}
@@ -899,11 +897,11 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
           ))}
         </div>
       ) : (
-        <div className="rounded-[3px] border border-dashed border-[var(--line)] bg-[var(--paper-2)] p-10 text-center">
+        <div className="rounded-[2px] bg-[var(--paper-2)] p-10 text-center shadow-[0_0_0_1px_rgba(26,16,8,0.05)]">
           <p className="font-display text-3xl text-[var(--espresso)]">
             No pieces match these filters.
           </p>
-          <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-[var(--ink-soft)]">
+          <p className="mx-auto mt-3 max-w-md text-[0.88rem] leading-[1.75] text-[var(--ink-soft)]">
             Clear filters or choose a broader category/color combination.
           </p>
         </div>
@@ -958,7 +956,7 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
                 )}
 
                 <div className="mt-4 rounded-[4px] border border-dashed border-[var(--line)] bg-[var(--paper)] p-4">
-                  <label className="block text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
+                  <label className="block eyebrow">
                     Photo for new piece
                     <input
                       type="file"
@@ -1057,7 +1055,7 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
 
 
                 <div className="mt-4 rounded-[4px] border border-dashed border-[var(--line)] bg-[var(--paper)] p-4">
-                  <label className="block text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
+                  <label className="block eyebrow">
                     Upload / replace photo
                     <input
                       type="file"
@@ -1093,7 +1091,7 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
                   ) : null}
                 </div>
 
-                <p className="mt-4 text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
+                <p className="mt-4 eyebrow">
                   {selectedItem.category} · {selectedItem.colorName}
                 </p>
               </aside>
