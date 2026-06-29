@@ -81,7 +81,7 @@ function getTodayLocalDate(): string {
 
 function buildAiOutfit(items: WardrobeItem[]): OutfitData | null {
   if (items.length === 0) return null;
-  const composed = composeOutfits(items, { occasion: "work", maxLooks: 5 });
+  const composed = composeOutfits(items, { occasion: "office", maxLooks: 5 });
   const best =
     composed.find((o) => o.decision === "approved") ?? composed[0];
   if (!best) return null;
@@ -169,7 +169,7 @@ async function getTodayOutfit(items: WardrobeItem[]): Promise<OutfitData> {
       };
       type Formula = { id: string; name: string; outfit_formula_items: FormulaItem[] } | null;
 
-      const formula = logEntry.outfit_formulas as Formula;
+      const formula = logEntry.outfit_formulas as unknown as Formula;
       const rawPieces = formula?.outfit_formula_items ?? [];
 
       const visualItems: WardrobeItem[] = rawPieces
@@ -184,10 +184,10 @@ async function getTodayOutfit(items: WardrobeItem[]): Promise<OutfitData> {
               status: "owned" as const,
               category: wi.category as WardrobeItem["category"],
               colorFamily: (wi.color_family ?? "brown") as WardrobeItem["colorFamily"],
-              colorName: wi.color_name ?? undefined,
+              colorName: wi.color_name ?? "",
               imageUrl: wi.image_url ?? undefined,
               imagePath: wi.image_path ?? undefined,
-              vibes: [],
+              vibes: [] as WardrobeItem["vibes"],
             }
           );
         });
@@ -247,10 +247,10 @@ async function getTodayOutfit(items: WardrobeItem[]): Promise<OutfitData> {
           status: "owned" as const,
           category: (p.category ?? p.slotId ?? "accessory") as WardrobeItem["category"],
           colorFamily: (p.colorFamily ?? "brown") as WardrobeItem["colorFamily"],
-          colorName: p.colorName,
+          colorName: p.colorName ?? "",
           imagePath: p.imagePath ?? undefined,
           imageUrl: undefined,
-          vibes: [],
+          vibes: [] as WardrobeItem["vibes"],
         };
       });
 
