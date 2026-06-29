@@ -144,7 +144,7 @@ export async function getCalendarEvents(
 ): Promise<CalendarResult> {
   const sources: CalendarSource[] = [];
 
-  const personalUrl = process.env.APPLE_CALENDAR_ICS_URL;
+  const personalUrl = process.env.APPLE_BERLITZ_ICS_URL ?? process.env.APPLE_CALENDAR_ICS_URL;
   if (personalUrl) {
     sources.push({ url: normalizeUrl(personalUrl), category: "personal" });
   }
