@@ -1,0 +1,1 @@
+- [node-ical with Next.js Turbopack](node-ical-nextjs.md) — node-ical throws "BigInt is not a function" at import unless added to serverExternalPackages in next.config.

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { PageHeader } from "@/components/page-header";
+import { DailyHeader } from "@/components/daily-header";
+import { TodayCalendar } from "@/components/today-calendar";
 import { mockOwnedItems } from "@/lib/mock-owned-items";
 import { mockWishlistItems } from "@/lib/mock-wishlist-items";
 import { outfitLooks } from "@/lib/mock-outfits";
@@ -42,27 +43,6 @@ const closetGaps = [
   },
 ];
 
-const todayAgenda = [
-  {
-    time: "9:00 AM",
-    title: "Work / Berlitz",
-    context: "Office",
-    outfitNeed: "polished, breathable, structured but not heavy",
-  },
-  {
-    time: "12:30 PM",
-    title: "Lunch + errands",
-    context: "Day movement",
-    outfitNeed: "comfortable shoes, light layers, easy bag",
-  },
-  {
-    time: "6:00 PM",
-    title: "Gym / active block",
-    context: "Fitness",
-    outfitNeed: "separate gym look; avoid over-styling after work",
-  },
-];
-
 const calendarStyleSignals = [
   "Office first",
   "Humid weather",
@@ -70,40 +50,10 @@ const calendarStyleSignals = [
   "Comfortable shoes",
 ];
 
-const weatherData = [
-  { label: "Temperature", value: "88°F" },
-  { label: "Humidity", value: "78%" },
-  { label: "Rain chance", value: "35%" },
-];
-
 export default function HomePage() {
   return (
     <div className="mx-auto max-w-5xl px-5 pb-16 pt-8 md:px-10 md:pb-20 md:pt-12">
-      <PageHeader
-        contained={false}
-        eyebrow="Daily Edit"
-        title="Good afternoon, Stephanie."
-        description=""
-        asideEyebrow="San Juan · Today"
-        asideText="Humid heat — light fabrics, open layers, and no heavy styling."
-      >
-        <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
-          {weatherData.map((d) => (
-            <div key={d.label}>
-              <p className="eyebrow mb-2">{d.label}</p>
-              <p className="font-display mt-2 text-[2.4rem] leading-none text-[var(--espresso)]">
-                {d.value}
-              </p>
-            </div>
-          ))}
-          <div>
-            <p className="eyebrow mb-2">Style verdict</p>
-            <p className="mt-2 text-[0.88rem] leading-[1.75] text-[var(--ink-soft)]">
-              Choose breathable pieces and keep structure light.
-            </p>
-          </div>
-        </div>
-      </PageHeader>
+      <DailyHeader />
 
       {/* Daily Styling Brief */}
       <section className="border-b border-[var(--line)] py-10 md:py-12">
@@ -174,94 +124,8 @@ export default function HomePage() {
             </div>
           </aside>
 
-          {/* Agenda */}
-          <div className="overflow-hidden rounded-[2px] bg-[var(--paper-2)] shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_0_0_1px_rgba(36,26,18,0.05),0_16px_44px_rgba(36,26,18,0.08)]">
-            <div className="flex items-center justify-between gap-4 border-b border-[var(--line)] px-6 py-5">
-              <div>
-                <p className="eyebrow mb-2">Apple Calendar Preview</p>
-                <p className="font-display text-[1.5rem] leading-none text-[var(--espresso)]">
-                  Monday, June 22
-                </p>
-              </div>
-              <span className="rounded-full border border-[var(--line)] px-3 py-1.5 text-[0.52rem] font-semibold uppercase tracking-[0.2em] text-[var(--coffee)]">
-                Preview
-              </span>
-            </div>
-
-            <div className="grid grid-cols-7 border-b border-[var(--line)]">
-              {[
-                ["Mon", "22"],
-                ["Tue", "23"],
-                ["Wed", "24"],
-                ["Thu", "25"],
-                ["Fri", "26"],
-                ["Sat", "27"],
-                ["Sun", "28"],
-              ].map(([day, date], index) => {
-                const isToday = index === 0;
-                return (
-                  <div
-                    key={`${day}-${date}`}
-                    className={[
-                      "border-r border-[var(--line)] px-1 py-3 text-center last:border-r-0",
-                      isToday ? "bg-[rgba(176,144,96,0.08)]" : "",
-                    ].join(" ")}
-                  >
-                    <p className="text-[0.5rem] font-semibold uppercase tracking-[0.18em] text-[var(--gold)]">
-                      {day}
-                    </p>
-                    <p
-                      className={[
-                        "font-display mt-1 text-[1.3rem] leading-none",
-                        isToday ? "text-[var(--espresso)]" : "text-[var(--caramel-soft)]",
-                      ].join(" ")}
-                    >
-                      {date}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="px-6 py-6">
-              <div className="relative">
-                <div className="absolute bottom-0 left-[5rem] top-0 w-px bg-[var(--line)]" />
-                {todayAgenda.map((event) => (
-                  <div
-                    key={`${event.time}-${event.title}`}
-                    className="relative grid gap-4 pb-6 last:pb-0 md:grid-cols-[5rem_1fr]"
-                  >
-                    <div className="pr-4 text-right">
-                      <p className="font-display text-[1.1rem] leading-none text-[var(--espresso)]">
-                        {event.time}
-                      </p>
-                      <p className="mt-1.5 text-[0.48rem] font-semibold uppercase tracking-[0.2em] text-[var(--gold)]">
-                        {event.context}
-                      </p>
-                    </div>
-                    <div className="relative pl-6">
-                      <span className="absolute left-[-0.28rem] top-2 h-2.5 w-2.5 rounded-full border-2 border-[var(--paper-2)] bg-[var(--gold)]" />
-                      <div className="rounded-[2px] bg-[var(--paper-2)] px-4 py-4 shadow-[0_0_0_1px_rgba(36,26,18,0.05),0_12px_30px_rgba(36,26,18,0.08)]">
-                        <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
-                          <div>
-                            <p className="text-[0.95rem] font-medium text-[var(--espresso)]">
-                              {event.title}
-                            </p>
-                            <p className="mt-1.5 text-[0.85rem] leading-[1.7] text-[var(--ink-soft)]">
-                              {event.outfitNeed}
-                            </p>
-                          </div>
-                          <span className="w-fit shrink-0 rounded-full border border-[var(--line)] px-2.5 py-1 text-[0.48rem] font-semibold uppercase tracking-[0.18em] text-[var(--coffee)]">
-                            outfit signal
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          {/* Calendar */}
+          <TodayCalendar />
         </div>
       </section>
 

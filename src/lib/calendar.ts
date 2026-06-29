@@ -1,0 +1,123 @@
+import "server-only";
+import ical from "node-ical";
+
+export type CalendarEvent = {
+  id: string;
+  title: string;
+  location: string | null;
+  start: string;
+  end: string;
+  allDay: boolean;
+};
+
+function normalizeUrl(raw: string): string {
+  const trimmed = raw.trim();
+  if (trimmed.startsWith("webcal://")) {
+    return "https://" + trimmed.slice("webcal://".length);
+  }
+  return trimmed;
+}
+
+function getDurationMs(ev: ical.VEvent): number {
+  const start = ev.start as Date;
+  const end = ev.end as Date;
+  if (start && end) {
+    return end.getTime() - start.getTime();
+  }
+  return 60 * 60 * 1000;
+}
+
+function isAllDay(ev: ical.VEvent): boolean {
+  const start = ev.start as Date & { dateOnly?: boolean };
+  return Boolean(start?.dateOnly);
+}
+
+export type CalendarResult =
+  | { configured: false; events: [] }
+  | { configured: true; events: CalendarEvent[] };
+
+export async function getCalendarEvents(
+  rangeStart: Date,
+  rangeEnd: Date,
+): Promise<CalendarResult> {
+  const rawUrl = process.env.APPLE_CALENDAR_ICS_URL;
+  if (!rawUrl) {
+    return { configured: false, events: [] };
+  }
+
+  const url = normalizeUrl(rawUrl);
+  const data = await ical.async.fromURL(url);
+  const events: CalendarEvent[] = [];
+
+  for (const key of Object.keys(data)) {
+    const item = data[key];
+    if (!item || item.type !== "VEVENT") continue;
+    const ev = item as ical.VEvent;
+
+    const title = (ev.summary || "Untitled").toString();
+    const location = ev.location ? ev.location.toString() : null;
+    const allDay = isAllDay(ev);
+    const durationMs = getDurationMs(ev);
+
+    if (ev.rrule) {
+      const occurrences = ev.rrule.between(rangeStart, rangeEnd, true);
+
+      const exdates = new Set<number>();
+      if (ev.exdate) {
+        for (const exKey of Object.keys(ev.exdate)) {
+          const exDate = ev.exdate[exKey] as Date;
+          if (exDate) exdates.add(exDate.getTime());
+        }
+      }
+
+      for (const occ of occurrences) {
+        const occMs = occ.getTime();
+        if (exdates.has(occMs)) continue;
+
+        const override =
+          ev.recurrences && ev.recurrences[occ.toISOString().slice(0, 10)];
+        if (override) {
+          const oStart = override.start as Date;
+          const oEnd = override.end as Date;
+          events.push({
+            id: `${key}-${occMs}`,
+            title: (override.summary || title).toString(),
+            location: override.location ? override.location.toString() : location,
+            start: oStart.toISOString(),
+            end: (oEnd || new Date(oStart.getTime() + durationMs)).toISOString(),
+            allDay,
+          });
+          continue;
+        }
+
+        events.push({
+          id: `${key}-${occMs}`,
+          title,
+          location,
+          start: occ.toISOString(),
+          end: new Date(occMs + durationMs).toISOString(),
+          allDay,
+        });
+      }
+      continue;
+    }
+
+    const start = ev.start as Date;
+    const end = (ev.end as Date) || new Date(start.getTime() + durationMs);
+    if (!start) continue;
+
+    if (end.getTime() > rangeStart.getTime() && start.getTime() < rangeEnd.getTime()) {
+      events.push({
+        id: key,
+        title,
+        location,
+        start: start.toISOString(),
+        end: end.toISOString(),
+        allDay,
+      });
+    }
+  }
+
+  events.sort((a, b) => a.start.localeCompare(b.start));
+  return { configured: true, events };
+}
