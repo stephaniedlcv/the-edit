@@ -54,6 +54,7 @@ function OutfitPieceVisual({
         category={item.category}
         className="h-full"
         compact
+        glass
       />
     </div>
   );
