@@ -34,10 +34,10 @@ const CATEGORY_STYLE: Record<
   },
   workout: {
     label: "Workouts",
-    dot: "#5F8A6B",
-    bar: "#5F8A6B",
-    bg: "rgba(95,138,107,0.1)",
-    chipBg: "rgba(95,138,107,0.14)",
+    dot: "#B85450",
+    bar: "#B85450",
+    bg: "rgba(184,84,80,0.1)",
+    chipBg: "rgba(184,84,80,0.14)",
   },
 };
 
