@@ -1,11 +1,43 @@
 import Link from "next/link";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
-import { outfitLooks } from "@/lib/mock-outfits";
+import { composeOutfits } from "@/lib/style-profile/outfit-composer";
+import type { WardrobeItem } from "@/types/wardrobe";
+
+const COLOR_SWATCH: Record<string, string> = {
+  black:     "#1C1412",
+  brown:     "#7D4E2D",
+  cream:     "#EDE6DA",
+  beige:     "#D1B899",
+  white:     "#F5F0E8",
+  burgundy:  "#6B2737",
+  olive:     "#6D7A45",
+  camel:     "#C08B4C",
+  plum:      "#5D3A5E",
+  mustard:   "#C49A2C",
+  denim:     "#4A6FA5",
+  blue:      "#4A6FA5",
+  pink:      "#D4909A",
+  gray:      "#9A8F85",
+  orange:    "#C96A3A",
+  metallic:  "#B8A870",
+  multicolor:"#8B5E3C",
+  statement: "#A1223F",
+};
+
+const COLLAGE_POSITIONS = [
+  { top: "4%",  left: "3%",  width: "46%", height: "32%", rotate: -3 },
+  { top: "7%",  left: "52%", width: "41%", height: "27%", rotate:  2 },
+  { top: "44%", left: "4%",  width: "44%", height: "29%", rotate: -2 },
+  { top: "57%", left: "52%", width: "37%", height: "25%", rotate:  3 },
+  { top: "76%", left: "19%", width: "34%", height: "18%", rotate: -1 },
+];
 
 type PieceData = {
   id: string;
   name: string;
   slot: string;
+  color: string;
+  imageUrl?: string | null;
   x: string | null;
   y: string | null;
   w: string | null;
@@ -13,7 +45,7 @@ type PieceData = {
 };
 
 type OutfitData = {
-  source: "planner" | "saved" | "mock";
+  source: "planner" | "saved" | "ai" | "mock";
   title: string;
   caption: string | null;
   formula: string[];
@@ -24,18 +56,53 @@ type OutfitData = {
 
 function getTodayLocalDate(): string {
   const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
+  return [
+    d.getFullYear(),
+    String(d.getMonth() + 1).padStart(2, "0"),
+    String(d.getDate()).padStart(2, "0"),
+  ].join("-");
 }
 
-async function getTodayOutfit(): Promise<OutfitData> {
+function buildAiOutfit(items: WardrobeItem[]): OutfitData | null {
+  if (items.length === 0) return null;
+
+  const composed = composeOutfits(items, { occasion: "work", maxLooks: 5 });
+  const best =
+    composed.find((o) => o.decision === "approved") ?? composed[0];
+  if (!best) return null;
+
+  const pieceItems = best.pieceIds
+    .map((id) => items.find((i) => i.id === id))
+    .filter((i): i is WardrobeItem => !!i)
+    .slice(0, 5);
+
+  return {
+    source: "ai",
+    title: best.title,
+    caption: best.stylingInstruction || null,
+    formula: best.formula
+      ? best.formula.split(/[+·,]/).map((s) => s.trim()).filter(Boolean)
+      : pieceItems.map((p) => p.name),
+    notes: best.whyItWorks?.[0] ?? null,
+    pieces: pieceItems.map((item) => ({
+      id: item.id,
+      name: item.name,
+      slot: item.category,
+      color: COLOR_SWATCH[item.colorFamily] ?? "#EDE6DA",
+      imageUrl: item.imageUrl ?? null,
+      x: null,
+      y: null,
+      w: null,
+      r: null,
+    })),
+  };
+}
+
+async function getTodayOutfit(items: WardrobeItem[]): Promise<OutfitData> {
   const supabase = getSupabaseServerClient();
   const today = getTodayLocalDate();
 
   if (supabase) {
-    // 1. Check planner: today's log entry (planned or worn)
     const { data: logEntry } = await supabase
       .from("outfit_log_entries")
       .select(
@@ -70,30 +137,37 @@ async function getTodayOutfit(): Promise<OutfitData> {
         }[];
       } | null;
 
-      const pieces: PieceData[] = formula?.outfit_formula_items?.map((item) => ({
-        id: item.id,
-        name: item.wardrobe_items?.name ?? item.slot,
-        slot: item.slot,
-        x: item.x_position,
-        y: item.y_position,
-        w: item.width_value,
-        r: item.rotate_value,
-      })) ?? [];
+      const rawPieces = formula?.outfit_formula_items ?? [];
+      const pieces: PieceData[] = rawPieces.map((item) => {
+        const wardrobeItem = items.find(
+          (wi) => wi.id === item.wardrobe_items?.id,
+        );
+        return {
+          id: item.id,
+          name: item.wardrobe_items?.name ?? item.slot,
+          slot: item.slot,
+          color: wardrobeItem
+            ? (COLOR_SWATCH[wardrobeItem.colorFamily] ?? "#EDE6DA")
+            : "#EDE6DA",
+          imageUrl: wardrobeItem?.imageUrl ?? null,
+          x: item.x_position,
+          y: item.y_position,
+          w: item.width_value,
+          r: item.rotate_value,
+        };
+      });
 
       return {
         source: "planner",
         title: logEntry.title,
         caption: logEntry.context ?? logEntry.outfit_need,
-        formula: pieces.length > 0
-          ? pieces.map((p) => p.name)
-          : [logEntry.title],
+        formula: pieces.length > 0 ? pieces.map((p) => p.name) : [logEntry.title],
         notes: logEntry.notes,
         status: logEntry.status as "planned" | "worn" | "skipped",
         pieces,
       };
     }
 
-    // 2. Fall back to most recent saved outfit
     const { data: savedOutfit } = await supabase
       .from("saved_outfits")
       .select("id, title, formula, styling_instruction, why_it_works, selected_pieces, worn_at")
@@ -102,14 +176,25 @@ async function getTodayOutfit(): Promise<OutfitData> {
       .maybeSingle();
 
     if (savedOutfit) {
-      type SelectedPiece = { name?: string; slot?: string };
-      const pieces_raw: SelectedPiece[] =
-        Array.isArray(savedOutfit.selected_pieces)
-          ? (savedOutfit.selected_pieces as SelectedPiece[])
-          : [];
+      type SP = { name?: string; slot?: string; color_family?: string; image_url?: string };
+      const rawPieces: SP[] = Array.isArray(savedOutfit.selected_pieces)
+        ? (savedOutfit.selected_pieces as SP[])
+        : [];
       const formulaItems: string[] = savedOutfit.formula
-        ? savedOutfit.formula.split(",").map((s: string) => s.trim())
-        : pieces_raw.map((p) => p.name ?? p.slot ?? "Piece");
+        ? savedOutfit.formula.split(",").map((s: string) => s.trim()).filter(Boolean)
+        : rawPieces.map((p) => p.name ?? p.slot ?? "Piece");
+
+      const pieces: PieceData[] = rawPieces.slice(0, 5).map((p, i) => ({
+        id: `saved-${i}`,
+        name: p.name ?? p.slot ?? "Piece",
+        slot: p.slot ?? "piece",
+        color: COLOR_SWATCH[p.color_family ?? ""] ?? "#EDE6DA",
+        imageUrl: p.image_url ?? null,
+        x: null,
+        y: null,
+        w: null,
+        r: null,
+      }));
 
       return {
         source: "saved",
@@ -117,28 +202,29 @@ async function getTodayOutfit(): Promise<OutfitData> {
         caption: savedOutfit.styling_instruction ?? null,
         formula: formulaItems,
         notes: (savedOutfit.why_it_works as string[] | null)?.[0] ?? null,
-        pieces: [],
+        pieces,
       };
     }
   }
 
-  // 3. Mock fallback
-  const mock = outfitLooks[0];
+  // AI fallback from wardrobe items
+  const aiOutfit = buildAiOutfit(items);
+  if (aiOutfit) return aiOutfit;
+
+  // Final mock fallback
   return {
     source: "mock",
-    title: mock.title,
-    caption: mock.caption,
-    formula: mock.formula,
-    notes: mock.notes,
-    pieces: mock.pieces.map((p) => ({
-      id: p.id,
-      name: p.name,
-      slot: p.name,
-      x: p.left,
-      y: p.top,
-      w: p.width,
-      r: p.rotate ? String(p.rotate) : "0",
-    })),
+    title: "Open Blazer Vest Office Formula",
+    caption: "Structured yet breathable — the go-to formula for the PR office.",
+    formula: ["Blazer vest", "Cream top", "Wide-leg trousers", "Loafers", "Structured bag"],
+    notes: "This formula works because it defines the waist without adding heat.",
+    pieces: [
+      { id: "m1", name: "Warm Brown Blazer Vest", slot: "outerwear", color: "#7D4E2D", imageUrl: null, x: null, y: null, w: null, r: null },
+      { id: "m2", name: "Cream Top",               slot: "top",       color: "#EDE6DA", imageUrl: null, x: null, y: null, w: null, r: null },
+      { id: "m3", name: "Brown Wide-leg Pants",    slot: "bottom",    color: "#9B7355", imageUrl: null, x: null, y: null, w: null, r: null },
+      { id: "m4", name: "Dark Brown Loafers",      slot: "shoes",     color: "#4A2E18", imageUrl: null, x: null, y: null, w: null, r: null },
+      { id: "m5", name: "Structured Bag",           slot: "bag",       color: "#6B4C30", imageUrl: null, x: null, y: null, w: null, r: null },
+    ],
   };
 }
 
@@ -147,65 +233,122 @@ const STATUS_STYLE: Record<string, { label: string; color: string }> = {
   worn:    { label: "Worn today ✓",       color: "text-[#5A8A5A]" },
 };
 
-export async function TodayOutfit() {
-  const outfit = await getTodayOutfit();
+const SOURCE_BADGE: Record<string, string> = {
+  planner: "Today's look",
+  saved:   "Latest saved look",
+  ai:      "AI Pick",
+  mock:    "Example look",
+};
+
+const SOURCE_NOTE: Record<string, string> = {
+  planner: "From your planner — logged for today.",
+  saved:   "Most recent saved outfit. Nothing planned for today yet.",
+  ai:      "Generated from your closet — plan a look in the Planner to pin it here.",
+  mock:    "Example look — add pieces to your closet to see real suggestions.",
+};
+
+function getTextColorForBg(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.55 ? "#241A12" : "#FAF8F5";
+}
+
+export async function TodayOutfit({ items }: { items: WardrobeItem[] }) {
+  const outfit = await getTodayOutfit(items);
   const hasPositioning = outfit.pieces.some((p) => p.x && p.y);
-  const mockPieces = outfit.source === "mock" || hasPositioning;
+  const usePositioned = hasPositioning;
 
   return (
     <div className="overflow-hidden rounded-[2px] bg-[var(--paper-2)] shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_0_0_1px_rgba(36,26,18,0.05),0_16px_44px_rgba(36,26,18,0.08)]">
       <div className="grid gap-0 md:grid-cols-[0.95fr_1.05fr]">
+
         {/* Visual collage */}
         <div
           className="relative min-h-[22rem] overflow-hidden border-b border-[var(--line)] md:border-b-0 md:border-r md:min-h-[26rem]"
-          style={{
-            background:
-              "linear-gradient(170deg, #F4EEE4 0%, #EDE6DA 70%, #E6DDCE 100%)",
-          }}
+          style={{ background: "linear-gradient(170deg, #F4EEE4 0%, #EDE6DA 70%, #E6DDCE 100%)" }}
         >
-          <div className="absolute right-4 top-4 rounded-full bg-[rgba(255,255,255,0.85)] px-3 py-1.5 text-[0.5rem] font-semibold uppercase tracking-[0.2em] text-[var(--gold)] shadow-[0_4px_16px_rgba(36,26,18,0.12)] backdrop-blur-sm border border-[rgba(36,26,18,0.08)]">
-            {outfit.status === "worn" ? "Worn today ✓" : "Today's look"}
+          {/* Badge */}
+          <div className="absolute right-4 top-4 z-10 rounded-full bg-[rgba(255,255,255,0.88)] px-3 py-1.5 text-[0.5rem] font-semibold uppercase tracking-[0.2em] text-[var(--gold)] shadow-[0_4px_16px_rgba(36,26,18,0.12)] backdrop-blur-sm border border-[rgba(36,26,18,0.08)]">
+            {SOURCE_BADGE[outfit.source]}
           </div>
 
-          {mockPieces && outfit.pieces.length > 0 ? (
-            outfit.pieces.slice(0, 5).map((piece) => (
-              <div
-                key={piece.id}
-                className="absolute rounded-[22px] bg-[rgba(255,255,255,0.7)] shadow-[0_16px_36px_rgba(36,26,18,0.12)]"
-                style={{
-                  top: piece.y ?? "20%",
-                  left: piece.x ?? "10%",
-                  width: piece.w ?? "40%",
-                  height: "auto",
-                  minHeight: "4rem",
-                  transform: `rotate(${piece.r ?? 0}deg)`,
-                }}
-              >
-                <div className="absolute inset-3 rounded-[16px] border border-[rgba(36,26,18,0.08)]" />
-                <div className="flex h-full min-h-[4rem] items-center justify-center px-4 py-3 text-center">
-                  <span className="font-display text-[0.95rem] leading-tight text-[var(--coffee)]">
-                    {piece.name}
-                  </span>
-                </div>
-              </div>
-            ))
-          ) : outfit.pieces.length > 0 ? (
-            /* Grid layout for pieces without positioning data */
-            <div className="absolute inset-4 flex flex-wrap content-center items-center justify-center gap-3">
-              {outfit.pieces.slice(0, 5).map((piece, i) => (
+          {outfit.pieces.length > 0 ? (
+            usePositioned ? (
+              /* DB-positioned pieces */
+              outfit.pieces.slice(0, 5).map((piece) => (
                 <div
                   key={piece.id}
-                  className="rounded-[18px] bg-[rgba(255,255,255,0.75)] px-4 py-3 shadow-[0_8px_24px_rgba(36,26,18,0.10)]"
-                  style={{ transform: `rotate(${i % 2 === 0 ? -2 : 2}deg)` }}
+                  className="absolute overflow-hidden rounded-[18px] shadow-[0_12px_32px_rgba(36,26,18,0.14)]"
+                  style={{
+                    top: piece.y ?? "20%",
+                    left: piece.x ?? "10%",
+                    width: piece.w ?? "40%",
+                    transform: `rotate(${piece.r ?? 0}deg)`,
+                    aspectRatio: "3/4",
+                    backgroundColor: piece.color,
+                  }}
                 >
-                  <span className="font-display text-[0.9rem] text-[var(--coffee)]">
-                    {piece.name}
-                  </span>
+                  {piece.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={piece.imageUrl}
+                      alt={piece.name}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full items-end p-3">
+                      <span
+                        className="font-display text-[0.8rem] leading-tight"
+                        style={{ color: getTextColorForBg(piece.color) }}
+                      >
+                        {piece.name}
+                      </span>
+                    </div>
+                  )}
                 </div>
-              ))}
-            </div>
+              ))
+            ) : (
+              /* Scattered collage with fixed positions */
+              outfit.pieces.slice(0, 5).map((piece, idx) => {
+                const pos = COLLAGE_POSITIONS[idx] ?? COLLAGE_POSITIONS[0];
+                return (
+                  <div
+                    key={piece.id}
+                    className="absolute overflow-hidden rounded-[18px] shadow-[0_12px_32px_rgba(36,26,18,0.14)]"
+                    style={{
+                      top: pos.top,
+                      left: pos.left,
+                      width: pos.width,
+                      height: pos.height,
+                      transform: `rotate(${pos.rotate}deg)`,
+                      backgroundColor: piece.color,
+                    }}
+                  >
+                    {piece.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={piece.imageUrl}
+                        alt={piece.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full items-end p-3">
+                        <span
+                          className="font-display text-[0.78rem] leading-tight"
+                          style={{ color: getTextColorForBg(piece.color) }}
+                        >
+                          {piece.name}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )
           ) : (
-            /* No pieces — empty/CTA state */
+            /* Empty state */
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
               <p className="font-display text-[1.15rem] italic leading-[1.4] text-[var(--coffee)]">
                 No look planned for today.
@@ -222,18 +365,16 @@ export async function TodayOutfit() {
 
         {/* Metadata */}
         <div className="px-6 py-7">
-          <div className="flex items-start justify-between gap-2 mb-4">
+          <div className="mb-4 flex items-start justify-between gap-2">
             <p className="eyebrow">Outfit of today</p>
             {outfit.status && STATUS_STYLE[outfit.status] && (
-              <span
-                className={`text-[0.52rem] font-semibold uppercase tracking-[0.18em] ${STATUS_STYLE[outfit.status].color}`}
-              >
+              <span className={`text-[0.52rem] font-semibold uppercase tracking-[0.18em] ${STATUS_STYLE[outfit.status].color}`}>
                 {STATUS_STYLE[outfit.status].label}
               </span>
             )}
           </div>
 
-          <h2 className="font-display text-[2.4rem] leading-[1.02] text-[var(--espresso)]">
+          <h2 className="font-display text-[2.1rem] leading-[1.02] text-[var(--espresso)]">
             {outfit.title}
           </h2>
 
@@ -265,24 +406,11 @@ export async function TodayOutfit() {
             </p>
           )}
 
-          {/* Source hint */}
-          {outfit.source === "planner" && (
-            <p className="mt-3 text-[0.72rem] text-[var(--ink-soft)]">
-              From your planner — logged for today.
-            </p>
-          )}
-          {outfit.source === "saved" && (
-            <p className="mt-3 text-[0.72rem] text-[var(--ink-soft)]">
-              Most recent saved outfit — nothing logged for today yet.
-            </p>
-          )}
-          {outfit.source === "mock" && (
-            <p className="mt-3 text-[0.72rem] text-[var(--ink-soft)]">
-              Example look — log an outfit in your planner to see it here.
-            </p>
-          )}
+          <p className="mt-4 text-[0.72rem] leading-[1.7] text-[var(--ink-soft)]">
+            {SOURCE_NOTE[outfit.source]}
+          </p>
 
-          <div className="mt-7 flex flex-wrap gap-6 border-t border-[var(--line)] pt-5">
+          <div className="mt-6 flex flex-wrap gap-6 border-t border-[var(--line)] pt-5">
             <Link
               href="/outfits"
               className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-[var(--espresso)] underline-offset-4 hover:underline"
