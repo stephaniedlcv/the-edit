@@ -1,0 +1,214 @@
+@import "tailwindcss";
+
+/* ===========================================================
+   THE EDIT — Editorial Warm Espresso
+   Cream base, espresso/caramel palette, serif headline,
+   top navigation, boutique atelier layout.
+   =========================================================== */
+
+:root {
+  --page: #cbbfae;
+  --paper: #f5eee4;
+  --paper-2: #fbf6ee;
+  --espresso: #241711;
+  --coffee: #5b4636;
+  --caramel: #a9794e;
+  --caramel-soft: #c39b6f;
+  --ink: #251914;
+  --ink-soft: #7b6554;
+  --line: #e1d4c2;
+  --cream: #eadcc8;
+  --camel: #c4aa84;
+  --brown: #94714d;
+
+  --background: var(--page);
+  --foreground: var(--ink);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font-sans), Inter, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.font-display {
+  font-family: var(--font-serif), Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.34em;
+  color: var(--caramel);
+}
+
+.hairline {
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+.editorial-shell {
+  background: var(--paper);
+  border: 1px solid rgba(255, 255, 255, 0.54);
+  box-shadow:
+    0 42px 100px rgba(36, 23, 17, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.58);
+}
+
+.nav-link {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--coffee);
+  transition: color 180ms ease, opacity 180ms ease;
+}
+
+.nav-link:hover {
+  color: var(--espresso);
+}
+
+.stat-divider {
+  border-left: 1px solid var(--line);
+}
+
+.shadow-soft {
+  box-shadow: 0 28px 70px -38px rgba(31, 22, 17, 0.4);
+}
+
+.lift {
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease;
+}
+
+.lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 34px 70px rgba(36, 23, 17, 0.14);
+}
+
+.image-frame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 0.7rem;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.18), transparent 34%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent),
+    var(--cream);
+}
+
+.image-frame::before {
+  content: "";
+  position: absolute;
+  inset: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 0.55rem;
+  pointer-events: none;
+}
+
+.image-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(36, 23, 17, 0.18), transparent 46%);
+  pointer-events: none;
+}
+
+.image-placeholder-label {
+  position: relative;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.image-action {
+  position: absolute;
+  z-index: 2;
+  top: 0.85rem;
+  right: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  background: rgba(251, 246, 238, 0.84);
+  color: var(--espresso);
+  border-radius: 999px;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  box-shadow: 0 12px 30px rgba(36, 23, 17, 0.16);
+  backdrop-filter: blur(8px);
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.image-action:hover {
+  transform: translateY(-1px);
+  background: var(--espresso);
+  color: var(--paper-2);
+}
+
+.pin-card {
+  break-inside: avoid;
+  border-radius: 0.9rem;
+  overflow: hidden;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  box-shadow: 0 24px 70px rgba(36, 23, 17, 0.1);
+}
+
+.outfit-collage {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  grid-template-rows: 9rem 9rem;
+  gap: 0.55rem;
+}
+
+.outfit-collage-main {
+  grid-row: span 2;
+}
+
+.price-dot {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: var(--caramel);
+}
+
+::selection {
+  background: var(--caramel-soft);
+  color: var(--espresso);
+}
+
+@keyframes buyOrderFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

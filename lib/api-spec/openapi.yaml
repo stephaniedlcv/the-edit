@@ -1,0 +1,411 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: closet
+    description: Closet / wardrobe item operations
+  - name: outfits
+    description: Saved outfit operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /closet/items:
+    post:
+      operationId: createClosetItem
+      tags: [closet]
+      summary: Create a new wardrobe item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClosetItemInput"
+      responses:
+        "200":
+          description: Item created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkWithId"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /closet/items/{id}:
+    patch:
+      operationId: updateClosetItem
+      tags: [closet]
+      summary: Update an existing wardrobe item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClosetItemInput"
+      responses:
+        "200":
+          description: Item updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkWithId"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /closet/items/{id}/image:
+    post:
+      operationId: uploadClosetItemImage
+      tags: [closet]
+      summary: Upload a photo for a wardrobe item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+              required: [file]
+      responses:
+        "200":
+          description: Image uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  imagePath:
+                    type: string
+                  imageUrl:
+                    type: string
+                required: [ok, imagePath, imageUrl]
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /outfits/saved:
+    get:
+      operationId: getSavedOutfits
+      tags: [outfits]
+      summary: List saved outfits
+      responses:
+        "200":
+          description: Saved outfits list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  outfits:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SavedOutfit"
+                required: [ok, outfits]
+        "500":
+          $ref: "#/components/responses/ServerError"
+    post:
+      operationId: saveOutfit
+      tags: [outfits]
+      summary: Save or update an outfit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveOutfitInput"
+      responses:
+        "200":
+          description: Outfit saved or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  id:
+                    type: string
+                  action:
+                    type: string
+                    enum: [inserted, updated]
+                required: [ok, id, action]
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+    delete:
+      operationId: deleteOutfit
+      tags: [outfits]
+      summary: Soft-delete a saved outfit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              required: [id]
+      responses:
+        "200":
+          description: Outfit deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  id:
+                    type: string
+                  action:
+                    type: string
+                    enum: [deleted]
+                required: [ok, id, action]
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+components:
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ServerError:
+      description: Server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    ErrorResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          enum: [false]
+        error:
+          type: string
+      required: [ok, error]
+
+    OkWithId:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        id:
+          type: string
+      required: [ok, id]
+
+    ClosetItemInput:
+      type: object
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+        itemStatus:
+          type: string
+          nullable: true
+        subcategory:
+          type: string
+        colorFamily:
+          type: string
+        colorName:
+          type: string
+        patternType:
+          type: string
+        patternSubtype:
+          type: string
+        size:
+          type: string
+        brand:
+          type: string
+        productUrl:
+          type: string
+        paidPrice:
+          type: number
+          nullable: true
+        purchaseSource:
+          type: string
+          nullable: true
+        purchaseDate:
+          type: string
+          nullable: true
+        notes:
+          type: string
+        stylingNotes:
+          type: string
+        vibes:
+          type: array
+          items:
+            type: string
+        loveScore:
+          type: number
+          nullable: true
+        versatilityScore:
+          type: number
+          nullable: true
+        fitConfidenceScore:
+          type: number
+          nullable: true
+        capsuleValueScore:
+          type: number
+          nullable: true
+      required: [name, category, colorFamily, colorName]
+
+    SaveOutfitInput:
+      type: object
+      properties:
+        title:
+          type: string
+        status:
+          type: string
+        source:
+          type: string
+        sourceOutfitId:
+          type: string
+        occasion:
+          type: string
+        formula:
+          type: string
+        decision:
+          type: string
+        generatedPieceIds:
+          type: array
+          items:
+            type: string
+        editedPieceIds:
+          type: array
+          items:
+            type: string
+        selectedPieces:
+          type: array
+          items: {}
+        scores:
+          type: object
+        stylingInstruction:
+          type: string
+        whyItWorks:
+          type: array
+          items:
+            type: string
+        notes:
+          type: string
+      required: [editedPieceIds]
+
+    SavedOutfit:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        status:
+          type: string
+        source:
+          type: string
+        source_outfit_id:
+          type: string
+          nullable: true
+        occasion:
+          type: string
+          nullable: true
+        formula:
+          type: string
+          nullable: true
+        decision:
+          type: string
+          nullable: true
+        generated_piece_ids:
+          type: array
+          items:
+            type: string
+        edited_piece_ids:
+          type: array
+          items:
+            type: string
+        selected_pieces:
+          type: array
+          items: {}
+        scores:
+          type: object
+        styling_instruction:
+          type: string
+          nullable: true
+        why_it_works:
+          type: array
+          items:
+            type: string
+        notes:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      required: [id, title, status]

@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "The Stephanie Edit"
+version = "1.0.0"
+id = "artifacts/the-edit"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22276
+
+[services.development]
+run = "pnpm --filter @workspace/the-edit run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/the-edit", "run", "build" ]
+publicDir = "artifacts/the-edit/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22276"
+BASE_PATH = "/"

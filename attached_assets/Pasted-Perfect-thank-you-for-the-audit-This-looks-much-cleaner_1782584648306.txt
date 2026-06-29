@@ -1,0 +1,67 @@
+Perfect, thank you for the audit. This looks much cleaner than expected.
+
+Before proceeding, please follow this scope exactly:
+
+1. Do NOT create another repo, project, fork, or clone.
+2. Do NOT change the stack.
+3. Do NOT redesign any page.
+4. Do NOT remove the mock fallback.
+5. Do NOT hardcode any Supabase keys.
+6. Do NOT run anything destructive in Supabase.
+
+Important clarification:
+Do you actually have permission/access to run SQL directly in my Supabase project from Replit, or will you only prepare the SQL for me to paste manually in the Supabase SQL Editor?
+
+If you do not have confirmed direct Supabase access, do not attempt to run the SQL. Instead, prepare the final SQL migration file and tell me exactly where to paste it in Supabase.
+
+Approved next steps:
+
+A. Create a dedicated SQL migration file in the repo with the proposed schema:
+
+* wardrobe_items
+* wardrobe_item_images
+* wishlist_items
+* wishlist_item_images
+* price_history
+* saved_outfits
+* style_profiles
+* outfit_log
+
+B. Add the planner data service:
+
+* Create artifacts/the-edit/src/lib/planner/data.ts
+* It should use Supabase when VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY exist.
+* It should fall back to mock-outfit-log.ts when Supabase is not configured.
+* The Planner page must not crash if Supabase is missing.
+
+C. Fix saved outfits fallback:
+
+* Update artifacts/the-edit/src/lib/outfits/data.ts so saved outfits have a safe mock fallback instead of only returning [].
+* Do not invent a huge outfit dataset. Keep it minimal and aligned with current mock/UX.
+
+D. Update planner page only as needed:
+
+* Update artifacts/the-edit/src/pages/planner.tsx to use the new planner data service.
+* Keep the current UI and behavior.
+
+E. Verify:
+
+* Run pnpm build.
+* Confirm the Replit preview still works.
+* Confirm app still works without Supabase secrets.
+* Confirm it is ready to switch to Supabase once I add the secrets.
+
+F. Final report:
+Send me:
+
+* Files created
+* Files modified
+* Build result
+* Whether preview works
+* The exact Replit Secrets I need to add
+* The exact Supabase SQL I need to run manually, unless you truly have confirmed direct access
+
+Do not start mobile app work.
+Do not create a pitch deck.
+Do not work on image upload error handling yet beyond documenting the current cause.
+Proceed with only the approved scope above.
