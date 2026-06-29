@@ -109,6 +109,7 @@ export function AppShell({ children }: AppShellProps) {
                 title={item.label}
               >
                 <Icon />
+                <span className="sidebar-label">{item.label}</span>
                 <span className="sidebar-tooltip">{item.label}</span>
               </Link>
             );
