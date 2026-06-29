@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { ClosetCategoryBoard } from "@/components/closet-category-board";
 import { PageHeader } from "@/components/page-header";

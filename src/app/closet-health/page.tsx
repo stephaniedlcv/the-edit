@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { getWardrobeItems } from "@/lib/wardrobe/data";

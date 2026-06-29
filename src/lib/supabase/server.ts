@@ -1,5 +1,9 @@
 import "server-only";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import WebSocket from "ws";
+
+const SupabaseWebSocket =
+  WebSocket as unknown as typeof globalThis.WebSocket;
 
 let serverClient: SupabaseClient | null = null;
 
@@ -26,6 +30,9 @@ export function getSupabaseServerClient() {
       auth: {
         persistSession: false,
         autoRefreshToken: false,
+      },
+      realtime: {
+        transport: SupabaseWebSocket,
       },
     });
   }
