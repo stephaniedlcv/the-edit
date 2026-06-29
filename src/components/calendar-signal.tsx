@@ -25,8 +25,16 @@ function formatHour(isoStr: string): string {
 }
 
 function isSameCalendarDay(isoStr: string): boolean {
-  const d = new Date(isoStr);
   const now = new Date();
+  if (!isoStr.includes("T")) {
+    const [y, m, d] = isoStr.split("-").map(Number);
+    return (
+      y === now.getFullYear() &&
+      m === now.getMonth() + 1 &&
+      d === now.getDate()
+    );
+  }
+  const d = new Date(isoStr);
   return (
     d.getFullYear() === now.getFullYear() &&
     d.getMonth() === now.getMonth() &&

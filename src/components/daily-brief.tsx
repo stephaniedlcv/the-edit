@@ -195,8 +195,19 @@ function getDailySeed(): number {
 }
 
 function isSameCalendarDay(isoStr: string): boolean {
-  const d = new Date(isoStr);
   const now = new Date();
+  // All-day events come as "YYYY-MM-DD" (no time component).
+  // Parsing that with `new Date()` gives UTC midnight, which in PR (UTC-4)
+  // lands on the *previous* day — so we parse the components directly.
+  if (!isoStr.includes("T")) {
+    const [y, m, d] = isoStr.split("-").map(Number);
+    return (
+      y === now.getFullYear() &&
+      m === now.getMonth() + 1 &&
+      d === now.getDate()
+    );
+  }
+  const d = new Date(isoStr);
   return (
     d.getFullYear() === now.getFullYear() &&
     d.getMonth() === now.getMonth() &&
@@ -216,10 +227,18 @@ function generateBrief(events: BriefEvent[]): BriefData {
 
   const firstWork = todayEvents.find((e) => e.category === "personal");
   const firstGym = todayEvents.find((e) => e.category === "workout");
-  const gymBeforeWork =
-    hasGym && hasWork && firstGym && firstWork
-      ? firstGym.start < firstWork.start
-      : false;
+
+  // Default: gym AM before work (user's established pattern).
+  // Only override if work has a clear timed start that is earlier than gym.
+  const workClearlyFirst =
+    hasGym &&
+    hasWork &&
+    firstGym &&
+    firstWork &&
+    firstWork.start.includes("T") &&
+    firstGym.start.includes("T") &&
+    firstWork.start < firstGym.start;
+  const gymBeforeWork = hasGym && hasWork && !workClearlyFirst;
 
   let headline: string;
   let recommended: string;
