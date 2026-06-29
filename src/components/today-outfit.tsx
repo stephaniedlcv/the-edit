@@ -218,30 +218,39 @@ async function getTodayOutfit(items: WardrobeItem[]): Promise<OutfitData> {
       .maybeSingle();
 
     if (savedOutfit) {
+      // Field names match outfit-editor.tsx saveChanges() output exactly
       type SP = {
-        name?: string; slot?: string; color_family?: string;
-        color_name?: string; image_url?: string; wardrobe_item_id?: string;
+        id?: string;
+        name?: string;
+        category?: string;
+        slotId?: string;
+        slotLabel?: string;
+        colorFamily?: string;
+        colorName?: string;
+        imagePath?: string | null;
+        imageUrl?: string | null;
       };
       const rawPieces: SP[] = Array.isArray(savedOutfit.selected_pieces)
         ? (savedOutfit.selected_pieces as SP[])
         : [];
 
       const visualItems: WardrobeItem[] = rawPieces.slice(0, 6).map((p, i) => {
-        const fromCloset = p.wardrobe_item_id
-          ? items.find((wi) => wi.id === p.wardrobe_item_id)
-          : undefined;
-        return (
-          fromCloset ?? {
-            id: `saved-${i}`,
-            name: p.name ?? p.slot ?? "Piece",
-            status: "owned" as const,
-            category: (p.slot ?? "accessory") as WardrobeItem["category"],
-            colorFamily: (p.color_family ?? "brown") as WardrobeItem["colorFamily"],
-            colorName: p.color_name,
-            imageUrl: p.image_url,
-            vibes: [],
-          }
-        );
+        // First: look up by wardrobe item id — gives us signed image URL
+        const fromCloset = p.id ? items.find((wi) => wi.id === p.id) : undefined;
+        if (fromCloset) return fromCloset;
+
+        // Fallback: construct from saved JSON (no signed URL, but has imagePath)
+        return {
+          id: `saved-${i}`,
+          name: p.name ?? p.slotLabel ?? "Piece",
+          status: "owned" as const,
+          category: (p.category ?? p.slotId ?? "accessory") as WardrobeItem["category"],
+          colorFamily: (p.colorFamily ?? "brown") as WardrobeItem["colorFamily"],
+          colorName: p.colorName,
+          imagePath: p.imagePath ?? undefined,
+          imageUrl: undefined,
+          vibes: [],
+        };
       });
 
       const formulaLabels = savedOutfit.formula
