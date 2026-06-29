@@ -1,3 +1,27 @@
+/**
+ * LEGACY SCRIPT — upload-closet-photos.mjs
+ *
+ * One-time migration helper that uploads local closet photos from
+ * `data/closet-photos/` to the `closet-items` Supabase storage bucket and
+ * inserts rows into `wardrobe_item_images`.
+ *
+ * IMPORTANT — SCHEMA NOTE:
+ * This script reads `wardrobe_items.photo_filename` and
+ * `wardrobe_items.photo_filename` columns.  These columns were part of an
+ * earlier schema and do NOT exist in the current migrations.  Running this
+ * script against a fresh database will return 0 items with photos and upload
+ * nothing — it will not error, but it will be a no-op.
+ *
+ * Only run this script if you are migrating a legacy Supabase project that
+ * still has those columns populated.  For new photo uploads, use the
+ * POST /api/closet/items/[id]/image route instead.
+ *
+ * Prerequisites:
+ *   - .env.local with NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY
+ *   - data/closet-photos/ directory present (unzip closet-photos.zip)
+ *
+ * Run with: node scripts/upload-closet-photos.mjs
+ */
 import fs from "node:fs";
 import path from "node:path";
 import { createClient } from "@supabase/supabase-js";

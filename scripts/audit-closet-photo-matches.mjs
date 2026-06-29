@@ -1,3 +1,27 @@
+/**
+ * LEGACY SCRIPT — audit-closet-photo-matches.mjs
+ *
+ * Audits which local closet photos in `data/closet-photos/` have a matching
+ * entry in `wardrobe_items` via the `photo_filename` and `drive_photo_path`
+ * columns, and prints a matched/missing summary.
+ *
+ * IMPORTANT — SCHEMA NOTE:
+ * This script reads `wardrobe_items.photo_filename` and
+ * `wardrobe_items.drive_photo_path` columns.  These columns were part of an
+ * earlier schema and do NOT exist in the current migrations.  Running this
+ * script against a fresh database will show all items as "No photo_filename
+ * in database" — it will not error, but the audit output will be meaningless.
+ *
+ * Only run this script if you are auditing a legacy Supabase project that
+ * still has those columns populated.  Current photo state is tracked through
+ * `wardrobe_item_images` rows and Supabase Storage directly.
+ *
+ * Prerequisites:
+ *   - .env.local with NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY
+ *   - data/closet-photos/ directory present (unzip closet-photos.zip)
+ *
+ * Run with: node scripts/audit-closet-photo-matches.mjs
+ */
 import fs from "node:fs";
 import path from "node:path";
 import { createClient } from "@supabase/supabase-js";

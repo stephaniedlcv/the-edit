@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "sync:closet-photos": "node scripts/sync-closet-photos.mjs",
     "predev": "npm run sync:closet-photos",
     "prebuild": "npm run sync:closet-photos"

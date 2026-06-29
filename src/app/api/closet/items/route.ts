@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getApiSecretError } from "@/lib/api/auth";
 import type {
   ColorFamily,
   PatternType,
@@ -74,6 +75,9 @@ function normalizeScore(value?: number | null) {
 }
 
 export async function POST(request: Request) {
+  const authError = getApiSecretError(request);
+  if (authError) return authError;
+
   const supabase = getSupabaseServerClient();
 
   if (!supabase) {

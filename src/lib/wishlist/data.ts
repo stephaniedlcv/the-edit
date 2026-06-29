@@ -1,7 +1,27 @@
 import { mockWishlistItems } from "@/lib/mock-wishlist-items";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { mapWishlistItem } from "@/lib/supabase/mappers";
+import { STYLE_OS_STORAGE_BUCKETS } from "@/lib/supabase/storage";
 import type { WishlistItem } from "@/types/wardrobe";
+
+async function attachSignedWishlistImageUrls(
+  items: WishlistItem[],
+  supabase: NonNullable<ReturnType<typeof getSupabaseServerClient>>,
+): Promise<WishlistItem[]> {
+  return Promise.all(
+    items.map(async (item) => {
+      if (!item.imagePath) return item;
+
+      const { data, error } = await supabase.storage
+        .from(STYLE_OS_STORAGE_BUCKETS.wishlistItems)
+        .createSignedUrl(item.imagePath, 60 * 60);
+
+      if (error || !data?.signedUrl) return item;
+
+      return { ...item, imageUrl: data.signedUrl };
+    }),
+  );
+}
 
 export async function getWishlistItems(): Promise<WishlistItem[]> {
   const supabase = getSupabaseServerClient();
@@ -25,5 +45,6 @@ export async function getWishlistItems(): Promise<WishlistItem[]> {
     return [];
   }
 
-  return data.map((item) => mapWishlistItem(item as never));
+  const mapped = data.map((item) => mapWishlistItem(item as never));
+  return attachSignedWishlistImageUrls(mapped, supabase);
 }

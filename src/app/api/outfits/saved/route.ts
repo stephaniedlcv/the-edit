@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getApiSecretError } from "@/lib/api/auth";
 
 type SaveOutfitBody = {
   title?: string;
@@ -32,6 +33,9 @@ function normalizeArray(value: unknown) {
 }
 
 export async function POST(request: Request) {
+  const authError = getApiSecretError(request);
+  if (authError) return authError;
+
   const supabase = getSupabaseServerClient();
 
   if (!supabase) {
@@ -134,6 +138,9 @@ export async function POST(request: Request) {
 
 
 export async function DELETE(request: Request) {
+  const authError = getApiSecretError(request);
+  if (authError) return authError;
+
   const supabase = getSupabaseServerClient();
 
   if (!supabase) {
@@ -191,6 +198,7 @@ export async function GET() {
   const { data, error } = await supabase
     .from("saved_outfits")
     .select("*")
+    .neq("status", "deleted")
     .order("created_at", { ascending: false })
     .limit(50);
 

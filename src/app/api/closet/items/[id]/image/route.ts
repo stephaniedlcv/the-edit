@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getApiSecretError } from "@/lib/api/auth";
 
 const BUCKET_NAME = "closet-items";
 const MAX_FILE_SIZE = 8 * 1024 * 1024;
@@ -16,6 +17,9 @@ export async function POST(
   request: Request,
   context: { params: Promise<{ id: string }> },
 ) {
+  const authError = getApiSecretError(request);
+  if (authError) return authError;
+
   const supabase = getSupabaseServerClient();
 
   if (!supabase) {

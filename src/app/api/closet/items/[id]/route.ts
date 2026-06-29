@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getApiSecretError } from "@/lib/api/auth";
 import type {
   ColorFamily,
   PatternType,
@@ -80,6 +81,9 @@ function normalizeScore(value?: number | null) {
 }
 
 export async function PATCH(request: Request, context: RouteContext) {
+  const authError = getApiSecretError(request);
+  if (authError) return authError;
+
   const { id } = await context.params;
   const supabase = getSupabaseServerClient();
 
