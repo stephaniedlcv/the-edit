@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { DailyHeader } from "@/components/daily-header";
+import { DailyBrief } from "@/components/daily-brief";
 import { TodayCalendar } from "@/components/today-calendar";
 import { mockOwnedItems } from "@/lib/mock-owned-items";
 import { mockWishlistItems } from "@/lib/mock-wishlist-items";
@@ -57,37 +58,7 @@ export default function HomePage() {
 
       {/* Daily Styling Brief */}
       <section className="border-b border-[var(--line)] py-10 md:py-12">
-        <p className="eyebrow mb-5">Daily Styling Brief</p>
-
-        <div className="border-y border-[var(--line)] py-7">
-          <h2 className="font-display text-[2.4rem] leading-[1.0] text-[var(--espresso)] md:text-[3.2rem]">
-            Office first. Humid heat. Gym separate.
-          </h2>
-        </div>
-
-        <div className="mt-7 grid gap-6 md:grid-cols-3">
-          {[
-            {
-              label: "Recommended",
-              text: "Open blazer vest formula, worn open with breathable layers.",
-            },
-            {
-              label: "Avoid",
-              text: "Heavy closed blazers, thick layers, and uncomfortable shoes.",
-            },
-            {
-              label: "Log note",
-              text: "Keep the gym outfit separate from the work look.",
-            },
-          ].map((item) => (
-            <div key={item.label}>
-              <p className="eyebrow mb-3">{item.label}</p>
-              <p className="text-[0.9rem] leading-[1.8] text-[var(--ink-soft)]">
-                {item.text}
-              </p>
-            </div>
-          ))}
-        </div>
+        <DailyBrief />
 
         {/* Calendar + Agenda */}
         <div className="mt-8 grid gap-6 lg:grid-cols-[0.38fr_0.62fr]">
