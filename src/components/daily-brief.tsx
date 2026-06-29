@@ -53,9 +53,17 @@ const WORK_GYM_HEADLINES = [
   "Work it. Then work out.",
   "Office to gym — pack smart, dress smarter.",
   "Double duty day. Lead with the blazer.",
-  "From structured to stretched. Plan for both.",
   "Power suit to power set. Today has two acts.",
   "Professional AM, active PM. Own both chapters.",
+];
+
+const GYM_FIRST_HEADLINES = [
+  "Gym first, Berlitz after. Start strong.",
+  "Morning lift, then the office. Two acts, one day.",
+  "Workout done before most people wake up. Then work.",
+  "Active start, professional finish. Pack accordingly.",
+  "Morning moves, then the meeting. Two looks — both count.",
+  "Sweat first, structure after. The best kind of day.",
 ];
 
 const GYM_ONLY_HEADLINES = [
@@ -102,6 +110,13 @@ const WORK_GYM_RECOMMENDED = [
   "Blazer over your gym base for the commute, swap at arrival. Seamless transition.",
   "Structured AM look with easy swap pieces. Keep the gym bag in the car.",
   "Office-to-gym: choose a neutral base that bridges both. Change only what's necessary.",
+];
+
+const GYM_FIRST_RECOMMENDED = [
+  "Gym look for the morning, full office look ready to change into. Don't overlap the two.",
+  "Active set in the AM — change completely before Berlitz. Two distinct identities.",
+  "Pack your office look the night before. Post-gym change should be fast and complete.",
+  "Matching athletic set for the gym block, then a full reset for the work look. No mixing.",
 ];
 
 const GYM_RECOMMENDED = [
@@ -191,18 +206,32 @@ function isSameCalendarDay(isoStr: string): boolean {
 
 function generateBrief(events: BriefEvent[]): BriefData {
   const seed = getDailySeed();
-  const todayEvents = events.filter((e) => isSameCalendarDay(e.start));
+  const todayEvents = events
+    .filter((e) => isSameCalendarDay(e.start))
+    .sort((a, b) => a.start.localeCompare(b.start));
 
   const hasWork = todayEvents.some((e) => e.category === "personal");
   const hasGym = todayEvents.some((e) => e.category === "workout");
   const hasHoliday = todayEvents.some((e) => e.category === "holiday");
+
+  const firstWork = todayEvents.find((e) => e.category === "personal");
+  const firstGym = todayEvents.find((e) => e.category === "workout");
+  const gymBeforeWork =
+    hasGym && hasWork && firstGym && firstWork
+      ? firstGym.start < firstWork.start
+      : false;
 
   let headline: string;
   let recommended: string;
   let avoid: string;
   let logNote: string;
 
-  if (hasWork && hasGym) {
+  if (hasWork && hasGym && gymBeforeWork) {
+    headline = pick(GYM_FIRST_HEADLINES, seed);
+    recommended = pick(GYM_FIRST_RECOMMENDED, seed, 1);
+    avoid = pick(GYM_AVOID, seed, 2);
+    logNote = pick(GYM_LOG_NOTES, seed, 1);
+  } else if (hasWork && hasGym) {
     headline = pick(WORK_GYM_HEADLINES, seed);
     recommended = pick(WORK_GYM_RECOMMENDED, seed, 1);
     avoid = pick(GYM_AVOID, seed, 2);

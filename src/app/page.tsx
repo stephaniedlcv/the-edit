@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { DailyHeader } from "@/components/daily-header";
 import { DailyBrief } from "@/components/daily-brief";
+import { CalendarSignal } from "@/components/calendar-signal";
 import { TodayCalendar } from "@/components/today-calendar";
 import { mockOwnedItems } from "@/lib/mock-owned-items";
 import { mockWishlistItems } from "@/lib/mock-wishlist-items";
@@ -44,13 +45,6 @@ const closetGaps = [
   },
 ];
 
-const calendarStyleSignals = [
-  "Office first",
-  "Humid weather",
-  "Light structure",
-  "Comfortable shoes",
-];
-
 export default function HomePage() {
   return (
     <div className="mx-auto max-w-5xl px-5 pb-16 pt-8 md:px-10 md:pb-20 md:pt-12">
@@ -62,38 +56,7 @@ export default function HomePage() {
 
         {/* Calendar + Agenda */}
         <div className="mt-8 grid gap-6 lg:grid-cols-[0.38fr_0.62fr]">
-          {/* Calendar Signal */}
-          <aside className="rounded-[2px] bg-[var(--paper-2)] px-6 py-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_0_0_1px_rgba(36,26,18,0.05),0_16px_44px_rgba(36,26,18,0.08)]">
-            <p className="eyebrow mb-4">Calendar Signal</p>
-
-            <h2 className="font-display text-[2.2rem] leading-none text-[var(--espresso)]">
-              Today&apos;s calendar
-            </h2>
-
-            <p className="mt-4 text-[0.88rem] leading-[1.8] text-[var(--ink-soft)]">
-              This is the Apple Calendar layer for the AI — it tells the system
-              what kind of outfit the day actually needs.
-            </p>
-
-            <div className="mt-5 flex flex-wrap gap-2">
-              {calendarStyleSignals.map((signal) => (
-                <span
-                  key={signal}
-                  className="rounded-full border border-[var(--line)] bg-[var(--paper)] px-3.5 py-1.5 text-[0.54rem] font-semibold uppercase tracking-[0.2em] text-[var(--coffee)]"
-                >
-                  {signal}
-                </span>
-              ))}
-            </div>
-
-            <div className="mt-7 border-t border-[var(--line)] pt-5">
-              <p className="eyebrow mb-3">AI instruction</p>
-              <p className="font-display text-[1.05rem] italic leading-[1.5] text-[var(--coffee)]">
-                Recommend an office look first, then treat gym as a separate
-                logged outfit.
-              </p>
-            </div>
-          </aside>
+          <CalendarSignal />
 
           {/* Calendar */}
           <TodayCalendar />
