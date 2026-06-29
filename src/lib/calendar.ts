@@ -158,11 +158,28 @@ export async function getCalendarEvents(
     return { configured: false, events: [] };
   }
 
-  const grouped = await Promise.all(
+  const grouped = await Promise.allSettled(
     sources.map((source) => fetchSourceEvents(source, rangeStart, rangeEnd)),
   );
 
-  const events = grouped.flat();
+  const events: CalendarEvent[] = [];
+  let anyFulfilled = false;
+  grouped.forEach((outcome, i) => {
+    if (outcome.status === "fulfilled") {
+      anyFulfilled = true;
+      events.push(...outcome.value);
+    } else {
+      console.error(
+        `Calendar source "${sources[i].category}" failed:`,
+        outcome.reason,
+      );
+    }
+  });
+
+  if (!anyFulfilled) {
+    throw new Error("All calendar sources failed");
+  }
+
   events.sort((a, b) => a.start.localeCompare(b.start));
   return { configured: true, events };
 }
