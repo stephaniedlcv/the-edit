@@ -677,8 +677,19 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
         </div>
       </div>
 
-      <div className="mb-8 rounded-[2px] bg-[var(--paper-2)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_0_0_1px_rgba(36,26,18,0.05),0_14px_40px_rgba(36,26,18,0.07)]">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-9">
+      <details className="closet-filter-drawer mb-8">
+        <summary>
+          <span>
+            Filters
+            {hasActiveFilters ? " · active" : ""}
+          </span>
+          <span>
+            {String(visibleItems.length).padStart(2, "0")} pieces
+          </span>
+        </summary>
+
+        <div className="closet-filter-panel">
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           <label className="grid gap-2">
             <span className="eyebrow">
               Category
@@ -855,16 +866,17 @@ export function ClosetCategoryBoard({ items: initialItems }: ClosetCategoryBoard
 
         </div>
 
-        {hasActiveFilters ? (
-          <button
-            type="button"
-            onClick={clearFilters}
-            className="mt-5 text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-[var(--coffee)]"
-          >
-            Clear filters
-          </button>
-        ) : null}
-      </div>
+          {hasActiveFilters ? (
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="mt-5 rounded-full bg-[var(--burgundy)] px-4 py-2 text-[0.58rem] font-bold uppercase tracking-[0.18em] text-white"
+            >
+              Clear filters
+            </button>
+          ) : null}
+        </div>
+      </details>
 
       <div className="mb-6 border-t border-[var(--line)] pt-7">
         <p className="eyebrow mb-3">{formatCategory(selectedCategory)}</p>
