@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import type { WardrobeCategory, WardrobeItem } from "@/types/wardrobe";
 
 const CATEGORY_LABELS: Record<WardrobeCategory, string> = {
@@ -44,7 +45,7 @@ function GalleryCard({ item }: { item: WardrobeItem }) {
   const score = getAverageScore(item);
 
   return (
-    <div className="gallery-v2-card">
+    <Link href={`/closet/item/${item.id}`} className="gallery-v2-card">
       <div className="gallery-v2-image">
         {item.imageUrl ? (
           <div
@@ -71,7 +72,7 @@ function GalleryCard({ item }: { item: WardrobeItem }) {
         <p>{item.colorName}{item.size ? ` · ${item.size}` : ""}</p>
         <h2 className="font-display">{item.name}</h2>
       </div>
-    </div>
+    </Link>
   );
 }
 

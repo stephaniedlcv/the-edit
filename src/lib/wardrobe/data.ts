@@ -61,3 +61,24 @@ export async function getWardrobeItems(): Promise<WardrobeItem[]> {
 
   return attachSignedWardrobeImageUrls(data.map((item) => mapWardrobeItem(item as never)));
 }
+
+export async function getWardrobeItemById(id: string): Promise<WardrobeItem | null> {
+  const supabase = getSupabaseServerClient();
+
+  if (!supabase) {
+    return mockOwnedItems.find((item) => item.id === id) ?? null;
+  }
+
+  const { data, error } = await supabase
+    .from("wardrobe_items")
+    .select("*, wardrobe_item_images(*)")
+    .eq("id", id)
+    .single();
+
+  if (error || !data) {
+    return null;
+  }
+
+  const [item] = await attachSignedWardrobeImageUrls([mapWardrobeItem(data as never)]);
+  return item ?? null;
+}
