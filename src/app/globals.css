@@ -849,3 +849,17 @@ main {
     flex-basis: 5.35rem !important;
   }
 }
+
+/* ===========================================================
+   THE EDIT — Safe bottom spacing for floating navigation
+   =========================================================== */
+
+main {
+  padding-bottom: calc(8.5rem + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+@media (min-width: 768px) {
+  main {
+    padding-bottom: calc(9rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
