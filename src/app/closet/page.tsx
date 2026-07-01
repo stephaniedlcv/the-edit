@@ -1,43 +1,48 @@
 export const dynamic = "force-dynamic";
 
-import Link from "next/link";
 import { ClosetCategoryBoard } from "@/components/closet-category-board";
-import { PageHeader } from "@/components/page-header";
 import { getWardrobeItems } from "@/lib/wardrobe/data";
 
 export default async function ClosetPage() {
-  const mockOwnedItems = await getWardrobeItems();
-  return (
-    <>
-      <PageHeader
-        eyebrow="Owned Wardrobe"
-        title={
-          <>
-            Your closet,{" "}
-            <em className="text-[var(--coffee)]">clearly edited.</em>
-          </>
-        }
-        description="Owned pieces only. This is the inventory you can actually style, repeat, and build outfits from."
-        asideEyebrow="Closet Mode"
-        asideText={`${String(mockOwnedItems.length).padStart(2, "0")} pieces ready to style.`}
-      >
-        <div className="flex flex-wrap gap-5">
-          <Link
-            href="/closet"
-            className="border-b-[1.5px] border-[var(--espresso)] pb-[3px] text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-[var(--espresso)] no-underline"
-          >
-            Wardrobe Gallery
-          </Link>
-          <Link
-            href="/closet-health"
-            className="border-b-[1.5px] border-transparent pb-[3px] text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-[var(--coffee)] no-underline transition hover:border-[var(--coffee)]"
-          >
-            Closet Health
-          </Link>
-        </div>
-      </PageHeader>
+  const ownedItems = await getWardrobeItems();
 
-      <ClosetCategoryBoard items={mockOwnedItems} />
-    </>
+  return (
+    <main className="closet-page min-h-screen px-4 py-6 md:px-6 md:py-8">
+      <section className="mx-auto max-w-[1120px]">
+        <div className="edit-card-glass mb-6 overflow-hidden p-6 md:p-8">
+          <p className="eyebrow mb-4">Owned Wardrobe</p>
+          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div>
+              <h1 className="font-display text-[4.2rem] leading-[0.82] text-[var(--espresso)] md:text-[6rem]">
+                Your closet,
+                <br />
+                clearly edited.
+              </h1>
+              <p className="mt-6 max-w-2xl text-[1rem] leading-7 text-[var(--ink-soft)]">
+                Owned pieces only — organized as a private wardrobe gallery for styling,
+                outfit building, capsule decisions, and repeatable formulas.
+              </p>
+            </div>
+
+            <div className="rounded-[1.75rem] bg-white/52 p-5 text-center shadow-[inset_0_0_0_1px_rgba(48,35,31,0.04)]">
+              <p className="eyebrow mb-3">Ready to style</p>
+              <p className="font-display text-[4.5rem] leading-none text-[var(--burgundy)]">
+                {String(ownedItems.length).padStart(2, "0")}
+              </p>
+              <p className="mt-2 text-sm text-[var(--ink-soft)]">owned pieces</p>
+            </div>
+          </div>
+
+          <div className="mt-7 flex flex-wrap gap-2">
+            <span className="edit-chip edit-chip-active">Wardrobe Gallery</span>
+            <span className="edit-chip">Dark Autumn</span>
+            <span className="edit-chip">Bottom Hourglass</span>
+            <span className="edit-chip">PR Lifestyle</span>
+          </div>
+        </div>
+
+        <ClosetCategoryBoard items={ownedItems} />
+      </section>
+    </main>
   );
 }
