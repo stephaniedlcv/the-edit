@@ -77,7 +77,8 @@ export function AppShell({ children }: AppShellProps) {
       <header className="sticky top-0 z-40 flex h-16 items-center justify-center border-b border-white/50 bg-[rgba(255,253,252,0.68)] backdrop-blur-2xl">
         <Link
           href="/"
-          className="font-display text-[1.7rem] uppercase leading-none tracking-[0.22em] text-[var(--espresso)] no-underline"
+          className="font-display text-[2rem] font-bold uppercase leading-none tracking-[0.18em] text-[var(--espresso)] no-underline transition-colors hover:text-[var(--burgundy)] md:text-[2.25rem]"
+          aria-label="THE EDIT home"
         >
           THE EDIT
         </Link>

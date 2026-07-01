@@ -758,21 +758,63 @@ main {
 
 
 
+
+
 /* ===========================================================
-   THE EDIT — Bottom nav compact final
+   THE EDIT — Wordmark and navigation refinement
    =========================================================== */
 
+header {
+  min-height: 4.5rem !important;
+  background: rgba(255, 253, 252, 0.78) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.72) !important;
+  box-shadow: 0 10px 28px rgba(74, 52, 42, 0.05);
+}
+
+.the-edit-wordmark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.58rem;
+  color: var(--espresso);
+  filter: drop-shadow(0 10px 22px rgba(74, 52, 42, 0.05));
+}
+
+.the-edit-wordmark-the {
+  font-family: var(--font-cormorant), serif;
+  font-size: 1.18rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.34em;
+  color: var(--coffee);
+  transform: translateY(0.03rem);
+}
+
+.the-edit-wordmark-edit {
+  font-family: var(--font-cormorant), serif;
+  font-size: 2.18rem;
+  font-weight: 700;
+  line-height: 0.88;
+  letter-spacing: 0.075em;
+  color: var(--espresso);
+}
+
+.the-edit-wordmark:hover .the-edit-wordmark-edit {
+  color: var(--burgundy);
+}
+
+/* Floating nav: standard app size, not huge, not cramped */
 .bottom-nav {
-  width: auto !important;
-  min-width: 27.5rem !important;
+  width: min(35.5rem, calc(100vw - 2rem)) !important;
+  min-width: 0 !important;
   max-width: calc(100vw - 2rem) !important;
   left: 50% !important;
   right: auto !important;
   bottom: calc(0.85rem + env(safe-area-inset-bottom, 0px)) !important;
   transform: translateX(-50%) !important;
-  padding: 0.32rem !important;
+  padding: 0.36rem !important;
   border-radius: 999px !important;
-  background: rgba(255, 253, 252, 0.76) !important;
+  background: rgba(255, 253, 252, 0.78) !important;
   border: 1px solid rgba(255, 255, 255, 0.78) !important;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.95),
@@ -783,34 +825,34 @@ main {
 
 .bottom-nav > div {
   display: flex !important;
-  justify-content: center !important;
   align-items: center !important;
-  gap: 0.18rem !important;
+  justify-content: center !important;
+  gap: 0.28rem !important;
 }
 
 .bottom-nav-item {
-  flex: 0 0 5.15rem !important;
-  min-height: 3.05rem !important;
-  padding: 0.42rem 0.35rem !important;
+  flex: 1 1 0 !important;
+  min-height: 3.38rem !important;
+  padding: 0.5rem 0.36rem !important;
   border-radius: 999px !important;
   color: var(--caramel) !important;
-  gap: 0.16rem !important;
+  gap: 0.24rem !important;
 }
 
 .bottom-nav-item span:first-child {
-  height: 1.05rem !important;
-  width: 1.05rem !important;
+  height: 1.16rem !important;
+  width: 1.16rem !important;
 }
 
 .bottom-nav-label {
-  font-size: 0.39rem !important;
-  letter-spacing: 0.11em !important;
+  font-size: 0.43rem !important;
+  letter-spacing: 0.12em !important;
   line-height: 1 !important;
 }
 
 .bottom-nav-dot {
-  height: 0.16rem !important;
-  width: 0.16rem !important;
+  height: 0.17rem !important;
+  width: 0.17rem !important;
 }
 
 .bottom-nav-item.active {
@@ -823,43 +865,71 @@ main {
   background: #FFFDFC !important;
 }
 
+/* More bottom breathing room so floating nav does not sit on content */
+main {
+  padding-bottom: calc(9.75rem + env(safe-area-inset-bottom, 0px)) !important;
+}
+
 @media (max-width: 520px) {
+  header {
+    min-height: 4.15rem !important;
+  }
+
+  .the-edit-wordmark {
+    gap: 0.45rem;
+  }
+
+  .the-edit-wordmark-the {
+    font-size: 0.92rem;
+    letter-spacing: 0.28em;
+  }
+
+  .the-edit-wordmark-edit {
+    font-size: 1.78rem;
+    letter-spacing: 0.06em;
+  }
+
   .bottom-nav {
-    min-width: 0 !important;
     width: calc(100vw - 1.25rem) !important;
   }
 
+  .bottom-nav > div {
+    gap: 0.14rem !important;
+  }
+
   .bottom-nav-item {
-    flex: 1 1 0 !important;
-    min-height: 3rem !important;
-    padding-inline: 0.2rem !important;
+    min-height: 3.18rem !important;
+    padding-inline: 0.22rem !important;
   }
 
   .bottom-nav-label {
-    font-size: 0.37rem !important;
+    font-size: 0.38rem !important;
   }
 }
 
 @media (min-width: 900px) {
   .bottom-nav {
-    min-width: 29rem !important;
-  }
-
-  .bottom-nav-item {
-    flex-basis: 5.35rem !important;
+    width: 36rem !important;
   }
 }
 
 /* ===========================================================
-   THE EDIT — Safe bottom spacing for floating navigation
+   THE EDIT — Clean bold wordmark reset
    =========================================================== */
 
-main {
-  padding-bottom: calc(8.5rem + env(safe-area-inset-bottom, 0px)) !important;
+header {
+  min-height: 4.5rem !important;
 }
 
-@media (min-width: 768px) {
-  main {
-    padding-bottom: calc(9rem + env(safe-area-inset-bottom, 0px)) !important;
+header a[aria-label="THE EDIT home"] {
+  word-spacing: 0.22em;
+  filter: drop-shadow(0 8px 18px rgba(74, 52, 42, 0.05));
+}
+
+@media (max-width: 520px) {
+  header a[aria-label="THE EDIT home"] {
+    font-size: 1.72rem !important;
+    letter-spacing: 0.14em !important;
+    word-spacing: 0.18em;
   }
 }
