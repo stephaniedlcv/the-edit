@@ -2227,3 +2227,172 @@ header a[aria-label="THE EDIT home"] {
     font-size: 1.12rem !important;
   }
 }
+
+
+
+
+
+
+
+/* ===========================================================
+   THE EDIT — Global typography law
+   One typography system for every page.
+   =========================================================== */
+
+/*
+  THE EDIT typography rule:
+  - Editorial serif: brand, page titles, section titles, product names, metrics.
+  - Clean sans: body copy, UI controls, labels, chips, navigation.
+*/
+
+/* Base reading font */
+html,
+body {
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+/* Brand + editorial display moments */
+.font-display,
+header a[aria-label="THE EDIT home"],
+main[class] h1,
+main[class] h2,
+main[class] h3 {
+  font-family: var(--font-cormorant), serif !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.03em !important;
+  color: var(--espresso) !important;
+}
+
+/* Keep the logo separate: elegant, spaced, consistent */
+header a[aria-label="THE EDIT home"] {
+  letter-spacing: 0.16em !important;
+  word-spacing: 0.22em !important;
+  line-height: 1 !important;
+}
+
+/* Page titles: same editorial family as Home, controlled scale */
+main[class] h1 {
+  line-height: 0.88 !important;
+}
+
+/* Section titles */
+main[class] h2 {
+  line-height: 0.92 !important;
+}
+
+/* Card titles / smaller headings */
+main[class] h3 {
+  line-height: 0.98 !important;
+}
+
+/* Functional UI always stays sans */
+p,
+small,
+button,
+input,
+select,
+textarea,
+nav,
+label,
+.eyebrow,
+.edit-chip,
+.bottom-nav-label,
+.closet-mini-link,
+.closet-category-pill span,
+.closet-category-pill strong,
+.closet-insight-card p,
+.closet-insight-card span,
+.closet-insight-card strong,
+.closet-recent-copy p,
+.closet-recent-type {
+  font-family: var(--font-inter), system-ui, sans-serif !important;
+}
+
+/* Luxury uppercase labels */
+.eyebrow,
+.edit-chip,
+.bottom-nav-label,
+.closet-mini-link,
+.closet-category-pill span,
+.closet-recent-copy p,
+.closet-recent-type {
+  font-weight: 800 !important;
+  letter-spacing: 0.16em !important;
+  text-transform: uppercase !important;
+}
+
+/* Metrics stay editorial, like a premium fashion dashboard */
+.closet-stat-value,
+.closet-v2-hero-count span,
+.closet-recent-score {
+  font-family: var(--font-cormorant), serif !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.035em !important;
+}
+
+/* Action tiles inherit display only when they are title-like */
+.closet-action-tile span:first-child {
+  font-family: var(--font-cormorant), serif !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 0.95 !important;
+}
+
+/* Product/item names remain editorial */
+.closet-recent-copy h3 {
+  font-family: var(--font-cormorant), serif !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.025em !important;
+}
+
+/* Keep dense dashboard labels readable */
+.closet-stat-label,
+.closet-stat-note,
+.closet-action-tile small {
+  font-family: var(--font-inter), system-ui, sans-serif !important;
+}
+
+/* Avoid corporate-looking oversized sans from old overrides */
+.closet-v2-hero h1,
+.closet-v2-section-head h2 {
+  font-family: var(--font-cormorant), serif !important;
+}
+
+/* ===========================================================
+   THE EDIT — Burgundy chip contrast fix
+   =========================================================== */
+
+.edit-chip-active,
+.closet-action-tile.primary,
+.closet-action-tile.primary span,
+.closet-action-tile.primary small {
+  color: #FFFDFC !important;
+}
+
+.edit-chip-active * {
+  color: #FFFDFC !important;
+}
+
+.closet-action-tile.primary {
+  background: var(--burgundy) !important;
+  border-color: rgba(122, 46, 53, 0.35) !important;
+}
+
+.closet-action-tile.primary small {
+  opacity: 0.86 !important;
+}
+
+/* ===========================================================
+   THE EDIT — Primary action text hard contrast
+   =========================================================== */
+
+.closet-dashboard-v2 a.closet-action-tile.primary,
+.closet-dashboard-v2 a.closet-action-tile.primary *,
+.closet-dashboard-v2 .closet-action-tile.primary,
+.closet-dashboard-v2 .closet-action-tile.primary * {
+  color: #FFFDFC !important;
+}
+
+.closet-dashboard-v2 .closet-action-tile.primary {
+  background: var(--burgundy) !important;
+}

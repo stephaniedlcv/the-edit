@@ -108,9 +108,17 @@ function ActionTile({
     <Link
       href={href}
       className={primary ? "closet-action-tile primary" : "closet-action-tile"}
+      style={primary ? { color: "#FFFDFC" } : undefined}
     >
-      <span>{title}</span>
-      <small>{note}</small>
+      <span
+        className="font-display text-[1.8rem] leading-[0.92] tracking-[-0.025em]"
+        style={primary ? { color: "#FFFDFC" } : undefined}
+      >
+        {title}
+      </span>
+      <small style={primary ? { color: "#FFFDFC", opacity: 0.86 } : undefined}>
+        {note}
+      </small>
     </Link>
   );
 }
@@ -273,7 +281,9 @@ const recentPieces = buildReadyToStylePieces(ownedItems, 8);
         <section className="closet-v2-hero">
           <div>
             <p className="eyebrow mb-2">Closet</p>
-            <h1>Wardrobe dashboard</h1>
+            <h1 className="font-display text-[3.25rem] leading-[0.86] tracking-[-0.035em] text-[var(--espresso)] md:text-[4.75rem]">
+              Wardrobe dashboard
+            </h1>
             <p>
               Your private closet overview — what you own, what is strong, what needs
               attention, and what is ready to style.
@@ -323,7 +333,9 @@ const recentPieces = buildReadyToStylePieces(ownedItems, 8);
             <div className="closet-v2-section-head">
               <div>
                 <p className="eyebrow">Closet focus</p>
-                <h2>Needs attention</h2>
+                <h2 className="font-display text-[2.65rem] leading-[0.9] tracking-[-0.03em] text-[var(--espresso)]">
+                  Needs attention
+                </h2>
               </div>
               <Link href="/wishlist" className="closet-mini-link">
                 Review wishlist
@@ -363,7 +375,9 @@ const recentPieces = buildReadyToStylePieces(ownedItems, 8);
             <div className="closet-v2-section-head">
               <div>
                 <p className="eyebrow">Categories</p>
-                <h2>Browse by section</h2>
+                <h2 className="font-display text-[2.65rem] leading-[0.9] tracking-[-0.03em] text-[var(--espresso)]">
+                  Browse by section
+                </h2>
               </div>
               <Link href="/closet/gallery" className="closet-mini-link">
                 View all
@@ -387,7 +401,9 @@ const recentPieces = buildReadyToStylePieces(ownedItems, 8);
             <div className="closet-v2-section-head">
               <div>
                 <p className="eyebrow">Recent pieces</p>
-                <h2>Ready to style</h2>
+                <h2 className="font-display text-[2.65rem] leading-[0.9] tracking-[-0.03em] text-[var(--espresso)]">
+                  Ready to style
+                </h2>
               </div>
               <Link href="/closet/gallery" className="closet-mini-link">
                 Open gallery
