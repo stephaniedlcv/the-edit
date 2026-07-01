@@ -74,8 +74,8 @@ const quickEvents = ["Office", "Gym", "Wash Hair", "Nails", "Dinner", "Wishlist"
 
 export default function PlannerPage() {
   return (
-    <main className="min-h-screen px-4 py-6 md:px-10 md:py-10">
-      <section className="mx-auto max-w-7xl">
+    <main className="min-h-screen px-4 py-6 md:px-6 md:py-8">
+      <section className="mx-auto max-w-[1120px]">
         <div className="mb-8 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="eyebrow mb-3">Calendar / Planner</p>
@@ -103,8 +103,8 @@ export default function PlannerPage() {
           </div>
         </div>
 
-        <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr_0.82fr]">
-          <section className="edit-card-glass p-5 md:p-7">
+        <div className="grid gap-5 lg:grid-cols-2">
+          <section className="edit-card-glass p-5 md:p-7 lg:col-span-2">
             <div className="mb-6 flex items-center justify-between">
               <div>
                 <p className="eyebrow mb-2">Month view</p>

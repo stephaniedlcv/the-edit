@@ -13,7 +13,6 @@ const navItems = [
   { label: "Calendar", href: "/planner", icon: PlannerIcon },
   { label: "Style", href: "/outfits", icon: OutfitsIcon },
   { label: "Wishlist", href: "/wishlist", icon: WishlistIcon },
-  { label: "Me", href: "/settings", icon: ProfileIcon },
 ];
 
 function HomeIcon() {
@@ -70,34 +69,26 @@ function WishlistIcon() {
   );
 }
 
-function ProfileIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="8.25" r="3.75" />
-      <path d="M4.75 20.25c.72-4.15 3.56-6.5 7.25-6.5s6.53 2.35 7.25 6.5" />
-    </svg>
-  );
-}
-
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
 
-  const mobileItems = [
-    navItems[0],
-    navItems[1],
-    navItems[2],
-    navItems[3],
-    navItems[4],
-  ];
-
   return (
-    <div className="flex min-h-screen bg-[var(--page)]">
-      <aside className="sidebar hidden md:flex">
-        <Link href="/" className="sidebar-wordmark" aria-label="THE EDIT home">
-          <span>TE</span>
+    <div className="min-h-screen bg-[var(--page)]">
+      <header className="sticky top-0 z-40 flex h-16 items-center justify-center border-b border-white/50 bg-[rgba(255,253,252,0.68)] backdrop-blur-2xl">
+        <Link
+          href="/"
+          className="font-display text-[1.7rem] uppercase leading-none tracking-[0.22em] text-[var(--espresso)] no-underline"
+        >
+          THE EDIT
         </Link>
+      </header>
 
-        <nav className="flex flex-1 flex-col items-center gap-2 pt-4">
+      <main className="mx-auto min-h-screen w-full max-w-[1180px] px-0 pb-[calc(6.25rem+env(safe-area-inset-bottom,0px))]">
+        {children}
+      </main>
+
+      <nav className="bottom-nav fixed z-50" aria-label="Main navigation">
+        <div className="flex items-stretch">
           {navItems.map((item) => {
             const isActive =
               item.href === "/"
@@ -109,54 +100,13 @@ export function AppShell({ children }: AppShellProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={["sidebar-item", isActive ? "active" : ""].join(" ")}
-                title={item.label}
+                className={["bottom-nav-item flex flex-1 flex-col items-center justify-center gap-1 no-underline", isActive ? "active" : ""].join(" ")}
               >
-                <Icon />
-                <span className="sidebar-tooltip">{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="pb-8 flex flex-col items-center">
-          <div className="h-1.5 w-1.5 rounded-full bg-[var(--burgundy)] opacity-40" />
-        </div>
-      </aside>
-
-      <div className="flex min-h-screen min-w-0 flex-1 flex-col bg-transparent">
-        <header className="md:hidden sticky top-0 z-40 flex h-16 items-center justify-center border-b border-white/50 bg-[rgba(255,253,252,0.68)] backdrop-blur-2xl">
-          <Link
-            href="/"
-            className="font-display text-[1.7rem] uppercase leading-none tracking-[0.22em] text-[var(--espresso)] no-underline"
-          >
-            THE EDIT
-          </Link>
-        </header>
-
-        <main className="flex-1 pb-[calc(6.25rem+env(safe-area-inset-bottom,0px))] md:pb-0">
-          {children}
-        </main>
-      </div>
-
-      <nav className="bottom-nav md:hidden" aria-label="Main navigation">
-        <div className="flex items-stretch">
-          {mobileItems.map((item) => {
-            const isActive =
-              item.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(item.href);
-            const Icon = item.icon;
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={["bottom-nav-item", isActive ? "active" : ""].join(" ")}
-              >
-                <Icon />
-                <span className="bottom-nav-label">{item.label}</span>
-                <span className="bottom-nav-dot" />
+                <span className="h-5 w-5">
+                  <Icon />
+                </span>
+                <span className="bottom-nav-label font-bold uppercase">{item.label}</span>
+                <span className="bottom-nav-dot h-1 w-1 rounded-full bg-transparent" />
               </Link>
             );
           })}
