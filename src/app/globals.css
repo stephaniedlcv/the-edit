@@ -3369,7 +3369,15 @@ label,
 }
 
 .gallery-v2-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
   margin-bottom: 0.55rem;
+}
+
+.gallery-v2-controls .gallery-v2-search-input {
+  flex: 1 1 auto;
+  width: auto;
 }
 
 .gallery-v2-search-input {
@@ -4087,6 +4095,7 @@ body:has(.item-edit) .bottom-nav {
   background: rgba(255,253,252,0.90);
 }
 
+
 @media (max-width: 520px) {
   .item-edit-image-section {
     grid-template-columns: 1fr;
@@ -4099,11 +4108,12 @@ body:has(.item-edit) .bottom-nav {
 }
 
 /* ===========================================================
-   THE EDIT — /closet/add: Add Piece page
+   THE EDIT — /closet/add: Add Piece page (final)
    =========================================================== */
 
+/* Header */
 .add-piece-header {
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.35rem;
 }
 
 .add-piece-title {
@@ -4120,23 +4130,29 @@ body:has(.item-edit) .bottom-nav {
   color: var(--ink-soft);
 }
 
+/* ── Photo card — full-width premium block ─── */
 .add-piece-image-section {
+  border-radius: 1.55rem;
+  background: rgba(255,253,252,0.62);
+  border: 1px solid rgba(255,255,255,0.72);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.90), 0 10px 28px rgba(74,52,42,0.06);
+  padding: 1rem;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
-  margin-bottom: 1.35rem;
+  margin-bottom: 1rem;
   align-items: start;
 }
 
 .add-piece-image-wrap {
-  border-radius: 1.35rem;
+  border-radius: 1.1rem;
   overflow: hidden;
   background: linear-gradient(145deg, rgba(244,232,223,0.88), rgba(255,253,252,0.66));
   aspect-ratio: 3/4;
-  max-height: 260px;
+  max-height: 240px;
   display: grid;
   place-items: center;
-  box-shadow: 0 12px 30px rgba(74,52,42,0.08);
+  box-shadow: 0 8px 20px rgba(74,52,42,0.07);
 }
 
 .add-piece-preview {
@@ -4159,40 +4175,71 @@ body:has(.item-edit) .bottom-nav {
 .add-piece-upload-col {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 0.75rem;
 }
 
 /* AI Catalog Clean-Up placeholder */
 .add-piece-ai-placeholder {
-  margin-top: 1.25rem;
-  border-radius: 1rem;
-  background: rgba(255,253,252,0.55);
-  border: 1px dashed rgba(122,46,53,0.18);
-  padding: 0.9rem 1rem;
+  border-radius: 0.9rem;
+  background: rgba(244,232,223,0.35);
+  border: 1px dashed rgba(122,46,53,0.16);
+  padding: 0.85rem 0.9rem;
 }
 
 .add-piece-ai-label {
-  font-size: 0.46rem;
+  font-size: 0.44rem;
   font-weight: 800;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--burgundy);
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.35rem;
 }
 
 .add-piece-ai-note {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
+  line-height: 1.58;
   color: var(--ink-soft);
   font-style: italic;
 }
 
+/* ── Form wrapper for create mode ───────────── */
+.add-piece-form-wrap {
+  display: contents;
+}
+
+/* ── Form grid for create mode ──────────────── */
+.add-piece-form-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+/* ── Visual group separators ────────────────── */
+.cf-group-label {
+  font-size: 0.48rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--burgundy);
+  padding-top: 0.85rem;
+  padding-bottom: 0.2rem;
+  border-top: 1px solid rgba(122,46,53,0.07);
+  margin-top: 0.25rem;
+}
+
+.cf-group-label:first-child {
+  padding-top: 0;
+  border-top: none;
+  margin-top: 0;
+}
+
+/* ── Mobile ─────────────────────────────────── */
 @media (max-width: 520px) {
   .add-piece-image-section {
     grid-template-columns: 1fr;
   }
 
   .add-piece-image-wrap {
-    max-height: 200px;
+    max-height: 180px;
     aspect-ratio: 4/3;
   }
 

@@ -211,24 +211,27 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
 
 
   return (
-    <section className="rounded-[4px] border border-[var(--line)] bg-[var(--paper-2)] p-7">
-      <p className="eyebrow mb-3">{isCreateMode ? "Add item" : "Edit item"}</p>
-      <h2 className="font-display text-4xl leading-none text-[var(--espresso)]">
-        {isCreateMode ? "New closet piece" : item.name}
-      </h2>
-      <p className="mt-4 text-sm leading-7 text-[var(--ink-soft)]">
-        {isCreateMode
-          ? "Create a new owned closet item. Add details and attach a photo in the same flow."
-          : "Use this form to correct color, category, size, brand, purchase info, scores, and styling notes."}
-      </p>
+    <section className={isCreateMode ? "add-piece-form-wrap" : "rounded-[4px] border border-[var(--line)] bg-[var(--paper-2)] p-7"}>
+      {!isCreateMode ? (
+        <>
+          <p className="eyebrow mb-3">Edit item</p>
+          <h2 className="font-display text-4xl leading-none text-[var(--espresso)]">
+            {item.name}
+          </h2>
+          <p className="mt-4 text-sm leading-7 text-[var(--ink-soft)]">
+            Use this form to correct color, category, size, brand, purchase info, scores, and styling notes.
+          </p>
+        </>
+      ) : null}
 
       {saveStatus === "error" ? (
-        <div className="mt-6 rounded-[3px] border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+        <div className={isCreateMode ? "mb-4 rounded-[3px] border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700" : "mt-6 rounded-[3px] border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"}>
           {errorMessage}
         </div>
       ) : null}
 
-      <form action={handleSubmit} className="mt-8 grid gap-5">
+      <form action={handleSubmit} className={isCreateMode ? "add-piece-form-grid" : "mt-8 grid gap-5"}>
+        {isCreateMode ? <p className="cf-group-label">Essential details</p> : null}
 
         <label className="grid gap-2">
           <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
@@ -397,6 +400,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
           />
         </label>
 
+        {isCreateMode ? <p className="cf-group-label">Style tags</p> : null}
         <fieldset className="grid gap-3 rounded-[3px] border border-[var(--line)] bg-[var(--paper)] p-4">
           <legend className="px-2 text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
             Vibes
@@ -419,6 +423,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
           </div>
         </fieldset>
 
+        {isCreateMode ? <p className="cf-group-label">Optional details</p> : null}
         <label className="grid gap-2">
           <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
             Product URL
@@ -504,6 +509,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
           </div>
         </fieldset>
 
+        {isCreateMode ? <p className="cf-group-label">Scores</p> : null}
         <fieldset className="grid gap-4 rounded-[3px] border border-[var(--line)] bg-[var(--paper)] p-4">
           <legend className="px-2 text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
             Closet scores

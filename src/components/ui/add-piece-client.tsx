@@ -120,7 +120,7 @@ export function AddPieceClient() {
 
             <div className="add-piece-ai-placeholder">
               <p className="add-piece-ai-label">AI Catalog Clean-Up</p>
-              <p className="add-piece-ai-note">coming next</p>
+              <p className="add-piece-ai-note">Clean the background, center the item, and keep the garment true to life.</p>
             </div>
           </div>
         </div>
