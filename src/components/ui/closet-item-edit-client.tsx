@@ -49,11 +49,11 @@ export function ClosetItemEditClient({ item }: Props) {
 
   return (
     <div>
-      <nav className="item-detail-nav mb-6">
-        <Link href={`/closet/item/${item.id}`} className="item-detail-back">
+      <nav className="item-d-nav">
+        <Link href={`/closet/item/${item.id}`} className="item-d-back">
           ← {item.name}
         </Link>
-        <Link href="/closet/gallery" className="item-detail-back">
+        <Link href="/closet/gallery" className="item-d-back">
           Gallery
         </Link>
       </nav>
