@@ -2,10 +2,21 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { OutfitBuilder } from "@/components/outfit-builder";
-import { getWardrobeItems } from "@/lib/wardrobe/data";
+import { getWardrobeItems, getWardrobeItemById } from "@/lib/wardrobe/data";
 
-export default async function OutfitsPage() {
-  const items = await getWardrobeItems();
+type Props = {
+  searchParams: Promise<{ pieceId?: string }>;
+};
+
+export default async function OutfitsPage({ searchParams }: Props) {
+  const [items, params] = await Promise.all([
+    getWardrobeItems(),
+    searchParams,
+  ]);
+
+  const selectedPiece = params.pieceId
+    ? await getWardrobeItemById(params.pieceId)
+    : null;
 
   return (
     <>
@@ -27,7 +38,7 @@ export default async function OutfitsPage() {
         </div>
       </section>
 
-      <OutfitBuilder items={items} />
+      <OutfitBuilder items={items} selectedPiece={selectedPiece ?? undefined} />
     </>
   );
 }

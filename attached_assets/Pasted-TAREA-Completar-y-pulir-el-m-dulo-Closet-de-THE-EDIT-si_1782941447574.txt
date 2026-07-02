@@ -1,0 +1,179 @@
+TAREA: Completar y pulir el módulo Closet de THE EDIT sin romper el resto de la app.
+
+Branch actual:
+ui/blush-glass-foundation
+
+Objetivo general:
+Rehacer el módulo Closet para que quede premium, limpio, organizado y consistente con la estética actual de Home.
+
+NO HACER:
+- No rediseñar Home.
+- No rediseñar Planner.
+- No rediseñar Wishlist.
+- No rediseñar Outfits.
+- No cambiar la navegación inferior.
+- No cambiar lógica de datos salvo que sea estrictamente necesario.
+- No hacer commit automáticamente.
+- No usar el componente viejo ClosetCategoryBoard en /closet/gallery si trae estructura vieja.
+- No mostrar en gallery: Stylist note, Product link, Love / Vers / Fit / Caps, precio, source, fecha ni metadata larga.
+
+REFERENCIA VISUAL:
+Home ya tiene el mood correcto:
+- cream/blush background
+- glass cards
+- burgundy accents
+- serif editorial para títulos
+- sans para UI, chips, body copy y labels
+- layout limpio tipo app/tablet, no desktop viejo
+
+REGLA DE TIPOGRAFÍA GLOBAL:
+Crear o reforzar una regla global consistente:
+- Logo “THE EDIT”: serif editorial, centrado, igual en todas las páginas.
+- Títulos principales y títulos de sección: serif editorial.
+- Nombres de piezas: serif editorial.
+- Body text, botones, chips, labels, filtros y navegación: sans limpia.
+- No crear overrides conflictivos por página.
+- No hacer que Closet parezca dashboard corporativo sans-heavy.
+
+ESTRUCTURA FINAL:
+
+1. /closet = Closet Dashboard
+Debe ser un dashboard premium, no una galería gigante.
+
+Debe incluir:
+- Hero compacto:
+  Eyebrow: Closet
+  Title: Wardrobe dashboard
+  Description: Your private closet overview — what you own, what is strong, what needs attention, and what is ready to style.
+  Stat: cantidad dinámica de owned pieces desde getWardrobeItems()
+
+- Quick actions:
+  Browse gallery → /closet/gallery
+  Add piece
+  Build look → /outfits
+  Wishlist → /wishlist
+
+- Stats compactas:
+  Owned
+  Tops
+  Bottoms
+  Shoes
+  Bags
+
+- Closet focus / Needs attention:
+  máximo 3 insights útiles.
+  Categorías a evaluar: Dresses, Bags, Accessories, Jewelry, Outerwear.
+  El texto debe ser específico por categoría, no repetir texto genérico.
+
+- Categories / Browse by section:
+  chips o pills compactas con count.
+
+- Ready to style:
+  mostrar 8 piezas variadas.
+  Debe intentar incluir una por categoría si existe:
+  top, bottom, shoes, dress, bag, accessory, jewelry, outerwear.
+  Si no hay suficientes categorías, completar con otras piezas.
+  Card compacta:
+  imagen
+  categoría
+  score promedio si existe
+  nombre
+  color/talla
+  No mostrar metadata larga.
+
+2. /closet/gallery = Closet Gallery limpia
+Debe ser una pantalla nueva y limpia.
+
+NO debe mostrar:
+- “Closet edit”
+- “Owned Wardrobe”
+- “All owned pieces” como bloque viejo del board
+- categorías serif gigantes
+- filtros largos abiertos
+- cards con Stylist note
+- Product link
+- Love / Vers / Fit / Caps
+- metadata larga
+
+Debe incluir:
+- Hero compacto:
+  Eyebrow: Closet Gallery
+  Title: Browse pieces
+  Description: A clean visual inventory of every owned piece, ready for styling, outfit building, and capsule decisions.
+  Stat: cantidad dinámica de owned pieces
+  Action: Dashboard → /closet
+
+- Controls:
+  Search closet
+  chips horizontales:
+  All, Tops, Bottoms, Shoes, Dresses, Bags, Accessories, Jewelry, Outerwear
+  cada chip con count
+  botón Filters compacto cerrado por defecto
+  sort compacto si es simple
+
+- Grid:
+  Desktop/tablet: 4 columnas
+  Mobile: 2 columnas
+  Card compacta:
+  imagen
+  categoría
+  score promedio si existe
+  nombre
+  color/talla
+
+IMPORTANTE:
+Si /closet/gallery todavía muestra “Closet edit” o “Owned Wardrobe”, la tarea está incompleta.
+
+COMPONENTES REUTILIZABLES SUGERIDOS:
+Crear si ayuda:
+- PageHero
+- ClosetStatTile
+- ClosetActionTile
+- ClosetCategoryChip
+- ClosetItemCard
+- ClosetGalleryControls
+- ClosetInsightCard
+
+DATA:
+Usar getWardrobeItems() existente.
+No cambiar tipos de WardrobeItem ni WardrobeCategory salvo necesidad real.
+No romper imports existentes.
+
+CSS:
+Si añades CSS en globals.css, agruparlo en bloques claros:
+- THE EDIT — Page Hero
+- THE EDIT — Closet Dashboard
+- THE EDIT — Closet Gallery
+- THE EDIT — Closet Cards
+
+Evitar CSS duplicado conflictivo.
+Evitar muchos !important.
+No crear reglas que rompan Home.
+
+VERIFICACIÓN OBLIGATORIA:
+Al terminar correr:
+
+npm run typecheck
+npm run build
+
+También correr:
+
+grep -RIn "Closet edit\|Owned Wardrobe\|Stylist note\|Product link\|Love\|Vers\|Fit\|Caps" src/app/closet/gallery src/components | head -80
+
+Criterio:
+- En /closet/gallery no debe aparecer “Closet edit” ni “Owned Wardrobe”.
+- En /closet/gallery no debe renderizarse el board viejo.
+- En /closet/gallery no deben verse Stylist note, Product link, Love / Vers / Fit / Caps en cards.
+
+RESULTADO ESPERADO:
+Al final entregar:
+1. Resumen de archivos modificados.
+2. Componentes nuevos creados.
+3. Qué lógica reutilizó.
+4. Resultado de typecheck.
+5. Resultado de build.
+6. Resultado del grep de textos viejos.
+7. Cómo verificar manualmente:
+   - abrir /closet
+   - abrir /closet/gallery
+8. No hacer commit. Dejar cambios listos para revisión.

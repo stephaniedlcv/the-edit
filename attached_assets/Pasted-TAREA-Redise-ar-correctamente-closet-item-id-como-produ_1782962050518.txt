@@ -1,0 +1,223 @@
+TAREA: Rediseñar correctamente /closet/item/[id] como product detail premium de THE EDIT.
+
+Contexto:
+Estamos en branch ui/blush-glass-foundation.
+La ruta /closet/item/[id] ya existe y funciona.
+El archivo principal es:
+
+src/app/closet/item/[id]/page.tsx
+
+La página actualmente usa clases como:
+- item-detail
+- item-detail-nav
+- item-detail-hero
+- item-detail-image-wrap
+- item-detail-image
+- item-detail-meta
+- item-detail-score-badge
+- item-detail-name
+- item-detail-color
+- item-detail-vibes
+- item-detail-actions
+- item-detail-panel
+- item-score-grid
+- item-score-pill
+- item-detail-dl
+- item-product-link
+
+Problema:
+La pantalla se ve funcional, pero todavía como ficha administrativa. Queremos que parezca una pantalla premium de detalle de producto dentro de una app de closet.
+
+Objetivo visual:
+Debe sentirse como una boutique digital del closet:
+- limpio
+- rápido de leer
+- editorial
+- mobile-first
+- sin bottom nav tapando contenido
+- sin repetir títulos
+- sin cards gigantes innecesarias
+
+IMPORTANTE:
+No tocar:
+- /closet dashboard
+- /closet/gallery
+- Home
+- Wishlist
+- Planner
+- Outfits
+- bottom nav global fuera de esta ruta
+
+Sí puedes tocar:
+- src/app/closet/item/[id]/page.tsx
+- src/app/closet/item/[id]/edit/page.tsx solo si necesitas padding o visual minor
+- src/app/globals.css
+- componentes nuevos solo si realmente ayudan
+
+Primero:
+Revisar globals.css y limpiar cualquier bloque conflictivo anterior relacionado con:
+- THE EDIT — Closet Item Detail mobile polish
+- THE EDIT — Closet Item Detail exact polish
+- THE EDIT — Hide app nav on closet item detail/edit
+- THE EDIT — Closet Item Detail product redesign
+
+Hay varios parches acumulados. Consolidar en un solo bloque final claro:
+THE EDIT — Closet Item Detail Final
+
+Nuevo layout requerido para /closet/item/[id]:
+
+1. Navegación superior contextual
+Arriba debe haber:
+- ← Gallery
+- Dashboard
+
+Estos pueden quedarse como pills pequeñas.
+No debe haber botón grande de Gallery abajo.
+
+2. Header de identidad arriba de la imagen
+Antes de la imagen debe aparecer:
+- nombre de la pieza en serif editorial
+- debajo: color · size · status
+
+Ejemplo:
+Chocolate one-shoulder bodysuit
+Chocolate · M · Active
+
+El título debe ser editorial pero controlado en móvil. No debe ocupar media pantalla.
+
+3. Imagen centrada como product card
+La imagen debe ir debajo del título.
+Debe estar perfectamente centrada.
+No puede quedar hacia la izquierda.
+Usar:
+- display grid / place-items center
+- background-size contain
+- background-position center
+- background-repeat no-repeat
+- object-fit contain si aplica
+
+En móvil:
+- altura aprox 300px–340px
+- no full screen
+- no cortar la prenda
+
+En tablet/desktop:
+- altura máxima aprox 460px
+
+4. Overlay dentro de la imagen
+Dentro de la card de imagen:
+- arriba izquierda: categoría, ejemplo Tops
+- arriba derecha: score promedio, ejemplo 8.3, en círculo burgundy
+
+Esto reemplaza la categoría y score fuera de la imagen.
+No repetir categoría afuera.
+No repetir score afuera.
+
+5. Chips en una sola línea
+Los vibes/tags como Minimal, Elevated, Work, Tropical deben ir debajo de la imagen.
+Deben ser una sola línea horizontal con overflow-x auto si hay muchos.
+No deben ocupar dos o más líneas.
+Deben verse como tags sutiles, no como botones grandes.
+
+6. Acciones principales
+Eliminar el botón grande de Gallery de item-detail-actions.
+Solo deben quedar dos botones:
+- Edit piece
+- Style it
+
+Style it debe enlazar a /outfits.
+Edit piece debe enlazar a /closet/item/[id]/edit.
+
+Los dos botones deben ir uno al lado del otro en móvil.
+Si el ancho es muy pequeño, pueden seguir en dos columnas.
+
+7. Styling notes
+Actualmente repite:
+Style notes
+Styling
+
+Eliminar repetición.
+Debe decir solo una vez:
+Styling notes
+
+Debajo mostrar stylingNotes y notes si existen.
+No usar eyebrow + título duplicado.
+
+8. Scores
+Actualmente los ratings ocupan mucho espacio.
+Convertirlos a una franja compacta o mini pills, no cards grandes.
+
+Debe verse como:
+Scores
+Love 8.0 · Vers 9.0 · Fit 8.0 · Capsule 8.5
+
+O como mini pills compactas:
+[Love 8.0] [Vers 9.0] [Fit 8.0] [Capsule 8.5]
+
+Preferencia: mini pills compactas en una sola fila de 4 en móvil.
+Si el ancho no da, que sigan cabiendo sin verse gigantes.
+
+Cambiar label “Versatility” a “Vers”.
+
+9. Piece info
+Revisar que Piece info se vea compacto:
+- label izquierda
+- valor derecha
+- filas finas
+- product link como pill discreto
+No debe ocupar demasiado espacio vertical.
+Puede quedarse al final.
+
+10. Bottom nav
+Para esta pantalla de detalle, se puede ocultar el bottom nav usando CSS scoped:
+body:has(.item-detail) .bottom-nav { display: none; }
+
+También para edit:
+body:has(.item-edit) .bottom-nav { display: none; }
+
+No modificar el diseño global del bottom nav.
+
+11. Padding
+Como el bottom nav estará oculto en detalle/edit, eliminar padding-bottom exagerado.
+No debe quedar gran espacio vacío al final.
+Usar padding-bottom aprox 3rem–4rem.
+
+12. Edit route
+Revisar /closet/item/[id]/edit:
+- que no quede tapado
+- si ocultas bottom nav también aquí, reducir padding excesivo
+- no rediseñar todo el formulario ahora
+- solo asegurar que se vea limpio y usable
+
+Criterios de aceptación visual:
+- Al abrir una pieza, primero veo nombre/color/size/status.
+- La imagen está centrada.
+- La categoría y score están dentro de la imagen arriba.
+- Los tags están en una sola línea.
+- Solo hay dos acciones principales: Edit piece y Style it.
+- No aparece Gallery como botón grande abajo.
+- No hay “Style notes” + “Styling” repetido.
+- Scores se ven compactos.
+- Piece info se ve limpio.
+- No aparece el bottom nav en detail/edit.
+- No hay gran espacio vacío al final.
+
+Verificación obligatoria:
+Correr:
+
+npm run typecheck
+npm run build
+
+También entregar:
+1. Archivos modificados.
+2. Qué bloques CSS eliminaste.
+3. Qué layout cambiaste en page.tsx.
+4. Resultado de typecheck.
+5. Resultado de build.
+6. Cómo probar manualmente:
+   - abrir /closet/gallery
+   - click en una pieza
+   - revisar /closet/item/[id]
+   - click Edit piece
+   - volver
+7. No hacer commit.

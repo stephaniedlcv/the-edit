@@ -1,0 +1,101 @@
+TAREA: Crear el flujo Add Piece para Closet como base funcional, preparando el espacio para AI Catalog Clean-Up.
+
+Contexto:
+Estamos en THE EDIT / Closet OS, branch ui/blush-glass-foundation.
+Ya existe:
+- /closet
+- /closet/gallery
+- /closet/item/[id]
+- /closet/item/[id]/edit
+- /api/closet/items
+- /api/closet/items/[id]
+- /api/closet/items/[id]/image
+- closet-item-edit-form.tsx
+- closet-item-edit-client.tsx
+- tipos WardrobeItem / WardrobeCategory
+- getWardrobeItems() y getWardrobeItemById()
+
+Objetivo:
+Crear un flujo funcional para añadir una pieza nueva al closet.
+
+Ruta deseada:
+- /closet/add
+
+Flujo esperado:
+1. Usuario entra a /closet/add.
+2. Ve una pantalla premium consistente con THE EDIT.
+3. Puede llenar campos básicos:
+   - name
+   - category
+   - type/subcategory si existe
+   - colorFamily
+   - colorName
+   - size
+   - itemStatus
+   - brand
+   - purchaseSource
+   - paidPrice
+   - purchaseDate
+   - productUrl
+   - notes
+   - stylingNotes
+   - vibes/tags
+   - scores si el form existente ya los soporta
+4. Puede subir imagen.
+5. Al guardar, se crea la pieza.
+6. Si hay imagen, se sube y se asocia a la nueva pieza.
+7. Al terminar, redirige a /closet/item/[newId].
+8. Cancel vuelve a /closet/gallery.
+
+Importante:
+- Reutilizar closet-item-edit-form.tsx si se puede adaptar a create mode.
+- No duplicar mucha lógica.
+- Si el API POST /api/closet/items ya existe, auditarlo y usarlo.
+- Si no existe POST funcional, implementarlo.
+- No romper PATCH existente.
+- No tocar Home.
+- No tocar Gallery visualmente salvo añadir link/botón Add Piece si ya existe un lugar natural.
+- No hacer commit.
+
+AI Catalog Clean-Up:
+No implementar todavía la edición real de AI en esta tarea.
+Pero preparar el flujo visual para futuro:
+- En la sección de imagen, dejar un bloque/placeholder que diga:
+  “AI Catalog Clean-Up coming next”
+- El diseño debe contemplar que luego guardaremos:
+  originalImageUrl
+  cleanedImageUrl
+  imageMode: original | cleaned
+- No cambiar schema todavía salvo que sea necesario.
+- No inventar llamadas a AI.
+- Solo dejar la UX preparada de forma limpia.
+
+Pantalla /closet/add:
+Debe sentirse premium, pero práctica:
+- título: Add piece
+- subtítulo: Build your closet one clean piece at a time.
+- sección imagen arriba
+- formulario debajo
+- botones: Save piece / Cancel
+- loading states
+- error states
+
+Verificación:
+npm run typecheck
+npm run build
+
+Entregar:
+1. Archivos modificados.
+2. Nueva ruta creada.
+3. Si reutilizó el form existente o creó modo create.
+4. Si POST /api/closet/items existía o fue creado.
+5. Cómo maneja upload de imagen.
+6. Resultado de typecheck.
+7. Resultado de build.
+8. Cómo probar manualmente:
+   - abrir /closet/add
+   - crear pieza sin imagen
+   - crear pieza con imagen
+   - verificar redirección al detail
+   - verificar que aparece en gallery
+9. No hacer commit.

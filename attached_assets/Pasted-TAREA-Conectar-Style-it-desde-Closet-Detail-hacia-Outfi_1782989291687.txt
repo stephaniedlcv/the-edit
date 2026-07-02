@@ -1,0 +1,69 @@
+TAREA: Conectar “Style it” desde Closet Detail hacia Outfits con pieza seleccionada.
+
+Contexto:
+Estamos en THE EDIT / Closet OS, branch ui/blush-glass-foundation.
+Ya existe:
+- /closet/item/[id]
+- botón Style it en el detalle
+- /outfits
+- wardrobe items reales
+- getWardrobeItemById(id)
+- getWardrobeItems()
+
+Objetivo:
+Cuando el usuario haga click en “Style it” desde /closet/item/[id], la ruta /outfits debe abrir con esa pieza como punto de partida.
+
+Flujo esperado:
+1. Usuario abre /closet/item/[id].
+2. Click en Style it.
+3. Navega a /outfits?pieceId=<id>.
+4. /outfits lee pieceId desde searchParams.
+5. Si el item existe, mostrar una sección arriba:
+   “Styling from”
+   imagen / nombre / categoría / color de la pieza seleccionada.
+6. El outfit builder debe tratar esa pieza como selected/locked starting piece si ya existe una estructura compatible.
+7. Si todavía no hay builder real compatible, al menos mostrar el selected piece premium card y preparar el estado para usarlo.
+8. Si pieceId no existe o no se encuentra, /outfits debe seguir funcionando normal.
+9. No romper /outfits sin query params.
+10. No tocar /closet/gallery ni /closet/add.
+11. No hacer commit.
+
+Cambios requeridos:
+- En /closet/item/[id]/page.tsx, cambiar href de Style it:
+  /outfits → /outfits?pieceId=${item.id}
+
+- Revisar /outfits page/component.
+- Añadir soporte para searchParams pieceId.
+- Usar getWardrobeItemById(pieceId) si la ruta es server component.
+- Si /outfits es client component, pasar selectedPiece como prop desde server wrapper.
+- Mostrar selected piece card arriba del builder.
+
+Diseño:
+- Mantener estética THE EDIT.
+- Card compacta, no enorme.
+- Debe decir claramente:
+  Styling from
+  [piece image] [piece name]
+  category · color · size
+- Añadir acción pequeña:
+  Change piece / Back to closet
+  si es simple.
+- No rediseñar todo Outfits.
+
+Verificación:
+npm run typecheck
+npm run build
+
+Entregar:
+1. Archivos modificados.
+2. Cómo lee pieceId.
+3. Qué pasa si pieceId no existe.
+4. Resultado typecheck.
+5. Resultado build.
+6. Cómo probar manualmente:
+   - abrir /closet/item/[id]
+   - click Style it
+   - confirmar /outfits?pieceId=id
+   - confirmar selected piece visible
+   - abrir /outfits sin query y confirmar que sigue normal.
+No hacer commit.
