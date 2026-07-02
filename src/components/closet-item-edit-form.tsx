@@ -231,6 +231,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
       ) : null}
 
       <form action={handleSubmit} className={isCreateMode ? "add-piece-form-grid" : "mt-8 grid gap-5"}>
+        <div className={isCreateMode ? "ap-card-main" : ""}>
         {isCreateMode ? <p className="cf-group-label">Essential details</p> : null}
 
         <label className="grid gap-2">
@@ -422,7 +423,9 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
             ))}
           </div>
         </fieldset>
+        </div>
 
+        <div className={isCreateMode ? "ap-card-secondary" : ""}>
         {isCreateMode ? <p className="cf-group-label">Optional details</p> : null}
         <label className="grid gap-2">
           <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
@@ -578,6 +581,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
           </div>
         </fieldset>
 
+        {isCreateMode ? <p className="cf-group-label">Notes</p> : null}
         <label className="grid gap-2">
           <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
             Notes
@@ -601,6 +605,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
             className="rounded-[3px] border border-[var(--line)] bg-[var(--paper)] px-4 py-3 text-sm leading-6 text-[var(--espresso)] outline-none focus:border-[var(--coffee)]"
           />
         </label>
+        </div>
 
         <div className="flex flex-wrap items-center gap-3 pt-3">
           <button

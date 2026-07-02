@@ -4109,10 +4109,10 @@ body:has(.item-edit) .bottom-nav {
 
 
 /* ===========================================================
-   THE EDIT — /closet/add: Add Piece page
+   THE EDIT — /closet/add: Quick Add guided flow
    =========================================================== */
 
-/* ── Page container (own class, not item-detail) ────────── */
+/* ── Page container ─────────────────────────────────────── */
 body:has(.add-piece-page) .bottom-nav {
   display: none;
 }
@@ -4123,16 +4123,14 @@ body:has(.add-piece-page) .bottom-nav {
   padding: 1.25rem 1rem 3.5rem;
 }
 
-/* ── Centered content wrapper ───────────────────────────── */
 .add-piece-wrap {
   max-width: 780px;
   margin: 0 auto;
 }
 
-/* ── Editorial header — floats on the blush background ──── */
+/* ── Editorial header — floats on blush, no box ─────────── */
 .add-piece-header {
   margin-bottom: 1.65rem;
-  padding: 0;
 }
 
 .add-piece-title {
@@ -4149,19 +4147,19 @@ body:has(.add-piece-page) .bottom-nav {
   color: var(--ink-soft);
 }
 
-/* ── Photo card — glass panel ───────────────────────────── */
+/* ── Photo hero card ─────────────────────────────────────── */
 .add-piece-photo-card {
   border-radius: 1.4rem;
-  background: rgba(255, 253, 252, 0.58);
-  border: 1px solid rgba(255, 255, 255, 0.70);
+  background: rgba(255, 253, 252, 0.60);
+  border: 1px solid rgba(255, 255, 255, 0.72);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.88),
+    inset 0 1px 0 rgba(255, 255, 255, 0.90),
     0 8px 24px rgba(74, 52, 42, 0.055);
   padding: 1rem;
   display: grid;
   grid-template-columns: 180px 1fr;
   gap: 1rem;
-  margin-bottom: 1.1rem;
+  margin-bottom: 0.85rem;
   align-items: start;
 }
 
@@ -4200,12 +4198,11 @@ body:has(.add-piece-page) .bottom-nav {
   padding-top: 0.15rem;
 }
 
-/* AI Clean-Up note — compact, no heavy border */
 .add-piece-ai-placeholder {
-  border-radius: 0.75rem;
-  background: rgba(244, 232, 223, 0.40);
-  border: 1px dashed rgba(122, 46, 53, 0.14);
-  padding: 0.7rem 0.8rem;
+  border-radius: 0.7rem;
+  background: rgba(244, 232, 223, 0.38);
+  border: 1px dashed rgba(122, 46, 53, 0.13);
+  padding: 0.65rem 0.8rem;
   margin-top: auto;
 }
 
@@ -4215,40 +4212,72 @@ body:has(.add-piece-page) .bottom-nav {
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--burgundy);
-  margin-bottom: 0.28rem;
+  margin-bottom: 0.25rem;
 }
 
 .add-piece-ai-note {
-  font-size: 0.73rem;
-  line-height: 1.55;
+  font-size: 0.72rem;
+  line-height: 1.5;
   color: var(--ink-soft);
   font-style: italic;
 }
 
-/* ── Form section (create mode) ─────────────────────────── */
+/* ── Form outer wrappers ─────────────────────────────────── */
 .add-piece-form-wrap {
   display: contents;
 }
 
 .add-piece-form-grid {
   display: grid;
-  gap: 0.7rem;
+  gap: 0.75rem;
 }
 
-/* ── Group separators ────────────────────────────────────── */
+/* ── Card 1: Essential details + Style tags ──────────────── */
+.ap-card-main {
+  display: grid;
+  gap: 0.68rem;
+  background: rgba(255, 253, 252, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.80);
+  border-radius: 1.4rem;
+  padding: 1.25rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 6px 20px rgba(74, 52, 42, 0.05);
+}
+
+/* ── Card 2: Optional details + Scores + Notes ───────────── */
+.ap-card-secondary {
+  display: grid;
+  gap: 0.68rem;
+  background: rgba(244, 232, 223, 0.20);
+  border: 1px solid rgba(122, 46, 53, 0.07);
+  border-radius: 1.25rem;
+  padding: 1.15rem 1.25rem;
+}
+
+/* Fieldsets inside cards: remove heavy white box, keep subtle */
+.ap-card-main fieldset,
+.ap-card-secondary fieldset {
+  background: transparent;
+  border-color: rgba(122, 46, 53, 0.10);
+}
+
+/* ── Group separator labels ──────────────────────────────── */
 .cf-group-label {
-  font-size: 0.46rem;
+  font-size: 0.44rem;
   font-weight: 800;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--burgundy);
-  padding-top: 0.9rem;
-  padding-bottom: 0.15rem;
+  padding-top: 0.85rem;
+  padding-bottom: 0.1rem;
   border-top: 1px solid rgba(122, 46, 53, 0.07);
-  margin-top: 0.2rem;
+  margin-top: 0.1rem;
 }
 
-/* first group label has no divider */
+/* First group label in any card or grid gets no top divider */
+.ap-card-main > .cf-group-label:first-child,
+.ap-card-secondary > .cf-group-label:first-child,
 .add-piece-form-grid > .cf-group-label:first-child {
   padding-top: 0;
   border-top: none;
@@ -4269,9 +4298,15 @@ body:has(.add-piece-page) .bottom-nav {
   .add-piece-title {
     font-size: clamp(2.2rem, 8vw, 3rem);
   }
+
+  .ap-card-main,
+  .ap-card-secondary {
+    border-radius: 1.1rem;
+    padding: 1rem;
+  }
 }
 
-/* ── Gallery controls: Add piece button ─────────────────── */
+/* ── Gallery: Add piece button ───────────────────────────── */
 .gallery-v2-add-btn {
   display: inline-flex;
   align-items: center;
@@ -4293,7 +4328,6 @@ body:has(.add-piece-page) .bottom-nav {
   justify-content: center;
 }
 
-/* On very small screens stack the button below search */
 @media (max-width: 420px) {
   .gallery-v2-controls {
     flex-direction: column;
