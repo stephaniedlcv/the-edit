@@ -17,7 +17,7 @@ export default async function ClosetItemEditPage({ params }: Props) {
   }
 
   return (
-    <main className="item-edit min-h-screen px-4 py-6 md:px-6 md:py-8">
+    <main className="item-edit min-h-screen px-4 pt-6 pb-28 md:px-6 md:pt-8 md:pb-32">
       <div className="mx-auto max-w-[820px]">
         <ClosetItemEditClient item={item} />
       </div>

@@ -3741,7 +3741,7 @@ label,
   overflow: hidden;
   background: linear-gradient(145deg, rgba(244,232,223,0.88), rgba(255,253,252,0.66));
   aspect-ratio: 3/4;
-  max-height: 34rem;
+  max-height: 26rem;
 }
 
 .item-detail-image {
@@ -3789,7 +3789,7 @@ label,
 }
 
 .item-detail-name {
-  font-size: clamp(2.8rem, 8vw, 4.2rem);
+  font-size: clamp(1.95rem, 7.5vw, 4.2rem);
   line-height: 0.87;
   letter-spacing: -0.03em;
   color: var(--espresso);
@@ -3869,7 +3869,7 @@ label,
 }
 
 .item-detail-section-title {
-  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
   line-height: 0.9;
   letter-spacing: -0.03em;
   color: var(--espresso);
@@ -4026,6 +4026,10 @@ label,
     grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
   }
 
+  .item-detail-image-wrap {
+    max-height: 32rem;
+  }
+
   .item-score-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
@@ -4037,5 +4041,41 @@ label,
 
   .item-edit-preview-wrap {
     max-height: none;
+  }
+}
+
+/* ===========================================================
+   THE EDIT — Closet Item Detail Polish
+   =========================================================== */
+
+@media (max-width: 639px) {
+  .item-detail-meta {
+    padding: 1.15rem;
+  }
+
+  .item-detail-actions {
+    flex-direction: column;
+    margin-top: 1.1rem;
+  }
+
+  .item-detail-action {
+    text-align: center;
+    padding: 0.82rem 1rem;
+  }
+
+  .item-detail-panel {
+    padding: 1.1rem;
+  }
+
+  .item-score-pill {
+    padding: 0.72rem 0.85rem;
+  }
+
+  .item-score-pill-value {
+    font-size: 1.75rem;
+  }
+
+  .item-detail-nav {
+    margin-bottom: 1rem;
   }
 }

@@ -1,0 +1,59 @@
+Pulir visualmente las rutas /closet/item/[id] y /closet/item/[id]/edit sin tocar /closet ni /closet/gallery.
+
+Problemas actuales:
+- En móvil, la imagen del detalle es demasiado alta y domina toda la pantalla.
+- El bottom nav tapa contenido y botones.
+- El título de la pieza está demasiado grande en móvil.
+- Hay demasiado espacio vacío al final de la página.
+- Los botones Edit piece / Gallery / Build outfit deben quedar visibles y mejor integrados.
+- No compactar ni rediseñar el bottom nav global.
+
+Objetivo:
+Hacer que el detalle se vea premium, limpio y usable en mobile/tablet/web.
+
+Ajustes requeridos:
+
+1. /closet/item/[id]
+- Limitar la altura de la imagen:
+  mobile: max-height aprox 380px–430px
+  tablet/desktop: que no pase de 520px
+- La imagen debe usar object-fit contain o bg-contain para no cortarse agresivamente.
+- El bloque de información principal debe subir más cerca de la imagen.
+- Reducir el tamaño del nombre de pieza en móvil.
+  Debe seguir siendo serif editorial, pero no ocupar 5 líneas gigantes.
+- Mantener score, categoría, color, talla y tags.
+- Mover los botones de acción para que se vean antes del nav:
+  Edit piece como primary burgundy
+  Gallery y Build outfit como pills secundarios
+- Añadir padding-bottom suficiente para el nav, pero no crear un vacío enorme.
+- Revisar sección Rating para que el nav no tape las pills.
+- Revisar Piece info para que View Product no quede tapado.
+
+2. /closet/item/[id]/edit
+- Revisar que el formulario no quede tapado por el nav.
+- Asegurar padding-bottom correcto.
+- Mantener el form funcional.
+- No rediseñar completamente el form si ya funciona; solo mejorar spacing y consistencia visual.
+
+3. CSS
+- Añadir estilos en globals.css en un bloque claro:
+  THE EDIT — Closet Item Detail Polish
+- No tocar Home.
+- No tocar /closet dashboard.
+- No tocar /closet/gallery.
+- No tocar bottom nav global.
+- Evitar !important salvo que sea necesario.
+
+4. Verificación
+Correr:
+npm run typecheck
+npm run build
+
+Entregar:
+- Archivos modificados
+- Qué cambios visuales hizo
+- Resultado de typecheck
+- Resultado de build
+- Cómo verificar manualmente:
+  /closet/gallery → click pieza → /closet/item/[id] → Edit piece → volver
+No hacer commit.

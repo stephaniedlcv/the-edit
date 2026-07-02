@@ -66,7 +66,7 @@ export default async function ClosetItemPage({ params }: Props) {
   );
 
   return (
-    <main className="item-detail min-h-screen px-4 py-6 md:px-6 md:py-8">
+    <main className="item-detail min-h-screen px-4 pt-6 pb-28 md:px-6 md:pt-8 md:pb-32">
       <div className="mx-auto max-w-[1120px]">
 
         <nav className="item-detail-nav">
