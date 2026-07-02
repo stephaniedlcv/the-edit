@@ -1,0 +1,80 @@
+TAREA: Implementar Archive / Restore piece en Closet.
+
+Contexto:
+Estamos en THE EDIT / Closet OS, branch ui/blush-glass-foundation.
+Ya existe:
+- /closet/gallery con filtros
+- /closet/item/[id]
+- /closet/item/[id]/edit
+- PATCH /api/closet/items/[id]
+- itemStatus en WardrobeItem
+- Gallery filters ya filtran por itemStatus
+- Add Piece / Edit Piece funcionan
+
+Objetivo:
+Permitir archivar y restaurar una pieza sin borrarla.
+
+Regla:
+No implementar delete permanente todavía.
+
+Flujo esperado:
+1. En /closet/item/[id], si itemStatus es active:
+   - mostrar acción secundaria discreta: Archive piece
+2. Al hacer click:
+   - actualizar itemStatus a archived usando PATCH /api/closet/items/[id]
+   - refrescar/redirigir al detalle
+   - la pieza debe mostrar status archived
+3. Si itemStatus es archived:
+   - mostrar acción: Restore piece
+   - actualizar itemStatus a active
+4. En Gallery:
+   - el filtro Status debe permitir ver Active / Archived
+   - por default debe mostrar todas o active según la lógica actual; no romperlo
+5. No borrar imágenes ni data.
+6. No romper Add/Edit/Detail/Outfits.
+
+Dónde ponerlo:
+- Preferencia: en /closet/item/[id] como acción secundaria al final de Piece info o debajo de las acciones principales.
+- No debe competir visualmente con Edit piece / Style it.
+- Usar botón/pill discreto, no burgundy primary.
+- Si archived, mostrar badge/status visible en el header o metadata.
+
+Implementación sugerida:
+- Crear un client component pequeño:
+  ClosetItemLifecycleAction
+  Props: itemId, currentStatus
+  Acción:
+   PATCH /api/closet/items/[id] con { itemStatus: "archived" } o { itemStatus: "active" }
+   router.refresh()
+- Si el API PATCH requiere payload completo, revisar antes de enviar solo itemStatus.
+  Si requiere payload completo, usar los datos existentes del item para enviar payload seguro.
+- No romper validación del PATCH.
+
+UX:
+- Loading state: Archiving... / Restoring...
+- Error state: mostrar mensaje corto si falla
+- Texto:
+  Archive piece
+  Restore piece
+- Optional confirm:
+  Para archive no hace falta modal si no borra. Pero puede usar window.confirm si quieres seguridad.
+
+Verificación:
+npm run typecheck
+npm run build
+
+Entregar:
+1. Archivos modificados
+2. Cómo actualiza itemStatus
+3. Si PATCH aceptaba payload parcial o completo
+4. Cómo se ve en active vs archived
+5. Resultado typecheck
+6. Resultado build
+7. Cómo probar manualmente:
+   - abrir pieza active
+   - archive
+   - ver status archived
+   - ir gallery y filtrar Archived
+   - restore
+   - ver status active
+8. No hacer commit.

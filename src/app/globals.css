@@ -4166,6 +4166,82 @@ body:has(.item-edit) .bottom-nav {
 }
 
 /* ===========================================================
+   THE EDIT — Closet Item Detail: status badge + lifecycle
+   =========================================================== */
+
+/* ── "Archived" / status badge above the name ───────────── */
+.item-d-status-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(122, 46, 53, 0.22);
+  background: rgba(122, 46, 53, 0.06);
+  padding: 0.36rem 0.72rem;
+  font-size: 0.44rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--burgundy);
+  margin-bottom: 0.55rem;
+}
+
+/* ── Lifecycle action area ───────────────────────────────── */
+.item-d-lifecycle-wrap {
+  margin-top: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.item-d-lifecycle-btn {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px dashed rgba(110, 85, 74, 0.28);
+  background: transparent;
+  padding: 0.62rem 1.05rem;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--caramel);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.14s, border-color 0.14s, color 0.14s;
+}
+
+.item-d-lifecycle-btn:hover:not(:disabled) {
+  background: rgba(110, 85, 74, 0.06);
+  border-color: rgba(110, 85, 74, 0.42);
+  color: var(--coffee);
+}
+
+.item-d-lifecycle-btn:disabled {
+  opacity: 0.52;
+  cursor: not-allowed;
+}
+
+.item-d-lifecycle-btn.restore {
+  border-color: rgba(88, 119, 74, 0.32);
+  color: #4a6a3a;
+}
+
+.item-d-lifecycle-btn.restore:hover:not(:disabled) {
+  background: rgba(88, 119, 74, 0.07);
+  border-color: rgba(88, 119, 74, 0.5);
+}
+
+.item-d-lifecycle-error {
+  font-size: 0.56rem;
+  color: var(--burgundy);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+/* ===========================================================
    THE EDIT — Closet Item Edit: image / upload section
    =========================================================== */
 

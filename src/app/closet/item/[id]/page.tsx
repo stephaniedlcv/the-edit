@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getWardrobeItemById } from "@/lib/wardrobe/data";
 import type { WardrobeItem } from "@/types/wardrobe";
+import { ClosetItemLifecycleAction } from "@/components/ui/closet-item-lifecycle-action";
 
 const CATEGORY_LABELS: Record<string, string> = {
   outerwear: "Outerwear",
@@ -75,13 +76,13 @@ export default async function ClosetItemPage({ params }: Props) {
         </nav>
 
         <header className="item-d-identity">
+          {item.itemStatus && item.itemStatus !== "active" ? (
+            <span className="item-d-status-badge">{item.itemStatus}</span>
+          ) : null}
           <h1 className="font-display item-d-name">{item.name}</h1>
           <p className="item-d-sub">
             {item.colorName}
             {item.size ? ` · ${item.size}` : ""}
-            {item.itemStatus && item.itemStatus !== "active"
-              ? ` · ${item.itemStatus}`
-              : ""}
           </p>
         </header>
 
@@ -190,6 +191,8 @@ export default async function ClosetItemPage({ params }: Props) {
             ) : null}
           </section>
         ) : null}
+
+        <ClosetItemLifecycleAction item={item} />
 
       </div>
     </main>
