@@ -1,0 +1,158 @@
+TAREA: Construir Add Wishlist Item para convertir Wishlist de read-only demo a flujo funcional.
+
+Contexto:
+Estamos en THE EDIT / Closet OS, branch ui/blush-glass-foundation.
+
+Auditoría actual:
+Existe:
+- /wishlist
+- src/components/wishlist-priority-board.tsx
+- src/components/wishlist-card.tsx
+- src/components/buy-order-filter.tsx
+- src/lib/wishlist/data.ts
+- src/lib/mock-wishlist-items.ts
+- WishlistItem type en src/types/wardrobe.ts
+- Supabase mapper mapWishlistItem()
+- bucket wishlist-items definido
+
+No existe:
+- /wishlist/add
+- /wishlist/item/[id]
+- /api/wishlist/items
+- PATCH wishlist
+- Move to Closet
+- Image upload UI para wishlist
+
+Objetivo:
+Crear el flujo funcional mínimo para añadir un item nuevo a Wishlist.
+
+Rutas/API requeridas:
+1. Crear POST /api/wishlist/items
+2. Crear /wishlist/add
+3. Conectar botón actual "+ Review Item" o crear botón "+ Add item" en /wishlist para navegar a /wishlist/add
+
+No implementar todavía:
+- Move to Closet
+- AI verdict real
+- Duplicate check real
+- Detail page
+- PATCH/edit
+- Image upload real si complica demasiado
+
+POST /api/wishlist/items:
+Debe validar mínimo:
+- name
+- category
+- colorFamily
+- colorName
+
+Debe aceptar opcionales:
+- productUrl
+- brand
+- size
+- currentPrice
+- targetPrice
+- notes
+- decision
+- priorityTier
+- closetGap
+- duplicateRisk
+- priorityScore
+- outfitPotential
+- closetImpactScore
+
+Defaults recomendados:
+- decision: "wishlist" o el valor válido más cercano según el tipo existente
+- priorityTier: "consider" o valor válido existente
+- closetGap: "none" o valor válido existente
+- duplicateRisk: "unknown" o "low", según el tipo existente
+- priorityScore: 5
+- outfitPotential: 5
+- closetImpactScore: 5
+- purchaseOrder: max(existing purchase_order) + 1 si Supabase está disponible; si no, usar timestamp fallback o count+1 de mock no persistente
+
+IMPORTANTE:
+Revisar los enums/tipos reales antes de usar strings. No inventar valores que rompan TypeScript.
+
+Si Supabase no está configurado:
+- mantener el patrón actual de fallback seguro.
+- Pero el POST debe estar implementado para Supabase real.
+- No intentar escribir al mock file desde API.
+
+Pantalla /wishlist/add:
+Debe ser un flujo guiado, no un formulario gigante.
+
+Layout recomendado:
+- Header:
+  New wishlist review
+  Add wishlist item
+  Capture the piece before it becomes an impulse buy.
+
+- Card 1: Product basics
+  name
+  productUrl
+  brand/store
+  currentPrice
+  targetPrice
+
+- Card 2: Closet classification
+  category
+  colorFamily
+  colorName
+  size
+
+- Card 3: Decision notes
+  decision
+  priorityTier
+  notes
+
+- Card 4: Scores / Intelligence
+  priorityScore
+  outfitPotential
+  closetImpactScore
+  duplicateRisk
+  closetGap
+
+Botones:
+- Save to wishlist
+- Cancel → /wishlist
+
+Al guardar:
+- POST /api/wishlist/items
+- Redirigir a /wishlist
+- Mostrar error si falla
+
+Botón en /wishlist:
+- El botón "+ Review Item" actual en buy-order-filter.tsx no tiene acción.
+- Convertirlo en Link a /wishlist/add.
+- Mantener estética actual.
+
+Estética:
+- Consistente con THE EDIT / blush editorial glass
+- No tabla
+- No admin form frío
+- Mobile-first
+- Serif para títulos
+- Sans para labels/buttons
+- Cards limpias tipo /closet/add, pero no copiar errores visuales anteriores
+
+Verificación obligatoria:
+npm run typecheck
+npm run build
+
+Entregar:
+1. Archivos modificados
+2. Nueva ruta creada
+3. Nueva API creada
+4. Valores default usados y por qué
+5. Cómo asigna purchaseOrder
+6. Resultado de typecheck
+7. Resultado de build
+8. Cómo probar manualmente:
+   - abrir /wishlist
+   - click + Review Item / Add item
+   - crear item mínimo
+   - crear item con precio/url/notas
+   - confirmar redirección a /wishlist
+   - confirmar que build no rompe
+9. No hacer commit.

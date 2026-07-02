@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type {
   WishlistDecision,
   WishlistItem,
@@ -118,12 +119,12 @@ export function BuyOrderFilter({
           </h2>
         </div>
 
-        <button
-          type="button"
-          className="pb-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.28em] text-[var(--gold)]"
+        <Link
+          href="/wishlist/add"
+          className="pb-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.28em] text-[var(--gold)] hover:text-[var(--caramel)] transition-colors"
         >
-          + Review Item
-        </button>
+          + Add item
+        </Link>
       </div>
 
       <div className="border-t border-[var(--line)] pt-6">

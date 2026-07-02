@@ -4322,6 +4322,26 @@ body:has(.item-edit) .bottom-nav {
 
 
 /* ===========================================================
+   THE EDIT — /wishlist/add: Add Wishlist Item guided flow
+   =========================================================== */
+
+body:has(.add-wishlist-page) .bottom-nav {
+  display: none;
+}
+
+.add-wishlist-page {
+  color: var(--espresso);
+  min-height: 100svh;
+  padding: 1.25rem 1rem 3.5rem;
+}
+
+@media (max-width: 520px) {
+  .add-wishlist-page {
+    padding: 1rem 0.85rem 3rem;
+  }
+}
+
+/* ===========================================================
    THE EDIT — /closet/add: Quick Add guided flow
    =========================================================== */
 
