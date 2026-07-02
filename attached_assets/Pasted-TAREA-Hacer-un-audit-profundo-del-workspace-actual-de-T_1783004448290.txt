@@ -1,0 +1,110 @@
+TAREA: Hacer un audit profundo del workspace actual de THE EDIT / Closet OS.
+
+Contexto importante:
+Un audit externo hecho sobre un zip descargado de GitHub encontró que faltaban rutas como /closet/gallery, /closet/add, /closet/item/[id], /wishlist/add y POST /api/wishlist/items. Pero ese audit probablemente revisó una versión vieja o un branch equivocado.
+
+Necesito que audites el workspace ACTUAL en Replit, tal cual está ahora, sin asumir que GitHub está actualizado.
+
+Primero confirma:
+1. Branch actual.
+2. git status.
+3. Últimos commits.
+4. Si existen estas rutas:
+   - /closet/gallery
+   - /closet/add
+   - /closet/item/[id]
+   - /closet/item/[id]/edit
+   - /wishlist/add
+   - /api/wishlist/items
+5. Si existen estos flujos:
+   - Add Piece
+   - Item Detail
+   - Edit Piece
+   - Archive / Restore
+   - Style it → /outfits?pieceId=
+   - Gallery filters
+   - Add Wishlist Item
+   - POST wishlist item
+
+Objetivo del audit:
+Auditar el estado real actual del proyecto, no el zip viejo.
+
+Revisar profundamente:
+- rutas
+- componentes
+- APIs
+- data flow
+- Supabase/mock fallback
+- CSS/globals
+- design system
+- mobile UX
+- bottom nav
+- wishlist readiness
+- AI readiness
+- deuda técnica
+- bugs potenciales
+- inconsistencias visuales
+- riesgos antes del redesign clean inspirado en Alta/THE EDIT
+
+Dirección visual nueva:
+Queremos mover THE EDIT hacia una estética más clean, minimal, mobile-app y catalog-like:
+- warm cream / off-white
+- producto protagonista
+- menos glass pesado
+- menos sombras
+- menos cajas
+- dividers finos
+- chips suaves
+- blush para CTAs principales
+- burgundy como micro-acento
+- espresso/black solo para jerarquía fuerte
+- serif editorial para logo/títulos selectos
+- sans limpia para UI
+- no copiar Alta, solo usar su claridad como inspiración
+
+Mantener identidad:
+- editorial
+- warm
+- curated
+- intelligent
+- feminine
+- premium
+- no SaaS/corporativo
+
+Auditar:
+1. Executive summary
+2. Qué rutas existen hoy
+3. Qué flujos funcionales existen hoy
+4. Qué está completo
+5. Qué está incompleto
+6. Qué está frágil
+7. Qué deuda técnica real queda
+8. Estado de globals.css y si hay parches/conflictos
+9. Problemas visuales actuales
+10. Problemas mobile
+11. Problemas API/data/auth/RLS
+12. Wishlist OS readiness
+13. AI readiness
+14. Qué debe arreglarse antes del redesign visual
+15. Roadmap recomendado
+
+Importante:
+No hacer cambios.
+No editar código.
+No hacer commit.
+Solo audit.
+
+Verificación:
+Correr:
+npm run typecheck
+npm run build
+
+Entregar:
+- branch actual
+- git status
+- rutas encontradas
+- archivos clave encontrados
+- diferencias con el audit del zip viejo
+- recomendaciones priorizadas
+- resultado typecheck
+- resultado build
