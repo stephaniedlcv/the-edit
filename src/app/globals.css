@@ -3171,31 +3171,31 @@ label,
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.38rem;
   border-radius: 999px;
-  border: 1px solid rgba(122, 46, 53, 0.12);
-  background: rgba(255, 253, 252, 0.58);
-  padding: 0.68rem 0.85rem;
-  font-size: 0.56rem;
-  font-weight: 800;
-  letter-spacing: 0.15em;
+  border: 1px solid rgba(95, 63, 50, 0.11);
+  background: transparent;
+  padding: 0.48rem 0.72rem;
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--coffee);
 }
 
 .gallery-v2-chip strong {
-  font-size: 0.5rem;
-  color: var(--burgundy);
+  font-size: 0.46rem;
+  color: var(--caramel);
 }
 
 .gallery-v2-chip.active {
-  background: var(--burgundy);
-  border-color: rgba(122, 46, 53, 0.35);
+  background: var(--espresso);
+  border-color: rgba(36, 26, 18, 0.30);
   color: #fffdfc;
 }
 
 .gallery-v2-chip.active strong {
-  color: #fffdfc;
+  color: rgba(255, 253, 252, 0.70);
 }
 
 .gallery-v2-head {
@@ -3477,12 +3477,13 @@ label,
 .gallery-filters {
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
-  margin-bottom: 0.85rem;
-  padding: 0.75rem 0.9rem;
-  border-radius: 1rem;
-  background: rgba(255, 253, 252, 0.55);
-  border: 1px solid rgba(122, 46, 53, 0.08);
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+  padding: 0.6rem 0;
+  background: transparent;
+  border: none;
+  border-top: 1px solid rgba(95, 63, 50, 0.07);
+  border-bottom: 1px solid rgba(95, 63, 50, 0.07);
 }
 
 /* ── Each filter row (horizontal scroll) ─────────────────── */
@@ -3504,18 +3505,18 @@ label,
 /* ── Row label ("Color", "Status", etc.) ─────────────────── */
 .gf-row-label {
   flex: 0 0 auto;
-  font-size: 0.44rem;
-  font-weight: 800;
-  letter-spacing: 0.18em;
+  font-size: 0.42rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--caramel);
-  min-width: 3rem;
-  padding-right: 0.25rem;
-  border-right: 1px solid var(--line);
-  margin-right: 0.1rem;
+  color: var(--ink-soft);
+  min-width: 2.8rem;
+  padding-right: 0.3rem;
+  border-right: 1px solid rgba(95, 63, 50, 0.10);
+  margin-right: 0.15rem;
   line-height: 1;
-  padding-top: 0.1rem;
-  padding-bottom: 0.1rem;
+  padding-top: 0.08rem;
+  padding-bottom: 0.08rem;
 }
 
 /* ── Filter chips ────────────────────────────────────────── */
@@ -3524,12 +3525,12 @@ label,
   flex: 0 0 auto;
   align-items: center;
   border-radius: 999px;
-  border: 1px solid rgba(122, 46, 53, 0.14);
-  background: rgba(255, 253, 252, 0.72);
-  padding: 0.6rem 0.85rem;
-  font-size: 0.54rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
+  border: 1px solid rgba(95, 63, 50, 0.12);
+  background: transparent;
+  padding: 0.36rem 0.68rem;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--coffee);
   white-space: nowrap;
@@ -3537,8 +3538,8 @@ label,
   -webkit-appearance: none;
   appearance: none;
   -webkit-tap-highlight-color: transparent;
-  transition: background 0.14s, border-color 0.14s, color 0.14s, transform 0.14s;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  transition: background 0.14s, border-color 0.14s, color 0.14s;
+  box-shadow: none;
 }
 
 .gallery-filter-row button.gf-chip {
@@ -3547,16 +3548,15 @@ label,
 }
 
 .gf-chip:hover:not(.active) {
-  background: rgba(255, 253, 252, 0.92);
-  border-color: rgba(122, 46, 53, 0.26);
-  transform: translateY(-1px);
+  background: rgba(255, 253, 252, 0.75);
+  border-color: rgba(95, 63, 50, 0.22);
 }
 
 .gf-chip.active {
-  background: var(--burgundy);
-  border-color: rgba(122, 46, 53, 0.35);
+  background: var(--espresso);
+  border-color: rgba(36, 26, 18, 0.30);
   color: #fffdfc;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 4px 12px rgba(122, 46, 53, 0.25);
+  box-shadow: none;
 }
 
 /* ── Count + clear row ───────────────────────────────────── */
@@ -3608,13 +3608,20 @@ label,
 
 /* Compact gallery cards */
 .gallery-v2-card {
-  border-radius: 1.15rem !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 2px 12px rgba(36, 26, 18, 0.05), 0 0 0 1px rgba(95, 63, 50, 0.06) !important;
+  transition: transform 200ms ease, box-shadow 200ms ease !important;
+}
+
+.gallery-v2-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(36, 26, 18, 0.10), 0 0 0 1px rgba(95, 63, 50, 0.07) !important;
 }
 
 .gallery-v2-image {
   height: 10.85rem !important;
-  margin: 0.5rem !important;
-  border-radius: 0.9rem !important;
+  margin: 0.45rem !important;
+  border-radius: 0.72rem !important;
 }
 
 /* Smaller, less dominant badges */
@@ -4468,24 +4475,22 @@ body:has(.add-piece-page) .bottom-nav {
 /* ── Card 1: Essential details + Style tags ──────────────── */
 .ap-card-main {
   display: grid;
-  gap: 0.68rem;
-  background: rgba(255, 253, 252, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.80);
-  border-radius: 1.4rem;
-  padding: 1.25rem;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.92),
-    0 6px 20px rgba(74, 52, 42, 0.05);
+  gap: 0.65rem;
+  background: rgba(255, 253, 252, 0.65);
+  border: 1px solid rgba(95, 63, 50, 0.09);
+  border-radius: 1.15rem;
+  padding: 1.1rem 1.2rem;
+  box-shadow: 0 2px 12px rgba(36, 26, 18, 0.04);
 }
 
 /* ── Card 2: Optional details + Scores + Notes ───────────── */
 .ap-card-secondary {
   display: grid;
-  gap: 0.68rem;
-  background: rgba(244, 232, 223, 0.20);
-  border: 1px solid rgba(122, 46, 53, 0.07);
-  border-radius: 1.25rem;
-  padding: 1.15rem 1.25rem;
+  gap: 0.65rem;
+  background: rgba(244, 232, 223, 0.14);
+  border: 1px solid rgba(95, 63, 50, 0.07);
+  border-radius: 1.05rem;
+  padding: 1rem 1.15rem;
 }
 
 /* Fieldsets inside cards: remove heavy white box, keep subtle */
@@ -4534,8 +4539,8 @@ body:has(.add-piece-page) .bottom-nav {
 
   .ap-card-main,
   .ap-card-secondary {
-    border-radius: 1.1rem;
-    padding: 1rem;
+    border-radius: 0.95rem;
+    padding: 0.9rem 1rem;
   }
 }
 

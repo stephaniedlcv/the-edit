@@ -59,11 +59,11 @@ function MiniPriceLine({ item }: { item: WishlistItem }) {
 
 export function WishlistCard({ item }: WishlistCardProps) {
   return (
-    <article className="group overflow-hidden rounded-[2px] bg-[var(--paper)] transition duration-300 hover:-translate-y-1 shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_16px_50px_rgba(26,16,8,0.07)] hover:shadow-[0_0_0_1px_rgba(26,16,8,0.05),0_24px_64px_rgba(26,16,8,0.12)]">
+    <article className="group overflow-hidden rounded-2xl bg-[var(--paper)] transition-all duration-200 hover:-translate-y-1 shadow-[0_2px_12px_rgba(36,26,18,0.05),0_0_0_1px_rgba(95,63,50,0.07)] hover:shadow-[0_8px_28px_rgba(36,26,18,0.10),0_0_0_1px_rgba(95,63,50,0.08)]">
       <div className="bg-[var(--cream)] p-3">
         {item.imageUrl ? (
           <div
-            className="h-[20rem] rounded-[2px] bg-contain bg-center bg-no-repeat"
+            className="h-[20rem] rounded-xl bg-contain bg-center bg-no-repeat"
             style={{ backgroundImage: `url(${item.imageUrl})` }}
             aria-label={item.name}
           />

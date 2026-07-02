@@ -1,0 +1,153 @@
+TAREA: Visual polish global para que THE EDIT se vea más clean, airy y app-like, inspirado en Alta sin copiarlo.
+
+Contexto:
+Estamos en THE EDIT / Closet OS, branch ui/blush-glass-foundation.
+Ya tenemos bastante funcionalidad:
+- /closet dashboard
+- /closet/gallery con filtros
+- /closet/add
+- /closet/item/[id]
+- /closet/item/[id]/edit
+- /outfits con selected piece
+- /wishlist
+- /wishlist/add
+
+Ahora queremos una pasada visual general mientras NO tocamos lógica.
+
+Objetivo visual:
+Que la app se sienta más clean, boutique, moderna, premium y fácil de leer.
+Inspiración: apps tipo Alta / closet app clean.
+NO copiar exactamente Alta.
+Mantener identidad THE EDIT:
+- editorial
+- warm cream
+- burgundy/caramel accents
+- serif para títulos
+- sans para UI
+- premium pero menos pesado
+
+Problemas actuales:
+- Algunas pantallas se sienten muy cargadas de blush/glass.
+- Los filtros de Gallery se ven funcionales pero visualmente pesados.
+- Add Piece y Add Wishlist pueden sentirse como formularios largos.
+- Hay demasiados bordes/sombras en algunas cards.
+- Necesitamos más claridad, aire y jerarquía.
+- Queremos que se sienta como app móvil/tablet premium, no dashboard web administrativo.
+
+No tocar lógica:
+- No cambiar APIs.
+- No cambiar payloads.
+- No cambiar rutas.
+- No cambiar filtros funcionales.
+- No cambiar create/edit/archive/move logic.
+- No romper build.
+- No hacer commit.
+
+Sí puedes tocar:
+- src/app/globals.css
+- clases visuales de componentes si hace falta
+- pequeños wrappers/classes en componentes, solo si es necesario para polish
+- /closet/gallery visual
+- /closet/add visual
+- /wishlist visual
+- /wishlist/add visual
+- bottom nav visual solo si es para hacerlo más clean, pero no romperlo
+
+Prioridad de pantallas:
+1. /closet/gallery
+2. /closet/add
+3. /wishlist
+4. /wishlist/add
+5. /closet/item/[id] solo ajustes mínimos si algo visual choca
+
+Dirección visual específica:
+
+1. Background
+- Mantener fondo warm cream.
+- Reducir el look de “muchas cajas blancas”.
+- Usar cards más sutiles: background rgba blanco/cream suave, bordes muy ligeros.
+- Menos sombras pesadas.
+
+2. Cards
+- Más limpias, menos bordeadas.
+- Border radius consistente.
+- Padding cómodo pero no exagerado.
+- Sombras sutiles o casi ninguna.
+- Que las cards de productos respiren.
+
+3. Gallery filters
+Los filtros actuales funcionan, pero visualmente no me gustan.
+Hacerlos más clean:
+- Un solo bloque compacto.
+- Labels menos pesados.
+- Chips más elegantes y pequeños.
+- Active state burgundy sutil.
+- Mejor spacing.
+- No parecer muchos botones apretados.
+- En mobile/tablet: horizontal scroll limpio.
+- Clear filters como texto/pill discreto.
+
+4. Gallery cards
+- Mantener 2 columnas mobile / 4 desktop.
+- Cards más tipo catalogo.
+- Imagen limpia.
+- Category badge y score menos invasivos.
+- Nombre legible.
+- Menos metadata visible.
+
+5. Add Piece / Add Wishlist
+- Hacer formularios más calmados.
+- Cards principales claras:
+  Essential / Optional / Scores
+- Reducir sensación de formulario administrativo.
+- Fields más compactos y uniformes.
+- Labels más suaves.
+- Inputs con bordes más limpios.
+- Buttons consistentes.
+- Header editorial sobre fondo, no dentro de caja dura.
+
+6. Wishlist
+- Cards menos cargadas.
+- Price/watch/score visual más limpio.
+- Filtros de Buy order más elegantes.
+- + Add item visible pero no chillón.
+
+7. Bottom nav
+- Mantener funcional.
+- Si se toca, hacerlo más clean:
+  - menos alto si es posible
+  - labels legibles
+  - active state suave
+  - no tapar contenido
+Pero no rediseñarlo completo ni romperlo.
+
+Design tokens sugeridos:
+- Fondo: cream/warm off-white
+- Cards: rgba(255,255,255,0.62) o rgba(255,250,246,0.72)
+- Border: rgba(95, 63, 50, 0.10)
+- Text: espresso/coffee
+- Accent: burgundy pero usado con moderación
+- Secondary accent: caramel/gold muted
+- Shadow: más suave, menos profunda
+
+Reglas:
+- No agregar colores fríos.
+- No usar gris corporativo.
+- No usar neon/pastel.
+- No cambiar serif editorial de títulos importantes.
+- No hacer todo demasiado blanco/frío.
+- No copiar Alta exactamente; solo la limpieza y claridad.
+
+Verificación:
+Correr:
+npm run typecheck
+npm run build
+
+También entregar:
+1. Archivos modificados.
+2. Qué pantallas tocó.
+3. Qué cambios visuales hizo.
+4. Confirmar que no cambió lógica.
+5. Resultado typecheck.
+6. Resultado build.
+7. No hacer commit.
