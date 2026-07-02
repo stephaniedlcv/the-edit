@@ -3469,6 +3469,119 @@ label,
   transform: translateY(-1px) !important;
 }
 
+/* ===========================================================
+   THE EDIT — Gallery advanced filters
+   =========================================================== */
+
+/* ── Filter panel container ──────────────────────────────── */
+.gallery-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.55rem;
+}
+
+/* ── Each filter row (horizontal scroll) ─────────────────── */
+.gallery-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 0.05rem;
+}
+
+.gallery-filter-row::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Row label ("Color", "Status", etc.) ─────────────────── */
+.gf-row-label {
+  flex-shrink: 0;
+  font-size: 0.42rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--caramel);
+  min-width: 2.75rem;
+  padding-right: 0.1rem;
+}
+
+/* ── Filter chips ────────────────────────────────────────── */
+.gf-chip {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(122, 46, 53, 0.12);
+  background: rgba(255, 253, 252, 0.68);
+  padding: 0.38rem 0.72rem;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--coffee);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.gf-chip:hover:not(.active) {
+  background: rgba(255, 253, 252, 0.90);
+  border-color: rgba(122, 46, 53, 0.22);
+}
+
+.gf-chip.active {
+  background: var(--burgundy);
+  border-color: var(--burgundy);
+  color: #fffdfc;
+}
+
+/* ── Count + clear row ───────────────────────────────────── */
+.gallery-filter-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 1.75rem;
+  margin-bottom: 0.65rem;
+}
+
+.gallery-filter-count {
+  font-size: 0.52rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.gallery-filter-count strong {
+  color: var(--espresso);
+  font-weight: 800;
+}
+
+.gallery-filter-clear {
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: rgba(122, 46, 53, 0.07);
+  border: 1px solid rgba(122, 46, 53, 0.14);
+  padding: 0.38rem 0.78rem;
+  font-size: 0.48rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--burgundy);
+  cursor: pointer;
+  transition: background 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.gallery-filter-clear:hover {
+  background: rgba(122, 46, 53, 0.12);
+}
+
 /* Compact gallery cards */
 .gallery-v2-card {
   border-radius: 1.15rem !important;
