@@ -59,8 +59,8 @@ export function AddPieceClient() {
   }
 
   return (
-    <main className="item-detail">
-      <div className="item-d-wrap">
+    <main className="add-piece-page">
+      <div className="add-piece-wrap">
 
         <nav className="item-d-nav">
           <Link href="/closet/gallery" className="item-d-back">← Gallery</Link>
@@ -75,7 +75,7 @@ export function AddPieceClient() {
           </p>
         </header>
 
-        <div className="add-piece-image-section">
+        <div className="add-piece-photo-card">
           <div className="add-piece-image-wrap">
             {previewUrl ? (
               <div

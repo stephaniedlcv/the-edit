@@ -4107,21 +4107,40 @@ body:has(.item-edit) .bottom-nav {
   }
 }
 
+
 /* ===========================================================
-   THE EDIT — /closet/add: Add Piece page (final)
+   THE EDIT — /closet/add: Add Piece page
    =========================================================== */
 
-/* Header */
+/* ── Page container (own class, not item-detail) ────────── */
+body:has(.add-piece-page) .bottom-nav {
+  display: none;
+}
+
+.add-piece-page {
+  color: var(--espresso);
+  min-height: 100svh;
+  padding: 1.25rem 1rem 3.5rem;
+}
+
+/* ── Centered content wrapper ───────────────────────────── */
+.add-piece-wrap {
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+/* ── Editorial header — floats on the blush background ──── */
 .add-piece-header {
-  margin-bottom: 1.35rem;
+  margin-bottom: 1.65rem;
+  padding: 0;
 }
 
 .add-piece-title {
-  font-size: clamp(2.2rem, 7vw, 3.8rem);
+  font-size: clamp(2.4rem, 7.5vw, 4rem);
   line-height: 0.88;
   letter-spacing: -0.03em;
   color: var(--espresso);
-  margin-bottom: 0.45rem;
+  margin-bottom: 0.4rem;
 }
 
 .add-piece-sub {
@@ -4130,29 +4149,31 @@ body:has(.item-edit) .bottom-nav {
   color: var(--ink-soft);
 }
 
-/* ── Photo card — full-width premium block ─── */
-.add-piece-image-section {
-  border-radius: 1.55rem;
-  background: rgba(255,253,252,0.62);
-  border: 1px solid rgba(255,255,255,0.72);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.90), 0 10px 28px rgba(74,52,42,0.06);
+/* ── Photo card — glass panel ───────────────────────────── */
+.add-piece-photo-card {
+  border-radius: 1.4rem;
+  background: rgba(255, 253, 252, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.70);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.88),
+    0 8px 24px rgba(74, 52, 42, 0.055);
   padding: 1rem;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 180px 1fr;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.1rem;
   align-items: start;
 }
 
 .add-piece-image-wrap {
-  border-radius: 1.1rem;
+  border-radius: 0.9rem;
   overflow: hidden;
-  background: linear-gradient(145deg, rgba(244,232,223,0.88), rgba(255,253,252,0.66));
+  background: linear-gradient(145deg, rgba(244, 232, 223, 0.85), rgba(255, 253, 252, 0.62));
   aspect-ratio: 3/4;
-  max-height: 240px;
+  max-height: 220px;
   display: grid;
   place-items: center;
-  box-shadow: 0 8px 20px rgba(74,52,42,0.07);
+  box-shadow: 0 6px 16px rgba(74, 52, 42, 0.07);
 }
 
 .add-piece-preview {
@@ -4166,7 +4187,7 @@ body:has(.item-edit) .bottom-nav {
 .add-piece-preview--empty {
   display: grid;
   place-items: center;
-  padding: 1.5rem;
+  padding: 1.25rem;
   text-align: center;
   width: 100%;
   height: 100%;
@@ -4175,15 +4196,17 @@ body:has(.item-edit) .bottom-nav {
 .add-piece-upload-col {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.65rem;
+  padding-top: 0.15rem;
 }
 
-/* AI Catalog Clean-Up placeholder */
+/* AI Clean-Up note — compact, no heavy border */
 .add-piece-ai-placeholder {
-  border-radius: 0.9rem;
-  background: rgba(244,232,223,0.35);
-  border: 1px dashed rgba(122,46,53,0.16);
-  padding: 0.85rem 0.9rem;
+  border-radius: 0.75rem;
+  background: rgba(244, 232, 223, 0.40);
+  border: 1px dashed rgba(122, 46, 53, 0.14);
+  padding: 0.7rem 0.8rem;
+  margin-top: auto;
 }
 
 .add-piece-ai-label {
@@ -4192,78 +4215,96 @@ body:has(.item-edit) .bottom-nav {
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--burgundy);
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.28rem;
 }
 
 .add-piece-ai-note {
-  font-size: 0.75rem;
-  line-height: 1.58;
+  font-size: 0.73rem;
+  line-height: 1.55;
   color: var(--ink-soft);
   font-style: italic;
 }
 
-/* ── Form wrapper for create mode ───────────── */
+/* ── Form section (create mode) ─────────────────────────── */
 .add-piece-form-wrap {
   display: contents;
 }
 
-/* ── Form grid for create mode ──────────────── */
 .add-piece-form-grid {
   display: grid;
-  gap: 0.85rem;
+  gap: 0.7rem;
 }
 
-/* ── Visual group separators ────────────────── */
+/* ── Group separators ────────────────────────────────────── */
 .cf-group-label {
-  font-size: 0.48rem;
+  font-size: 0.46rem;
   font-weight: 800;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--burgundy);
-  padding-top: 0.85rem;
-  padding-bottom: 0.2rem;
-  border-top: 1px solid rgba(122,46,53,0.07);
-  margin-top: 0.25rem;
+  padding-top: 0.9rem;
+  padding-bottom: 0.15rem;
+  border-top: 1px solid rgba(122, 46, 53, 0.07);
+  margin-top: 0.2rem;
 }
 
-.cf-group-label:first-child {
+/* first group label has no divider */
+.add-piece-form-grid > .cf-group-label:first-child {
   padding-top: 0;
   border-top: none;
   margin-top: 0;
 }
 
-/* ── Mobile ─────────────────────────────────── */
+/* ── Mobile ──────────────────────────────────────────────── */
 @media (max-width: 520px) {
-  .add-piece-image-section {
+  .add-piece-photo-card {
     grid-template-columns: 1fr;
   }
 
   .add-piece-image-wrap {
-    max-height: 180px;
+    max-height: 200px;
     aspect-ratio: 4/3;
   }
 
   .add-piece-title {
-    font-size: clamp(2rem, 7.5vw, 2.8rem);
+    font-size: clamp(2.2rem, 8vw, 3rem);
   }
 }
 
-/* Gallery board: Add piece button */
+/* ── Gallery controls: Add piece button ─────────────────── */
 .gallery-v2-add-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
   border-radius: 999px;
   background: var(--burgundy);
-  border: 1px solid rgba(122,46,53,0.35);
-  padding: 0.65rem 1rem;
+  border: 1px solid rgba(122, 46, 53, 0.30);
+  padding: 0.65rem 1.1rem;
   font-size: 0.5rem;
   font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: #fffdfc;
   text-decoration: none;
-  box-shadow: 0 8px 20px rgba(122,46,53,0.20);
+  box-shadow: 0 6px 18px rgba(122, 46, 53, 0.18);
   white-space: nowrap;
   flex-shrink: 0;
+  align-self: stretch;
+  justify-content: center;
+}
+
+/* On very small screens stack the button below search */
+@media (max-width: 420px) {
+  .gallery-v2-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .gallery-v2-controls .gallery-v2-search-input {
+    width: 100%;
+  }
+
+  .gallery-v2-add-btn {
+    align-self: auto;
+  }
 }
