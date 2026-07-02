@@ -107,6 +107,9 @@ export function ClosetGalleryBoard({ items, counts }: Props) {
           className="gallery-v2-search-input"
           aria-label="Search closet"
         />
+        <Link href="/closet/add" className="gallery-v2-add-btn">
+          + Add piece
+        </Link>
       </div>
 
       <div className="gallery-v2-chips" role="group" aria-label="Filter by category">

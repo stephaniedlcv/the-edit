@@ -306,7 +306,7 @@ const recentPieces = buildReadyToStylePieces(ownedItems, 8);
           <ActionTile
             title="Add piece"
             note="Upload item"
-            href="/closet/gallery"
+            href="/closet/add"
           />
           <ActionTile
             title="Build look"

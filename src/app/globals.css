@@ -4019,3 +4019,204 @@ body:has(.item-edit) .bottom-nav {
     justify-content: start;
   }
 }
+
+/* ===========================================================
+   THE EDIT — Closet Item Edit: image / upload section
+   =========================================================== */
+
+.item-edit-image-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  align-items: start;
+}
+
+.item-edit-preview-wrap {
+  border-radius: 1.35rem;
+  overflow: hidden;
+  background: linear-gradient(145deg, rgba(244,232,223,0.88), rgba(255,253,252,0.66));
+  aspect-ratio: 3/4;
+  max-height: 220px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 26px rgba(74,52,42,0.07);
+}
+
+.item-edit-preview {
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.item-edit-preview--empty {
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+}
+
+.item-edit-upload-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.item-edit-upload-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(255,253,252,0.72);
+  border: 1px solid rgba(122,46,53,0.12);
+  padding: 0.72rem 1rem;
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--burgundy);
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.88), 0 6px 16px rgba(74,52,42,0.05);
+}
+
+.item-edit-upload-label:hover {
+  background: rgba(255,253,252,0.90);
+}
+
+@media (max-width: 520px) {
+  .item-edit-image-section {
+    grid-template-columns: 1fr;
+  }
+
+  .item-edit-preview-wrap {
+    max-height: 180px;
+    aspect-ratio: 4/3;
+  }
+}
+
+/* ===========================================================
+   THE EDIT — /closet/add: Add Piece page
+   =========================================================== */
+
+.add-piece-header {
+  margin-bottom: 1.25rem;
+}
+
+.add-piece-title {
+  font-size: clamp(2.2rem, 7vw, 3.8rem);
+  line-height: 0.88;
+  letter-spacing: -0.03em;
+  color: var(--espresso);
+  margin-bottom: 0.45rem;
+}
+
+.add-piece-sub {
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.add-piece-image-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.35rem;
+  align-items: start;
+}
+
+.add-piece-image-wrap {
+  border-radius: 1.35rem;
+  overflow: hidden;
+  background: linear-gradient(145deg, rgba(244,232,223,0.88), rgba(255,253,252,0.66));
+  aspect-ratio: 3/4;
+  max-height: 260px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 12px 30px rgba(74,52,42,0.08);
+}
+
+.add-piece-preview {
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.add-piece-preview--empty {
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+}
+
+.add-piece-upload-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* AI Catalog Clean-Up placeholder */
+.add-piece-ai-placeholder {
+  margin-top: 1.25rem;
+  border-radius: 1rem;
+  background: rgba(255,253,252,0.55);
+  border: 1px dashed rgba(122,46,53,0.18);
+  padding: 0.9rem 1rem;
+}
+
+.add-piece-ai-label {
+  font-size: 0.46rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--burgundy);
+  margin-bottom: 0.3rem;
+}
+
+.add-piece-ai-note {
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+@media (max-width: 520px) {
+  .add-piece-image-section {
+    grid-template-columns: 1fr;
+  }
+
+  .add-piece-image-wrap {
+    max-height: 200px;
+    aspect-ratio: 4/3;
+  }
+
+  .add-piece-title {
+    font-size: clamp(2rem, 7.5vw, 2.8rem);
+  }
+}
+
+/* Gallery board: Add piece button */
+.gallery-v2-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  background: var(--burgundy);
+  border: 1px solid rgba(122,46,53,0.35);
+  padding: 0.65rem 1rem;
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #fffdfc;
+  text-decoration: none;
+  box-shadow: 0 8px 20px rgba(122,46,53,0.20);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
