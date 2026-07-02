@@ -120,7 +120,7 @@ export default async function ClosetItemPage({ params }: Props) {
           <Link href={`/closet/item/${item.id}/edit`} className="item-d-btn primary">
             Edit piece
           </Link>
-          <Link href="/outfits" className="item-d-btn">
+          <Link href={`/outfits?pieceId=${item.id}`} className="item-d-btn">
             Style it
           </Link>
         </div>

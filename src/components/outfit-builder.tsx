@@ -9,7 +9,73 @@ import type { WardrobeItem } from "@/types/wardrobe";
 
 type OutfitBuilderProps = {
   items: WardrobeItem[];
+  selectedPiece?: WardrobeItem;
 };
+
+const CATEGORY_LABELS: Record<string, string> = {
+  outerwear: "Outerwear",
+  top: "Top",
+  bottom: "Bottom",
+  dress: "Dress",
+  shoes: "Shoes",
+  bag: "Bag",
+  accessory: "Accessory",
+  jewelry: "Jewelry",
+};
+
+function SelectedPieceCard({ piece }: { piece: WardrobeItem }) {
+  return (
+    <div className="mx-auto max-w-6xl px-6 pb-2 pt-6 md:px-10">
+      <div className="flex items-center gap-5 rounded-[10px] border border-[rgba(122,46,53,0.14)] bg-[rgba(255,253,252,0.82)] px-5 py-4 shadow-[0_6px_24px_rgba(74,47,34,0.06)] backdrop-blur-sm">
+
+        {piece.imageUrl ? (
+          <div
+            className="h-16 w-16 flex-shrink-0 rounded-[6px] border border-[var(--line)] bg-contain bg-center bg-no-repeat"
+            style={{ backgroundImage: `url(${piece.imageUrl})` }}
+            aria-label={piece.name}
+          />
+        ) : (
+          <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-[6px] border border-[var(--line)] bg-[var(--paper-3)]">
+            <span className="font-display text-lg leading-none text-[var(--espresso)]">
+              {piece.name.charAt(0)}
+            </span>
+          </div>
+        )}
+
+        <div className="min-w-0 flex-1">
+          <p className="mb-0.5 text-[0.44rem] font-800 uppercase tracking-[0.18em] text-[var(--caramel)]">
+            Styling from
+          </p>
+          <p className="font-display truncate text-[1.35rem] leading-none text-[var(--espresso)]">
+            {piece.name}
+          </p>
+          <p className="mt-1 text-[0.52rem] font-semibold uppercase tracking-[0.1em] text-[var(--coffee)]">
+            {CATEGORY_LABELS[piece.category] ?? piece.category}
+            {" · "}
+            {piece.colorName}
+            {piece.size ? ` · ${piece.size}` : ""}
+          </p>
+        </div>
+
+        <div className="flex flex-shrink-0 flex-col gap-2 sm:flex-row">
+          <Link
+            href="/closet/gallery"
+            className="inline-flex items-center rounded-full border border-[rgba(122,46,53,0.18)] bg-[var(--paper)] px-3.5 py-2 text-[0.48rem] font-800 uppercase tracking-[0.14em] text-[var(--burgundy)] no-underline transition hover:bg-[rgba(122,46,53,0.06)]"
+          >
+            Change piece
+          </Link>
+          <Link
+            href="/closet"
+            className="inline-flex items-center rounded-full border border-[var(--line)] bg-transparent px-3.5 py-2 text-[0.48rem] font-semibold uppercase tracking-[0.14em] text-[var(--coffee)] no-underline transition hover:border-[var(--caramel)]"
+          >
+            Back to closet
+          </Link>
+        </div>
+
+      </div>
+    </div>
+  );
+}
 
 type OutfitSlot = {
   id: string;
@@ -178,7 +244,7 @@ function GeneratedLookCard({
   );
 }
 
-export function OutfitBuilder({ items }: OutfitBuilderProps) {
+export function OutfitBuilder({ items, selectedPiece }: OutfitBuilderProps) {
   const activeItems = activeOnly(items);
   const categoryCounts = countByCategory(activeItems);
 
@@ -263,6 +329,8 @@ export function OutfitBuilder({ items }: OutfitBuilderProps) {
           </Link>
         </div>
       </PageHeader>
+
+      {selectedPiece ? <SelectedPieceCard piece={selectedPiece} /> : null}
 
       <section className="mx-auto max-w-6xl px-6 py-10 md:px-10">
         <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
