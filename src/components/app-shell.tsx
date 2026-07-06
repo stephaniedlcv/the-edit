@@ -156,15 +156,15 @@ export function AppShell({ children }: AppShellProps) {
       </main>
 
       <nav className="bottom-nav fixed z-50" aria-label="Main navigation">
-        <div className="flex items-stretch">
+        <div className="bottom-nav-grid">
           {leftNav.map((item) => (
             <NavItem key={item.href} {...item} pathname={pathname} />
           ))}
 
-          <div ref={addRef} className="bottom-nav-add relative flex items-center justify-center">
+          <div ref={addRef} className="bottom-nav-add relative">
             <button
               onClick={() => setAddOpen((v) => !v)}
-              className="bottom-nav-add-btn"
+              className={`bottom-nav-add-btn flex w-full flex-col items-center justify-center gap-1${addOpen ? " open" : ""}`}
               aria-label={addOpen ? "Close add menu" : "Add item"}
               aria-expanded={addOpen}
               aria-haspopup="menu"
@@ -172,6 +172,8 @@ export function AppShell({ children }: AppShellProps) {
               <span className="bottom-nav-add-icon">
                 <PlusIcon open={addOpen} />
               </span>
+              <span className="bottom-nav-label font-bold uppercase">Add</span>
+              <span className="bottom-nav-dot h-1 w-1 rounded-full" />
             </button>
 
             {addOpen && (
