@@ -803,7 +803,7 @@ header {
   color: var(--burgundy);
 }
 
-/* ── Header: compact sticky bar ──────────────────────────────────────────── */
+/* ── Header ──────────────────────────────────────────────────────────────── */
 .nav-header {
   height: 3.25rem !important;
 }
@@ -812,134 +812,184 @@ header {
   font-size: 1.6rem !important;
 }
 
-/* ── Bottom nav pill ─────────────────────────────────────────────────────── */
-.bottom-nav {
-  width: min(34rem, calc(100vw - 2rem)) !important;
-  min-width: 0 !important;
-  max-width: calc(100vw - 2rem) !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: calc(0.85rem + env(safe-area-inset-bottom, 0px)) !important;
-  transform: translateX(-50%) !important;
-  padding: 0.32rem !important;
-  border-radius: 999px !important;
-  background: rgba(255, 253, 252, 0.82) !important;
-  border: 1px solid rgba(255, 255, 255, 0.80) !important;
+/* ── Content padding — nav must not cover content ────────────────────────── */
+.main-content {
+  padding-bottom: calc(7rem + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* ── FLOATING TABBAR — two panels + center FAB ───────────────────────────── */
+
+/* Outer container — positions the whole bar */
+.bottom-tabbar {
+  position: fixed;
+  bottom: calc(0.9rem + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  width: min(36rem, calc(100vw - 2rem));
+}
+
+/* Inner flex row: [left panel] [fab zone] [right panel] */
+.bottom-tabbar-inner {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+/* The two glass panels */
+.bottom-tabbar-panel {
+  flex: 1 1 0;
+  display: flex;
+  align-items: stretch;
+  min-height: 3.25rem;
+  background: rgba(255, 253, 252, 0.90);
+  backdrop-filter: blur(26px) saturate(1.4);
+  -webkit-backdrop-filter: blur(26px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 10px 28px rgba(74, 52, 42, 0.13);
+}
+
+.bottom-tabbar-panel-left {
+  border-radius: 999px 1rem 1rem 999px;
+  border-right: none;
+  padding-right: 0.15rem;
+}
+
+.bottom-tabbar-panel-right {
+  border-radius: 1rem 999px 999px 1rem;
+  border-left: none;
+  padding-left: 0.15rem;
+}
+
+/* Center zone — gap between panels, holds the FAB */
+.bottom-tabbar-fab-zone {
+  flex: 0 0 auto;
+  width: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* FAB: the burgundy circle */
+.bottom-tabbar-fab {
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--espresso) 10%, var(--burgundy) 100%);
+  border: 2.5px solid rgba(255, 253, 252, 0.28);
+  box-shadow:
+    0 0 0 2.5px rgba(255, 253, 252, 0.88),
+    0 8px 24px rgba(74, 30, 22, 0.38);
+  color: rgba(255, 253, 252, 0.95);
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.bottom-tabbar-fab:hover {
+  box-shadow:
+    0 0 0 2.5px rgba(255, 253, 252, 0.88),
+    0 12px 28px rgba(74, 30, 22, 0.46);
+  opacity: 0.93;
+}
+
+.bottom-tabbar-fab:active {
+  opacity: 0.80;
+}
+
+.bottom-tabbar-fab-icon {
+  width: 1.3rem;
+  height: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Nav items inside panels ─────────────────────────────────────────────── */
+.tabbar-item {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.18rem;
+  padding: 0.5rem 0.25rem;
+  color: var(--caramel);
+  text-decoration: none;
+  min-width: 0;
+  border-radius: 999px;
+  transition: color 0.14s ease;
+}
+
+.tabbar-item-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+  display: flex;
+  flex-shrink: 0;
+}
+
+.tabbar-item-label {
+  font-size: 0.42rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.tabbar-item-dot {
+  width: 0.18rem;
+  height: 0.18rem;
+  border-radius: 50%;
+  background: transparent;
+  transition: background 0.14s ease;
+}
+
+/* Active state — color only, no size or shape change */
+.tabbar-item.active {
+  color: var(--burgundy);
+}
+
+.tabbar-item.active .tabbar-item-dot {
+  background: var(--burgundy);
+}
+
+/* ── Action sheet ────────────────────────────────────────────────────────── */
+.tabbar-sheet {
+  position: absolute;
+  bottom: calc(100% + 0.85rem);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 13.5rem;
+  background: rgba(255, 253, 252, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 1rem;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    0 12px 32px rgba(74, 52, 42, 0.15) !important;
-  backdrop-filter: blur(28px) saturate(1.4);
-  -webkit-backdrop-filter: blur(28px) saturate(1.4);
-  overflow: visible !important;
+    0 16px 40px rgba(74, 52, 42, 0.20);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  overflow: hidden;
+  animation: sheet-appear 0.18s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  z-index: 60;
 }
 
-/* 5-column equal grid — every slot identical width */
-.bottom-nav-grid {
-  display: grid !important;
-  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-  align-items: stretch !important;
-  gap: 0.18rem !important;
-}
-
-/* Shared slot styles — nav items AND add button match exactly */
-.bottom-nav-item,
-.bottom-nav-add-btn {
-  min-height: 3.1rem !important;
-  padding: 0.42rem 0.25rem !important;
-  border-radius: 999px !important;
-  gap: 0.2rem !important;
-  width: 100% !important;
-  cursor: pointer !important;
-  outline: none !important;
-  border: none !important;
-  background: transparent !important;
-}
-
-.bottom-nav-item {
-  color: var(--caramel) !important;
-  /* flex layout already set by Tailwind via app-shell classes */
-}
-
-.bottom-nav-item span:first-child {
-  height: 1.1rem !important;
-  width: 1.1rem !important;
-  flex-shrink: 0 !important;
-}
-
-.bottom-nav-label {
-  font-size: 0.41rem !important;
-  letter-spacing: 0.12em !important;
-  line-height: 1 !important;
-}
-
-.bottom-nav-dot {
-  height: 0.15rem !important;
-  width: 0.15rem !important;
-  border-radius: 999px !important;
-}
-
-/* Active nav item — color + bg only, zero size change */
-.bottom-nav-item.active {
-  color: #FFFDFC !important;
-  background: linear-gradient(135deg, var(--burgundy), var(--rose-deep)) !important;
-  box-shadow: 0 4px 14px rgba(122, 46, 53, 0.22) !important;
-}
-
-.bottom-nav-item.active .bottom-nav-dot {
-  background: #FFFDFC !important;
-}
-
-/* ── Add button — fills its slot, looks premium ──────────────────────────── */
-.bottom-nav-add {
-  /* grid handles sizing — no override needed */
-  min-width: 0 !important;
-}
-
-.bottom-nav-add-btn {
-  background: linear-gradient(140deg, var(--espresso) 0%, var(--burgundy) 100%) !important;
-  color: #FFFDFC !important;
-  box-shadow: 0 4px 16px rgba(74, 30, 22, 0.30) !important;
-  transition: box-shadow 0.15s ease, opacity 0.15s ease !important;
-}
-
-.bottom-nav-add-btn:hover {
-  box-shadow: 0 6px 20px rgba(74, 30, 22, 0.40) !important;
-  opacity: 0.92 !important;
-}
-
-.bottom-nav-add-btn:active {
-  opacity: 0.80 !important;
-}
-
-.bottom-nav-add-btn .bottom-nav-dot {
-  background: rgba(255, 253, 252, 0.45) !important;
-}
-
-.bottom-nav-add-icon {
-  display: flex !important;
-  width: 1.1rem !important;
-  height: 1.1rem !important;
-  flex-shrink: 0 !important;
-}
-
-/* ── Add action sheet ────────────────────────────────────────────────────── */
-.bottom-nav-add-sheet {
-  position: absolute !important;
-  bottom: calc(100% + 0.9rem) !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  min-width: 13rem !important;
-  background: rgba(255, 253, 252, 0.96) !important;
-  border: 1px solid rgba(255, 255, 255, 0.85) !important;
-  border-radius: 1rem !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    0 16px 40px rgba(74, 52, 42, 0.20) !important;
-  backdrop-filter: blur(20px) saturate(1.4) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(1.4) !important;
-  overflow: hidden !important;
-  animation: sheet-appear 0.18s cubic-bezier(0.34, 1.56, 0.64, 1) both !important;
-  z-index: 60 !important;
+.tabbar-sheet::after {
+  content: "";
+  position: absolute;
+  bottom: -0.38rem;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 0.72rem;
+  height: 0.72rem;
+  background: rgba(255, 253, 252, 0.97);
+  border-right: 1px solid rgba(255, 255, 255, 0.85);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.85);
 }
 
 @keyframes sheet-appear {
@@ -947,59 +997,40 @@ header {
   to   { opacity: 1; transform: translateX(-50%) translateY(0)   scale(1);    }
 }
 
-.bottom-nav-add-option {
-  display: flex !important;
-  align-items: center !important;
-  gap: 0.65rem !important;
-  padding: 0.72rem 1rem !important;
-  color: var(--espresso) !important;
-  text-decoration: none !important;
-  transition: background 0.12s ease !important;
-  white-space: nowrap !important;
+.tabbar-sheet-option {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.75rem 1rem;
+  color: var(--espresso);
+  text-decoration: none;
+  transition: background 0.12s ease;
+  white-space: nowrap;
 }
 
-.bottom-nav-add-option:hover {
-  background: rgba(122, 46, 53, 0.07) !important;
-  color: var(--burgundy) !important;
+.tabbar-sheet-option:hover {
+  background: rgba(122, 46, 53, 0.07);
+  color: var(--burgundy);
 }
 
-.bottom-nav-add-option-icon {
-  display: flex !important;
-  width: 1.1rem !important;
-  height: 1.1rem !important;
-  flex-shrink: 0 !important;
+.tabbar-sheet-option-icon {
+  display: flex;
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
 }
 
-.bottom-nav-add-option-label {
-  font-size: 0.8rem !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.04em !important;
-  line-height: 1 !important;
+.tabbar-sheet-option-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1;
 }
 
-.bottom-nav-add-divider {
-  height: 1px !important;
-  background: rgba(74, 52, 42, 0.08) !important;
-  margin: 0 0.75rem !important;
-}
-
-/* A small pointer/caret beneath the sheet pointing down toward the + button */
-.bottom-nav-add-sheet::after {
-  content: "" !important;
-  position: absolute !important;
-  bottom: -0.4rem !important;
-  left: 50% !important;
-  transform: translateX(-50%) rotate(45deg) !important;
-  width: 0.75rem !important;
-  height: 0.75rem !important;
-  background: rgba(255, 253, 252, 0.96) !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.85) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.85) !important;
-}
-
-/* ── Content padding — don't let nav cover content ───────────────────────── */
-.main-content {
-  padding-bottom: calc(7.5rem + env(safe-area-inset-bottom, 0px)) !important;
+.tabbar-sheet-divider {
+  height: 1px;
+  background: rgba(74, 52, 42, 0.08);
+  margin: 0 0.75rem;
 }
 
 /* ── Mobile (≤ 520px) ────────────────────────────────────────────────────── */
@@ -1012,40 +1043,42 @@ header {
     font-size: 1.45rem !important;
   }
 
-  .bottom-nav {
-    width: calc(100vw - 1.25rem) !important;
+  .bottom-tabbar {
+    width: calc(100vw - 1.5rem);
   }
 
-  .bottom-nav-grid {
-    gap: 0.08rem !important;
+  .bottom-tabbar-fab-zone {
+    width: 4.25rem;
   }
 
-  .bottom-nav-item,
-  .bottom-nav-add-btn {
-    min-height: 2.9rem !important;
-    padding-inline: 0.15rem !important;
+  .bottom-tabbar-fab {
+    width: 2.9rem;
+    height: 2.9rem;
   }
 
-  .bottom-nav-label {
-    font-size: 0.37rem !important;
+  .tabbar-item {
+    padding: 0.42rem 0.18rem;
+  }
+
+  .tabbar-item-icon {
+    width: 1.05rem;
+    height: 1.05rem;
+  }
+
+  .tabbar-item-label {
+    font-size: 0.38rem;
   }
 }
 
-/* ── Desktop command-bar polish (≥ 900px) ────────────────────────────────── */
+/* ── Desktop (≥ 900px) ───────────────────────────────────────────────────── */
 @media (min-width: 900px) {
-  .bottom-nav {
-    width: 32rem !important;
-    padding: 0.38rem !important;
+  .bottom-tabbar {
+    width: 35rem;
   }
 
-  .bottom-nav-item,
-  .bottom-nav-add-btn {
-    min-height: 3rem !important;
-  }
-
-  .bottom-nav-label {
-    font-size: 0.44rem !important;
-    letter-spacing: 0.14em !important;
+  .tabbar-item-label {
+    font-size: 0.44rem;
+    letter-spacing: 0.14em;
   }
 
   .nav-wordmark {

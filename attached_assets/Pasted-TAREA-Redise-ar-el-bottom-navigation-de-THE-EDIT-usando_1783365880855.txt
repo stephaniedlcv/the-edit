@@ -1,0 +1,94 @@
+TAREA: Rediseñar el bottom navigation de THE EDIT usando referencia tipo floating tabbar con notch central.
+
+Contexto:
+Estamos en la rama redesign-v1. El nav actual no funciona visualmente. Queremos rediseñarlo inspirado en una tabbar flotante con notch/curva central como la referencia enviada: barra blanca con esquinas redondeadas, un botón central elevado dentro de una curva, íconos alineados y labels pequeños.
+
+Objetivo:
+Crear una bottom command bar premium para THE EDIT que tenga 5 acciones:
+Home | Closet | Add | Style | Wishlist
+
+Dirección visual:
+1. La barra debe ser flotante, centrada y elegante.
+2. Fondo ivory/cream o white warm, no blanco frío.
+3. Esquinas grandes/redondeadas.
+4. Debe tener una curva/notch central para alojar el botón Add.
+5. El botón Add debe estar elevado en el centro:
+   - círculo de 48px–56px aprox.
+   - color burgundy/espresso
+   - ícono plus en ivory
+   - sombra suave
+   - debe parecer una acción principal premium, no una pastilla pesada.
+6. Los otros 4 items deben estar dentro de la barra:
+   - Home
+   - Closet
+   - Style
+   - Wishlist
+7. Íconos finos, elegantes, color taupe/espresso suave.
+8. Labels pequeños, uppercase o micro-label, tracking elegante.
+9. El estado activo no debe convertirse en un botón grande.
+10. El activo puede usar:
+   - ícono burgundy
+   - label burgundy
+   - pequeño dot debajo
+   - o círculo suave detrás del ícono
+   Pero NO una pastilla grande.
+
+Layout:
+1. Usar 5 slots iguales visualmente.
+2. El slot central pertenece a Add.
+3. La barra debe tener suficiente espacio alrededor del botón central para que no se vea apretado.
+4. En desktop:
+   - max-width aprox. 560px
+   - centrado
+   - bottom fijo
+   - se debe sentir como command bar premium, no como mobile nav agrandado.
+5. En mobile:
+   - width: calc(100% - 32px) o similar
+   - respetar safe-area inset-bottom.
+6. No debe tapar contenido.
+   - Asegurar padding-bottom global suficiente en main/content.
+
+Funcionalidad:
+1. Home navega a /
+2. Closet navega a /closet
+3. Add abre un pequeño menú/action sheet con:
+   - Add closet piece → /closet/add
+   - Add wishlist item → /wishlist/add
+4. Style navega a /outfits
+5. Wishlist navega a /wishlist
+
+Importante:
+1. No copiar colores de la referencia morada.
+2. Adaptarlo a THE EDIT:
+   - ivory
+   - cream
+   - blush muy suave
+   - burgundy
+   - espresso
+   - taupe
+3. No tocar Supabase.
+4. No tocar APIs.
+5. No cambiar rutas existentes.
+6. No romper funcionalidad.
+7. Mantener el header/logo actual, pero asegurar que el nav se vea integrado con la estética editorial.
+
+Implementación sugerida:
+- Revisar src/components/app-shell.tsx
+- Revisar clases globales en src/app/globals.css si el nav usa CSS compartido
+- Crear la forma del notch con CSS usando pseudo-elementos, radial-gradient, clip-path o un contenedor central elevado.
+- Priorizar estabilidad visual sobre complejidad extrema.
+- Si el notch perfecto es muy riesgoso, hacer una versión visualmente equivalente:
+  barra flotante redondeada + botón central elevado + espacio/curva simulada con pseudo-elemento.
+
+Resultado esperado:
+- El nav debe parecerse conceptualmente a la referencia enviada:
+  floating tabbar, botón central elevado, curva/notch central.
+- Debe sentirse premium, femenino, limpio y editorial.
+- No debe verse chunky.
+- No debe verse como 5 botones pesados.
+- Debe sentirse diseñado para THE EDIT.
+
+Después de implementar:
+- correr npm run typecheck
+- correr npm run build
+- mostrar git status --short
