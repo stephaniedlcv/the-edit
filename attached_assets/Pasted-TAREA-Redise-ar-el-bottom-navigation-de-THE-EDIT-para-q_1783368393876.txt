@@ -1,0 +1,103 @@
+TAREA: Rediseñar el bottom navigation de THE EDIT para que el item activo sea el que sobresale, inspirado en la referencia enviada.
+
+Contexto:
+La implementación actual del nav no está resolviendo bien el centro. Lo que queremos ahora NO es un botón + permanentemente separado con un fondo raro. Queremos una barra continua, y que el tab activo sea el que sobresale en una burbuja circular, como en la referencia.
+
+Objetivo:
+Convertir el nav inferior en una floating tabbar continua donde el item activo sube y sobresale visualmente.
+
+Estructura:
+- Home
+- Closet
+- Add
+- Style
+- Wishlist
+
+Comportamiento visual deseado:
+1. La barra debe ser una sola superficie continua:
+   - floating
+   - centrada
+   - ivory/cream
+   - bordes redondeados
+   - sombra suave
+   - sin divisiones visibles
+   - sin fondos extra raros detrás del centro
+
+2. Todos los items viven en 5 slots iguales.
+
+3. El item activo debe sobresalir:
+   - convertirse en una burbuja circular elevada
+   - sobresalir por encima del borde superior de la barra
+   - tener icono principal centrado
+   - label debajo o integrado de forma limpia
+   - usar burgundy/espresso para el estado activo
+   - verse premium, no chunky
+
+4. Los items no activos:
+   - se quedan dentro de la barra
+   - icono y label pequeños
+   - color taupe/espresso suave
+   - sin pills grandes
+
+5. IMPORTANTE:
+   - ya NO queremos un blob/blanco separado detrás del +.
+   - ya NO queremos una notch falsa visible como parche.
+   - la barra debe verse como una sola pieza.
+
+6. Lógica de activo:
+   - Home activo en /
+   - Closet activo en /closet y subrutas
+   - Style activo en /outfits y subrutas
+   - Wishlist activo en /wishlist y subrutas
+   - Add no es ruta normal; debe abrir menú.
+   - Cuando el menú Add esté abierto, Add puede verse como activo/sobresalido también.
+
+7. Menú Add:
+   - Add closet piece → /closet/add
+   - Add wishlist item → /wishlist/add
+
+8. Dirección visual:
+   - editorial
+   - premium
+   - feminine
+   - clean
+   - ivory / cream / taupe / burgundy / espresso
+   - NO copiar el morado de la referencia
+
+9. Implementación:
+   - Rehacer el nav en src/components/app-shell.tsx si hace falta
+   - Limpiar CSS acumulado/overrides viejos del nav en src/app/globals.css
+   - Simplificar en lugar de seguir agregando parches
+   - Priorizar una base estable y limpia
+
+10. Técnica recomendada:
+   - usar un contenedor de barra continua
+   - cada item en un slot igual
+   - para el item activo, renderizar una burbuja circular posicionada absolute/relative que suba por encima de la barra
+   - los no activos quedan planos
+   - no usar notch fake que se vea como pieza aparte
+   - si se necesita, simular la integración con sombra/overlap suave en vez de una curva complejísima
+
+11. Desktop y mobile:
+   - debe verse bien en ambos
+   - en desktop seguir como command bar flotante centrada
+   - no tapar contenido
+   - mantener padding-bottom adecuado
+
+12. No tocar:
+   - Supabase
+   - APIs
+   - rutas existentes
+   - lógica de datos
+
+Resultado esperado:
+- La barra se ve unificada
+- El item activo sobresale
+- El diseño se parece conceptualmente a la referencia
+- Se elimina el fondo raro detrás del +
+- El nav se siente diseñado, no parchado
+
+Después de implementar:
+- correr npm run typecheck
+- correr npm run build
+- mostrar git status --short

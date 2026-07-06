@@ -10,7 +10,7 @@ type AppShellProps = { children: React.ReactNode };
 
 function HomeIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <path d="M3.5 10.25 12 3.75l8.5 6.5V20a1.25 1.25 0 0 1-1.25 1.25H4.75A1.25 1.25 0 0 1 3.5 20v-9.75Z" />
       <path d="M9.25 21.25v-7.5h5.5v7.5" />
     </svg>
@@ -19,7 +19,7 @@ function HomeIcon() {
 
 function ClosetIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 4.25c0-1.15.9-2 2.05-2 1.05 0 1.95.75 1.95 1.8 0 1.25-1.1 1.85-2.05 2.32L12 7.35" />
       <path d="M12 7.35 5.25 11.2a1.6 1.6 0 0 0-.8 1.38v.22h15.1v-.22a1.6 1.6 0 0 0-.8-1.38L12 7.35Z" />
       <path d="M5.1 12.8v6.45c0 .83.67 1.5 1.5 1.5h10.8c.83 0 1.5-.67 1.5-1.5V12.8" />
@@ -27,26 +27,7 @@ function ClosetIcon() {
   );
 }
 
-function OutfitsIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3.5" y="3.5" width="7.25" height="9.25" rx="2" />
-      <rect x="13.25" y="3.5" width="7.25" height="5.75" rx="2" />
-      <rect x="13.25" y="11.25" width="7.25" height="9.25" rx="2" />
-      <rect x="3.5" y="14.75" width="7.25" height="5.75" rx="2" />
-    </svg>
-  );
-}
-
-function WishlistIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.15 5.35a5.05 5.05 0 0 0-7.15 0L12 6.35l-1-1a5.05 5.05 0 1 0-7.15 7.15l1 1L12 20.65l7.15-7.15 1-1a5.05 5.05 0 0 0 0-7.15Z" />
-    </svg>
-  );
-}
-
-function PlusIcon({ open }: { open: boolean }) {
+function AddIcon({ open }: { open: boolean }) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -61,6 +42,25 @@ function PlusIcon({ open }: { open: boolean }) {
       }}
     >
       <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}
+
+function StyleIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3.5" y="3.5" width="7.25" height="9.25" rx="2" />
+      <rect x="13.25" y="3.5" width="7.25" height="5.75" rx="2" />
+      <rect x="13.25" y="11.25" width="7.25" height="9.25" rx="2" />
+      <rect x="3.5" y="14.75" width="7.25" height="5.75" rx="2" />
+    </svg>
+  );
+}
+
+function WishlistIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.15 5.35a5.05 5.05 0 0 0-7.15 0L12 6.35l-1-1a5.05 5.05 0 1 0-7.15 7.15l1 1L12 20.65l7.15-7.15 1-1a5.05 5.05 0 0 0 0-7.15Z" />
     </svg>
   );
 }
@@ -83,58 +83,35 @@ function HeartIcon() {
   );
 }
 
-// ── Nav item ───────────────────────────────────────────────────────────────
-
-function NavItem({
-  label,
-  href,
-  icon: Icon,
-  pathname,
-}: {
-  label: string;
-  href: string;
-  icon: () => React.ReactElement;
-  pathname: string;
-}) {
-  const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
-  return (
-    <Link
-      href={href}
-      className={`tabbar-item${isActive ? " active" : ""}`}
-    >
-      <span className="tabbar-item-icon">
-        <Icon />
-      </span>
-      <span className="tabbar-item-label">{label}</span>
-      <span className="tabbar-item-dot" />
-    </Link>
-  );
-}
-
 // ── App shell ──────────────────────────────────────────────────────────────
 
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const [addOpen, setAddOpen] = useState(false);
-  const fabZoneRef = useRef<HTMLDivElement>(null);
+  const addSlotRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!addOpen) return;
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") setAddOpen(false);
     }
-    function onMouse(e: MouseEvent) {
-      if (fabZoneRef.current && !fabZoneRef.current.contains(e.target as Node)) {
+    function onPointer(e: MouseEvent) {
+      if (addSlotRef.current && !addSlotRef.current.contains(e.target as Node)) {
         setAddOpen(false);
       }
     }
     document.addEventListener("keydown", onKey);
-    document.addEventListener("mousedown", onMouse);
+    document.addEventListener("mousedown", onPointer);
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.removeEventListener("mousedown", onMouse);
+      document.removeEventListener("mousedown", onPointer);
     };
   }, [addOpen]);
+
+  const isHome     = pathname === "/";
+  const isCloset   = pathname.startsWith("/closet");
+  const isStyle    = pathname.startsWith("/outfits");
+  const isWishlist = pathname.startsWith("/wishlist");
 
   return (
     <div className="min-h-screen bg-[var(--page)]">
@@ -154,60 +131,99 @@ export function AppShell({ children }: AppShellProps) {
         {children}
       </main>
 
-      {/* ── Floating tabbar ──────────────────────────────────────────── */}
-      <nav className="bottom-tabbar" aria-label="Main navigation">
-        <div className="bottom-tabbar-inner">
+      {/* ── Floating nav bar ────────────────────────────────────────────── */}
+      <nav className="nav-bar" aria-label="Main navigation">
+        <div className="nav-track">
 
-          {/* Left panel: Home + Closet */}
-          <div className="bottom-tabbar-panel bottom-tabbar-panel-left">
-            <NavItem label="Home"   href="/"       icon={HomeIcon}   pathname={pathname} />
-            <NavItem label="Closet" href="/closet" icon={ClosetIcon} pathname={pathname} />
-          </div>
-
-          {/* Center FAB zone */}
-          <div ref={fabZoneRef} className="bottom-tabbar-fab-zone">
-            <button
-              onClick={() => setAddOpen((v) => !v)}
-              className="bottom-tabbar-fab"
-              aria-label={addOpen ? "Close add menu" : "Add item"}
-              aria-expanded={addOpen}
-              aria-haspopup="menu"
-            >
-              <span className="bottom-tabbar-fab-icon">
-                <PlusIcon open={addOpen} />
+          {/* Home */}
+          <Link href="/" className={`nav-slot${isHome ? " active" : ""}`}>
+            {isHome ? (
+              <span className="nav-slot-bubble" aria-hidden="true">
+                <span className="nav-slot-bubble-icon"><HomeIcon /></span>
               </span>
-            </button>
+            ) : (
+              <span className="nav-slot-icon"><HomeIcon /></span>
+            )}
+            <span className="nav-slot-label">Home</span>
+          </Link>
 
+          {/* Closet */}
+          <Link href="/closet" className={`nav-slot${isCloset ? " active" : ""}`}>
+            {isCloset ? (
+              <span className="nav-slot-bubble" aria-hidden="true">
+                <span className="nav-slot-bubble-icon"><ClosetIcon /></span>
+              </span>
+            ) : (
+              <span className="nav-slot-icon"><ClosetIcon /></span>
+            )}
+            <span className="nav-slot-label">Closet</span>
+          </Link>
+
+          {/* Add — button, not a route */}
+          <button
+            ref={addSlotRef}
+            onClick={() => setAddOpen((v) => !v)}
+            className={`nav-slot${addOpen ? " active" : ""}`}
+            aria-label={addOpen ? "Close add menu" : "Add item"}
+            aria-expanded={addOpen}
+            aria-haspopup="menu"
+          >
+            <span className="nav-slot-bubble" aria-hidden="true">
+              <span className="nav-slot-bubble-icon">
+                <AddIcon open={addOpen} />
+              </span>
+            </span>
+            <span className="nav-slot-label">Add</span>
+
+            {/* Action sheet */}
             {addOpen && (
-              <div className="tabbar-sheet" role="menu" aria-label="Add options">
+              <div className="nav-sheet" role="menu" aria-label="Add options">
                 <Link
                   href="/closet/add"
                   onClick={() => setAddOpen(false)}
-                  className="tabbar-sheet-option"
+                  className="nav-sheet-option"
                   role="menuitem"
                 >
-                  <span className="tabbar-sheet-option-icon"><HangerIcon /></span>
-                  <span className="tabbar-sheet-option-label">Add closet piece</span>
+                  <span className="nav-sheet-option-icon"><HangerIcon /></span>
+                  <span className="nav-sheet-option-label">Add closet piece</span>
                 </Link>
-                <div className="tabbar-sheet-divider" />
+                <div className="nav-sheet-divider" />
                 <Link
                   href="/wishlist/add"
                   onClick={() => setAddOpen(false)}
-                  className="tabbar-sheet-option"
+                  className="nav-sheet-option"
                   role="menuitem"
                 >
-                  <span className="tabbar-sheet-option-icon"><HeartIcon /></span>
-                  <span className="tabbar-sheet-option-label">Add wishlist item</span>
+                  <span className="nav-sheet-option-icon"><HeartIcon /></span>
+                  <span className="nav-sheet-option-label">Add wishlist item</span>
                 </Link>
               </div>
             )}
-          </div>
+          </button>
 
-          {/* Right panel: Style + Wishlist */}
-          <div className="bottom-tabbar-panel bottom-tabbar-panel-right">
-            <NavItem label="Style"    href="/outfits"  icon={OutfitsIcon}  pathname={pathname} />
-            <NavItem label="Wishlist" href="/wishlist" icon={WishlistIcon} pathname={pathname} />
-          </div>
+          {/* Style */}
+          <Link href="/outfits" className={`nav-slot${isStyle ? " active" : ""}`}>
+            {isStyle ? (
+              <span className="nav-slot-bubble" aria-hidden="true">
+                <span className="nav-slot-bubble-icon"><StyleIcon /></span>
+              </span>
+            ) : (
+              <span className="nav-slot-icon"><StyleIcon /></span>
+            )}
+            <span className="nav-slot-label">Style</span>
+          </Link>
+
+          {/* Wishlist */}
+          <Link href="/wishlist" className={`nav-slot${isWishlist ? " active" : ""}`}>
+            {isWishlist ? (
+              <span className="nav-slot-bubble" aria-hidden="true">
+                <span className="nav-slot-bubble-icon"><WishlistIcon /></span>
+              </span>
+            ) : (
+              <span className="nav-slot-icon"><WishlistIcon /></span>
+            )}
+            <span className="nav-slot-label">Wishlist</span>
+          </Link>
 
         </div>
       </nav>
