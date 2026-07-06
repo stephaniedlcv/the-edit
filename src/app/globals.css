@@ -803,90 +803,211 @@ header {
   color: var(--burgundy);
 }
 
-/* Floating nav: standard app size, not huge, not cramped */
+/* ── Header: compact sticky bar ──────────────────────────────────────────── */
+.nav-header {
+  height: 3.25rem !important;
+}
+
+.nav-wordmark {
+  font-size: 1.6rem !important;
+}
+
+/* ── Bottom nav pill ─────────────────────────────────────────────────────── */
 .bottom-nav {
-  width: min(35.5rem, calc(100vw - 2rem)) !important;
+  width: min(34rem, calc(100vw - 2rem)) !important;
   min-width: 0 !important;
   max-width: calc(100vw - 2rem) !important;
   left: 50% !important;
   right: auto !important;
   bottom: calc(0.85rem + env(safe-area-inset-bottom, 0px)) !important;
   transform: translateX(-50%) !important;
-  padding: 0.36rem !important;
+  padding: 0.32rem !important;
   border-radius: 999px !important;
-  background: rgba(255, 253, 252, 0.78) !important;
-  border: 1px solid rgba(255, 255, 255, 0.78) !important;
+  background: rgba(255, 253, 252, 0.82) !important;
+  border: 1px solid rgba(255, 255, 255, 0.80) !important;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    0 14px 36px rgba(74, 52, 42, 0.16) !important;
-  backdrop-filter: blur(26px) saturate(1.35);
-  -webkit-backdrop-filter: blur(26px) saturate(1.35);
+    0 12px 32px rgba(74, 52, 42, 0.15) !important;
+  backdrop-filter: blur(28px) saturate(1.4);
+  -webkit-backdrop-filter: blur(28px) saturate(1.4);
+  overflow: visible !important;
 }
 
 .bottom-nav > div {
   display: flex !important;
-  align-items: center !important;
+  align-items: stretch !important;
   justify-content: center !important;
-  gap: 0.28rem !important;
+  gap: 0.2rem !important;
 }
 
 .bottom-nav-item {
   flex: 1 1 0 !important;
-  min-height: 3.38rem !important;
-  padding: 0.5rem 0.36rem !important;
+  min-height: 3.1rem !important;
+  padding: 0.42rem 0.3rem !important;
   border-radius: 999px !important;
   color: var(--caramel) !important;
-  gap: 0.24rem !important;
+  gap: 0.2rem !important;
 }
 
 .bottom-nav-item span:first-child {
-  height: 1.16rem !important;
-  width: 1.16rem !important;
+  height: 1.1rem !important;
+  width: 1.1rem !important;
 }
 
 .bottom-nav-label {
-  font-size: 0.43rem !important;
+  font-size: 0.41rem !important;
   letter-spacing: 0.12em !important;
   line-height: 1 !important;
 }
 
 .bottom-nav-dot {
-  height: 0.17rem !important;
-  width: 0.17rem !important;
+  height: 0.15rem !important;
+  width: 0.15rem !important;
 }
 
 .bottom-nav-item.active {
   color: #FFFDFC !important;
   background: linear-gradient(135deg, var(--burgundy), var(--rose-deep)) !important;
-  box-shadow: 0 8px 18px rgba(122, 46, 53, 0.20) !important;
+  box-shadow: 0 6px 16px rgba(122, 46, 53, 0.22) !important;
 }
 
 .bottom-nav-item.active .bottom-nav-dot {
   background: #FFFDFC !important;
 }
 
-/* More bottom breathing room so floating nav does not sit on content */
-main {
-  padding-bottom: calc(9.75rem + env(safe-area-inset-bottom, 0px)) !important;
+/* ── Add button (center, elevated) ───────────────────────────────────────── */
+.bottom-nav-add {
+  flex: 0 0 auto !important;
+  width: 4.2rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
+.bottom-nav-add-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 2.75rem !important;
+  height: 2.75rem !important;
+  border-radius: 999px !important;
+  background: linear-gradient(140deg, var(--espresso) 0%, var(--burgundy) 100%) !important;
+  border: 2px solid rgba(255, 255, 255, 0.22) !important;
+  box-shadow:
+    0 0 0 3px rgba(255, 253, 252, 0.82),
+    0 8px 22px rgba(74, 30, 22, 0.36) !important;
+  color: #FFFDFC !important;
+  cursor: pointer !important;
+  outline: none !important;
+  transition: transform 0.18s ease, box-shadow 0.18s ease !important;
+  margin-top: -1.1rem !important;
+}
+
+.bottom-nav-add-btn:hover {
+  transform: scale(1.07) translateY(-1px) !important;
+  box-shadow:
+    0 0 0 3px rgba(255, 253, 252, 0.82),
+    0 12px 28px rgba(74, 30, 22, 0.42) !important;
+}
+
+.bottom-nav-add-btn:active {
+  transform: scale(0.96) !important;
+}
+
+.bottom-nav-add-icon {
+  display: flex !important;
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+}
+
+/* ── Add action sheet ────────────────────────────────────────────────────── */
+.bottom-nav-add-sheet {
+  position: absolute !important;
+  bottom: calc(100% + 0.9rem) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  min-width: 13rem !important;
+  background: rgba(255, 253, 252, 0.96) !important;
+  border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  border-radius: 1rem !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 16px 40px rgba(74, 52, 42, 0.20) !important;
+  backdrop-filter: blur(20px) saturate(1.4) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.4) !important;
+  overflow: hidden !important;
+  animation: sheet-appear 0.18s cubic-bezier(0.34, 1.56, 0.64, 1) both !important;
+  z-index: 60 !important;
+}
+
+@keyframes sheet-appear {
+  from { opacity: 0; transform: translateX(-50%) translateY(6px) scale(0.96); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0)   scale(1);    }
+}
+
+.bottom-nav-add-option {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.65rem !important;
+  padding: 0.72rem 1rem !important;
+  color: var(--espresso) !important;
+  text-decoration: none !important;
+  transition: background 0.12s ease !important;
+  white-space: nowrap !important;
+}
+
+.bottom-nav-add-option:hover {
+  background: rgba(122, 46, 53, 0.07) !important;
+  color: var(--burgundy) !important;
+}
+
+.bottom-nav-add-option-icon {
+  display: flex !important;
+  width: 1.1rem !important;
+  height: 1.1rem !important;
+  flex-shrink: 0 !important;
+}
+
+.bottom-nav-add-option-label {
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+  line-height: 1 !important;
+}
+
+.bottom-nav-add-divider {
+  height: 1px !important;
+  background: rgba(74, 52, 42, 0.08) !important;
+  margin: 0 0.75rem !important;
+}
+
+/* A small pointer/caret beneath the sheet pointing down toward the + button */
+.bottom-nav-add-sheet::after {
+  content: "" !important;
+  position: absolute !important;
+  bottom: -0.4rem !important;
+  left: 50% !important;
+  transform: translateX(-50%) rotate(45deg) !important;
+  width: 0.75rem !important;
+  height: 0.75rem !important;
+  background: rgba(255, 253, 252, 0.96) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.85) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.85) !important;
+}
+
+/* ── Content padding — don't let nav cover content ───────────────────────── */
+.main-content {
+  padding-bottom: calc(7.5rem + env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/* ── Mobile (≤ 520px) ────────────────────────────────────────────────────── */
 @media (max-width: 520px) {
-  header {
-    min-height: 4.15rem !important;
+  .nav-header {
+    height: 3rem !important;
   }
 
-  .the-edit-wordmark {
-    gap: 0.45rem;
-  }
-
-  .the-edit-wordmark-the {
-    font-size: 0.92rem;
-    letter-spacing: 0.28em;
-  }
-
-  .the-edit-wordmark-edit {
-    font-size: 1.78rem;
-    letter-spacing: 0.06em;
+  .nav-wordmark {
+    font-size: 1.45rem !important;
   }
 
   .bottom-nav {
@@ -894,22 +1015,43 @@ main {
   }
 
   .bottom-nav > div {
-    gap: 0.14rem !important;
+    gap: 0.1rem !important;
   }
 
   .bottom-nav-item {
-    min-height: 3.18rem !important;
-    padding-inline: 0.22rem !important;
+    min-height: 2.9rem !important;
+    padding-inline: 0.18rem !important;
   }
 
   .bottom-nav-label {
-    font-size: 0.38rem !important;
+    font-size: 0.37rem !important;
   }
 }
 
+/* ── Desktop command-bar polish (≥ 900px) ────────────────────────────────── */
 @media (min-width: 900px) {
   .bottom-nav {
-    width: 36rem !important;
+    width: 32rem !important;
+    padding: 0.38rem !important;
+  }
+
+  .bottom-nav-item {
+    min-height: 3rem !important;
+  }
+
+  .bottom-nav-label {
+    font-size: 0.44rem !important;
+    letter-spacing: 0.14em !important;
+  }
+
+  .bottom-nav-add-btn {
+    width: 2.6rem !important;
+    height: 2.6rem !important;
+    margin-top: -0.9rem !important;
+  }
+
+  .nav-wordmark {
+    font-size: 1.7rem !important;
   }
 }
 
