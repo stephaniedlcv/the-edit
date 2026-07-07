@@ -921,6 +921,14 @@ header {
   justify-content: center;
 }
 
+/* SVGs must fill their containers explicitly */
+.nav-slot-bubble-icon svg,
+.nav-slot-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 @keyframes bubble-in {
   from {
     transform: translateX(-50%) translateY(5px) scale(0.82);
