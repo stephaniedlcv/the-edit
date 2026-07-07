@@ -175,7 +175,7 @@ export function AppShell({ children }: AppShellProps) {
           <button
             ref={addSlotRef}
             onClick={() => setAddOpen((v) => !v)}
-            className={`nav-slot${addOpen ? " active" : ""}`}
+            className={`nav-slot nav-slot-add${addOpen ? " active" : ""}`}
             aria-label={addOpen ? "Close add menu" : "Add item"}
             aria-expanded={addOpen}
             aria-haspopup="menu"

@@ -48,6 +48,24 @@
 
   --background: var(--page);
   --foreground: var(--ink);
+
+  /* ─── Cromática foundation tokens ─── */
+  --gal: #EFEBE3;
+  --papel: #FAF7F0;
+  --tinta: #1D1814;
+  --tinta-suave: #6F675B;
+  --tinta-tenue: #A29889;
+
+  /* Espectro cromático — Dark Autumn closet DNA */
+  --c-espresso: #3E2C22;
+  --c-camel: #B98A55;
+  --c-crema: #EBDFC9;
+  --c-oliva: #6B6D4C;
+  --c-burdeos: #77303A;
+  --c-mostaza: #C3902F;
+  --c-flama: #C6532F;
+  --c-ciruela: #5A3A50;
+  --c-denim: #3A4B5F;
 }
 
 * {
@@ -96,43 +114,6 @@ body {
     0 40px 100px rgba(36,26,18,0.10);
 }
 
-/* Desktop nav links — dark on light */
-.nav-link {
-  font-size: 0.64rem;
-  font-weight: 600;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  text-decoration: none;
-  transition: color 160ms ease;
-  position: relative;
-}
-
-.nav-link::after {
-  content: "";
-  position: absolute;
-  bottom: -3px;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: var(--gold);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.nav-link:hover {
-  color: var(--espresso);
-}
-
-.nav-link:hover::after,
-.nav-link.active::after {
-  transform: scaleX(1);
-}
-
-.nav-link.active {
-  color: var(--espresso);
-}
 
 .stat-divider {
   border-left: 1px solid var(--line);
@@ -387,66 +368,6 @@ body {
   opacity: 1;
 }
 
-/* Bottom tab nav — light glassy */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  background: rgba(250,247,241,0.92);
-  backdrop-filter: blur(24px) saturate(1.6);
-  -webkit-backdrop-filter: blur(24px) saturate(1.6);
-  border-top: 1px solid rgba(36,26,18,0.08);
-  box-shadow:
-    0 -1px 0 rgba(255,255,255,0.6),
-    0 -12px 40px rgba(36,26,18,0.08);
-  padding-bottom: env(safe-area-inset-bottom, 0);
-}
-
-.bottom-nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.75rem 0.5rem;
-  color: var(--caramel);
-  text-decoration: none;
-  transition: color 160ms ease;
-  min-width: 0;
-  flex: 1;
-}
-
-.bottom-nav-item.active {
-  color: var(--gold);
-}
-
-.bottom-nav-item svg {
-  width: 1.3rem;
-  height: 1.3rem;
-  flex-shrink: 0;
-}
-
-.bottom-nav-label {
-  font-size: 0.52rem;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.bottom-nav-item.active .bottom-nav-dot {
-  background: var(--gold);
-}
-
-.bottom-nav-dot {
-  width: 3px;
-  height: 3px;
-  border-radius: 999px;
-  background: transparent;
-  margin-top: 1px;
-  transition: background 160ms ease;
-}
 
 ::selection {
   background: rgba(161,122,53,0.25);
@@ -598,47 +519,6 @@ body {
   display: none !important;
 }
 
-.bottom-nav {
-  left: 50%;
-  right: auto;
-  bottom: calc(0.85rem + env(safe-area-inset-bottom, 0px));
-  width: min(42rem, calc(100vw - 2rem));
-  transform: translateX(-50%);
-  border-radius: 999px;
-  border: 1px solid var(--glass-border);
-  background: rgba(255, 253, 252, 0.70);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.86),
-    0 18px 48px rgba(74, 52, 42, 0.18);
-  padding: 0.35rem;
-  backdrop-filter: blur(26px) saturate(1.45);
-  -webkit-backdrop-filter: blur(26px) saturate(1.45);
-}
-
-.bottom-nav > div {
-  gap: 0.18rem;
-}
-
-.bottom-nav-item {
-  border-radius: 999px;
-  padding: 0.62rem 0.35rem;
-  color: var(--caramel);
-}
-
-.bottom-nav-item.active {
-  color: #FFFDFC;
-  background: linear-gradient(135deg, var(--burgundy), var(--rose-deep));
-  box-shadow: 0 10px 26px rgba(122, 46, 53, 0.24);
-}
-
-.bottom-nav-item.active .bottom-nav-dot {
-  background: #FFFDFC;
-}
-
-.bottom-nav-label {
-  letter-spacing: 0.12em;
-  font-size: 0.49rem;
-}
 
 ::selection {
   background: rgba(122, 46, 53, 0.20);
@@ -675,55 +555,6 @@ button:focus-visible {
   box-shadow: none;
 }
 
-.bottom-nav,
-.bottom-nav * {
-  outline: none !important;
-}
-
-.bottom-nav {
-  position: fixed;
-  left: 50% !important;
-  right: auto !important;
-  bottom: calc(0.9rem + env(safe-area-inset-bottom, 0px)) !important;
-  width: min(39rem, calc(100vw - 2rem)) !important;
-  transform: translateX(-50%) !important;
-  border-radius: 999px !important;
-  border: 1px solid rgba(255, 255, 255, 0.72) !important;
-  background: rgba(255, 253, 252, 0.72) !important;
-  padding: 0.35rem !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.92),
-    0 18px 48px rgba(74, 52, 42, 0.18) !important;
-  backdrop-filter: blur(28px) saturate(1.45);
-  -webkit-backdrop-filter: blur(28px) saturate(1.45);
-}
-
-.bottom-nav-item {
-  min-width: 0;
-  border-radius: 999px !important;
-  color: var(--caramel) !important;
-  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
-}
-
-.bottom-nav-item:hover {
-  background: rgba(232, 200, 190, 0.28);
-  color: var(--espresso) !important;
-}
-
-.bottom-nav-item.active {
-  color: #FFFDFC !important;
-  background: linear-gradient(135deg, var(--burgundy), var(--rose-deep)) !important;
-  box-shadow: 0 10px 24px rgba(122, 46, 53, 0.22) !important;
-}
-
-.bottom-nav-item.active:hover {
-  color: #FFFDFC !important;
-}
-
-.bottom-nav-label {
-  font-size: 0.48rem !important;
-  letter-spacing: 0.12em !important;
-}
 
 header {
   background: rgba(255, 253, 252, 0.72) !important;
@@ -830,24 +661,22 @@ header {
   padding-top: 1.5rem;
 }
 
-/* The pill track */
+/* The pill track — Cromática: dark tinta */
 .nav-track {
   display: flex;
   align-items: stretch;
   height: 3rem;
-  background: rgba(255, 253, 252, 0.92);
-  backdrop-filter: blur(26px) saturate(1.4);
-  -webkit-backdrop-filter: blur(26px) saturate(1.4);
-  border: 1px solid rgba(255, 255, 255, 0.80);
+  background: var(--tinta);
+  border: 1px solid rgba(255, 253, 252, 0.08);
   border-radius: 999px;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.92),
-    0 10px 28px rgba(74, 52, 42, 0.14);
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 18px 48px rgba(29, 24, 20, 0.50);
   overflow: visible;
   position: relative;
 }
 
-/* Each of the 5 equal slots */
+/* Each of the 5 equal slots — Cromática: light text on dark track */
 .nav-slot {
   flex: 1 1 0;
   display: flex;
@@ -859,7 +688,7 @@ header {
   position: relative;
   cursor: pointer;
   text-decoration: none;
-  color: var(--caramel);
+  color: rgba(250, 247, 240, 0.42);
   border: none;
   background: transparent;
   outline: none;
@@ -886,14 +715,14 @@ header {
   transition: color 0.14s ease;
 }
 
-/* Active: bubble pops up, label stays at slot bottom */
+/* Active: bubble pops up, label stays at slot bottom — Cromática: bright papel */
 .nav-slot.active {
   justify-content: flex-end;
   padding-bottom: 0.3rem;
-  color: var(--burgundy);
+  color: rgba(250, 247, 240, 0.92);
 }
 
-/* The popping bubble — lifts above the track */
+/* The popping bubble — Cromática: papel circle with tinta icon, dark ring */
 .nav-slot-bubble {
   position: absolute;
   top: -1.35rem;
@@ -902,14 +731,14 @@ header {
   width: 3.4rem;
   height: 3.4rem;
   border-radius: 50%;
-  background: var(--burgundy);
+  background: var(--papel);
   box-shadow:
-    0 0 0 3px rgba(255, 253, 252, 0.94),
-    0 8px 20px rgba(122, 46, 53, 0.32);
+    0 0 0 3px rgba(29, 24, 20, 0.72),
+    0 8px 20px rgba(29, 24, 20, 0.40);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 253, 252, 0.96);
+  color: var(--tinta);
   animation: bubble-in 0.24s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
@@ -938,6 +767,61 @@ header {
     transform: translateX(-50%) translateY(0) scale(1);
     opacity: 1;
   }
+}
+
+/* ── Add button — Cromática conic-gradient ring ──────────────────────────── */
+.nav-slot-add {
+  /* Conic gradient outer ring */
+  background: conic-gradient(
+    var(--c-espresso),
+    var(--c-camel),
+    var(--c-mostaza),
+    var(--c-flama),
+    var(--c-burdeos),
+    var(--c-ciruela),
+    var(--c-oliva),
+    var(--c-espresso)
+  );
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  align-self: center;
+  box-shadow: 0 4px 16px rgba(29, 24, 20, 0.40);
+  /* Override slot layout — no label/bubble stack */
+  flex-direction: row;
+  padding: 0;
+  gap: 0;
+  color: var(--tinta);
+}
+
+/* Inner paper circle (3px inset) */
+.nav-slot-add::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--papel);
+  z-index: 0;
+}
+
+/* Icon sits above the paper circle */
+.nav-slot-add .nav-slot-icon {
+  position: relative;
+  z-index: 1;
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--tinta);
+}
+
+/* Hide label and suppress bubble on add slot */
+.nav-slot-add .nav-slot-label,
+.nav-slot-add .nav-slot-bubble {
+  display: none;
 }
 
 /* ── Action sheet ────────────────────────────────────────────────────────── */
@@ -3634,10 +3518,6 @@ label,
 
 /* Slightly lower nav on wider preview/tablet so it does not cover content */
 @media (min-width: 720px) {
-  .bottom-nav {
-    bottom: calc(0.35rem + env(safe-area-inset-bottom, 0px)) !important;
-  }
-
   .closet-dashboard-v2 {
     padding-bottom: 10rem !important;
   }
@@ -3679,12 +3559,6 @@ label,
   padding-bottom: 12rem !important;
 }
 
-/* On desktop/tablet preview, keep the nav elegant but stop it from sitting too high */
-@media (min-width: 720px) {
-  .bottom-nav {
-    bottom: calc(0.25rem + env(safe-area-inset-bottom, 0px)) !important;
-  }
-}
 
 /* Mobile needs a little more because browser controls overlap */
 @media (max-width: 520px) {
@@ -3702,9 +3576,9 @@ label,
    THE EDIT — Closet Item Detail Final
    =========================================================== */
 
-/* Hide bottom nav on detail/edit screens */
-body:has(.item-detail) .bottom-nav,
-body:has(.item-edit) .bottom-nav {
+/* Hide nav on detail/edit screens */
+body:has(.item-detail) .nav-bar,
+body:has(.item-edit) .nav-bar {
   display: none;
 }
 
@@ -4185,7 +4059,7 @@ body:has(.item-edit) .bottom-nav {
    THE EDIT — /wishlist/add: Add Wishlist Item guided flow
    =========================================================== */
 
-body:has(.add-wishlist-page) .bottom-nav {
+body:has(.add-wishlist-page) .nav-bar {
   display: none;
 }
 
@@ -4206,7 +4080,7 @@ body:has(.add-wishlist-page) .bottom-nav {
    =========================================================== */
 
 /* ── Page container ─────────────────────────────────────── */
-body:has(.add-piece-page) .bottom-nav {
+body:has(.add-piece-page) .nav-bar {
   display: none;
 }
 

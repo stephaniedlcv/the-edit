@@ -1,0 +1,112 @@
+Sí, arranca con Fase 1, pero SOLO como “Cromática Foundation”.
+
+Importante:
+- No implementes todavía Home magazine cover completo.
+- No implementes todavía Espina Cromática dinámica.
+- No implementes todavía Color River.
+- No crees endpoints nuevos todavía.
+- No cambies rutas.
+- No cambies lógica de negocio.
+- No cambies payloads.
+- No toques Supabase migrations.
+- No hagas rediseño total de pantallas.
+- No introduzcas datos hardcodeados.
+- No cambies la estructura del nav, solo su base visual si es seguro.
+
+Objetivo de Fase 1:
+Preparar la base visual de Cromática sin convertir todavía la app completa.
+
+Tareas permitidas:
+
+1. Checkpoint inicial
+Antes de editar:
+- Ejecuta `git status --short`
+- Confirma branch actual.
+- Si hay cambios sin commit, avísame antes de continuar.
+- No trabajes encima de cambios sucios sin reportarlo.
+
+2. Fonts
+Cambiar la base tipográfica:
+- Fraunces para serif/display.
+- Instrument Sans para UI/sans.
+- Mantén los nombres de variables existentes si la app usa `--font-serif` y `--font-sans`, para no romper clases actuales.
+- Revisa `src/app/layout.tsx`.
+- No metas Google Fonts vía CSS externo si ya se está usando `next/font/google`.
+
+3. Tokens Cromática
+En `globals.css`, añade o actualiza variables base de Cromática:
+- --gal
+- --papel
+- --tinta
+- --tinta-suave
+- --tinta-tenue
+- variables para espresso, camel, crema, oliva, burdeos, mostaza, flama, ciruela, denim
+
+Importante:
+- Mantén aliases existentes que ya usa la app, como `--page`, `--espresso`, `--blush`, `--burgundy`, etc., si existen.
+- No hagas un cambio visual masivo de todas las pantallas todavía.
+- La meta es crear foundation, no rediseñar cada ruta.
+
+4. Limpieza nav CSS muerta
+Antes de borrar nada:
+- Usa `rg` para confirmar qué clases están realmente usadas.
+- Confirma que `.nav-bar`, `.nav-track`, `.nav-slot`, `.nav-slot-bubble`, `.nav-slot-icon`, `.nav-slot-label`, `.nav-sheet` son la navegación viva actual.
+- Elimina solo CSS de generaciones muertas si no hay referencias reales:
+  - `.nav-link`
+  - `.bottom-nav`
+  - `.bottom-nav-item`
+  - `.edit-tabbar`
+  - `.edit-tabbar-center`
+  - `.edit-add-label`
+- Si alguna clase aparece en archivos vivos, NO la borres y repórtalo.
+
+5. Botón Add cromático
+Actualizar solamente el estilo visual del botón Add actual:
+- Usar conic-gradient con los colores Cromática/Dark Autumn.
+- No cambies rutas.
+- No cambies comportamiento.
+- No cambies el menú del Add si ya existe.
+- No conviertas el Add en una página nueva.
+
+6. Nav visual base
+Puedes llevar la navegación actual hacia el lenguaje Cromática:
+- Dark pill / tinta
+- labels legibles
+- active state limpio
+- Add cromático
+Pero:
+- No cambies todavía los botones del nav.
+- No metas Planner/Profile todavía si eso implica cambiar estructura.
+- La estructura de navegación final se decidirá después.
+
+7. No tocar todavía
+No implementes:
+- Home como portada diaria
+- Edición diaria Nº
+- Espina Cromática con conteos
+- endpoint `/api/wardrobe/color-distribution`
+- Color River
+- Planner
+- AI/help/campana
+- Profile nuevo
+- Tabs nuevos de Closet
+
+Eso será Fase 2 o Fase 3.
+
+Validación:
+Después de los cambios ejecuta:
+- `npm run typecheck` si existe
+- `npm run build`
+
+Si `typecheck` no existe, dilo claramente.
+
+Entrega final:
+Quiero:
+1. Archivos modificados.
+2. Qué CSS muerto eliminaste y cómo verificaste que no se usaba.
+3. Qué variables nuevas agregaste.
+4. Qué cambió en fonts.
+5. Qué cambió en el botón Add/nav.
+6. Qué NO tocaste.
+7. Resultado de typecheck/build.
+8. Cualquier riesgo o decisión pendiente.
