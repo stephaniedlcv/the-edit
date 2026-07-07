@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -215,15 +215,23 @@ export function AddWishlistClient() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  useEffect(() => {
-    set("colorName", "");
-    set("subcategory", "");
-    set("size", "");
-  }, [form.category]);
+  function handleCategoryChange(value: FormState["category"]) {
+    setForm((prev) => ({
+      ...prev,
+      category: value,
+      colorName: "",
+      subcategory: "",
+      size: "",
+    }));
+  }
 
-  useEffect(() => {
-    set("colorName", "");
-  }, [form.colorFamily]);
+  function handleColorFamilyChange(value: FormState["colorFamily"]) {
+    setForm((prev) => ({
+      ...prev,
+      colorFamily: value,
+      colorName: "",
+    }));
+  }
 
   const colorNameOptions = form.colorFamily
     ? colorNameByFamily[form.colorFamily].map((c) => ({ value: c, label: c }))
@@ -365,7 +373,7 @@ export function AddWishlistClient() {
                 label="Category"
                 required
                 value={form.category}
-                onChange={(v) => set("category", v as WardrobeCategory)}
+                onChange={(v) => handleCategoryChange(v as FormState["category"])}
                 placeholder="Select a category"
                 options={categoryOptions.map((c) => ({ value: c, label: c.charAt(0).toUpperCase() + c.slice(1) }))}
               />
@@ -385,7 +393,7 @@ export function AddWishlistClient() {
                   label="Color family"
                   required
                   value={form.colorFamily}
-                  onChange={(v) => set("colorFamily", v as ColorFamily)}
+                  onChange={(v) => handleColorFamilyChange(v as FormState["colorFamily"])}
                   placeholder="Select a color"
                   options={colorFamilyOptions.map((c) => ({
                     value: c,

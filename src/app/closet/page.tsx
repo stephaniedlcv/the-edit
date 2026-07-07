@@ -213,7 +213,14 @@ export default async function ClosetPage() {
   }));
 
   
-function normalizeReadyToStyleCategory(item: any) {
+type ReadyToStyleCategoryInput = {
+  category?: unknown;
+  categoryName?: unknown;
+  type?: unknown;
+  section?: unknown;
+};
+
+function normalizeReadyToStyleCategory<T extends ReadyToStyleCategoryInput>(item: T) {
   const raw = String(
     item.category ??
     item.categoryName ??
@@ -233,7 +240,7 @@ function normalizeReadyToStyleCategory(item: any) {
   return "other";
 }
 
-function buildReadyToStylePieces(items: any[], limit = 8) {
+function buildReadyToStylePieces<T extends ReadyToStyleCategoryInput>(items: T[], limit = 8) {
   const order = [
     "tops",
     "bottoms",
@@ -246,14 +253,14 @@ function buildReadyToStylePieces(items: any[], limit = 8) {
     "other",
   ];
 
-  const buckets = new Map(order.map((key) => [key, [] as any[]]));
+  const buckets = new Map(order.map((key) => [key, [] as T[]]));
 
   for (const item of items) {
     const key = normalizeReadyToStyleCategory(item);
     buckets.get(key)?.push(item);
   }
 
-  const result: any[] = [];
+  const result: T[] = [];
   let added = true;
 
   while (result.length < limit && added) {
@@ -262,7 +269,10 @@ function buildReadyToStylePieces(items: any[], limit = 8) {
     for (const key of order) {
       const bucket = buckets.get(key);
       if (bucket && bucket.length > 0) {
-        result.push(bucket.shift());
+        const nextItem = bucket.shift();
+      if (nextItem) {
+        result.push(nextItem);
+      }
         added = true;
         if (result.length >= limit) break;
       }
