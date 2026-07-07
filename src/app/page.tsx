@@ -47,6 +47,19 @@ const GAP_NOTES: Partial<Record<WardrobeCategory, string>> = {
   jewelry: "A few repeatable jewelry staples would make every outfit feel finished.",
 };
 
+function getGreeting(): string {
+  const now = new Date();
+  const hourStr = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    hour12: false,
+    timeZone: "America/Puerto_Rico",
+  }).format(now);
+  const hour = parseInt(hourStr, 10);
+  if (hour >= 5 && hour < 12) return "Good morning";
+  if (hour >= 12 && hour < 18) return "Good afternoon";
+  return "Good evening";
+}
+
 function StatCard({
   label,
   value,
@@ -72,32 +85,25 @@ function StatCard({
   );
 }
 
-function MiniItem({
-  title,
-  subtitle,
-  tone,
+function RealStatRow({
+  label,
+  value,
+  href,
 }: {
-  title: string;
-  subtitle: string;
-  tone: "rose" | "olive" | "plum" | "gold";
+  label: string;
+  value: number;
+  href: string;
 }) {
-  const tones = {
-    rose: "from-[var(--blush)] to-[var(--dusty-rose)]",
-    olive: "from-[#EEE9DE] to-[var(--olive)]",
-    plum: "from-[var(--blush)] to-[var(--plum)]",
-    gold: "from-[#F4E8DF] to-[var(--gold)]",
-  };
-
   return (
-    <div className="flex items-center gap-3 rounded-[1.35rem] bg-white/50 p-3 shadow-[inset_0_0_0_1px_rgba(48,35,31,0.04)]">
-      <div className={`h-14 w-14 shrink-0 rounded-[1.1rem] bg-gradient-to-br ${tones[tone]}`} />
-      <div className="min-w-0">
-        <p className="font-display text-2xl leading-none text-[var(--espresso)]">
-          {title}
-        </p>
-        <p className="mt-1 text-sm leading-5 text-[var(--ink-soft)]">{subtitle}</p>
-      </div>
-    </div>
+    <Link
+      href={href}
+      className="flex items-center justify-between rounded-[1.35rem] bg-white/50 px-4 py-3 no-underline shadow-[inset_0_0_0_1px_rgba(48,35,31,0.04)]"
+    >
+      <p className="text-sm text-[var(--ink-soft)]">{label}</p>
+      <p className="font-display text-2xl leading-none text-[var(--espresso)]">
+        {value}
+      </p>
+    </Link>
   );
 }
 
@@ -152,10 +158,13 @@ export default async function HomePage() {
     if (savedRes.count !== null) savedLooksCount = savedRes.count;
   }
 
+  const greeting = getGreeting();
+
   return (
     <main className="min-h-screen px-4 py-6 md:px-6 md:py-8">
       <section className="mx-auto max-w-[1120px]">
         <div className="mb-6 grid gap-5 lg:grid-cols-[1.08fr_0.92fr]">
+          {/* ── Left hero — greeting + actions ────────────────────── */}
           <section className="edit-card-glass relative overflow-hidden p-6 md:p-8">
             <div className="absolute right-[-5rem] top-[-5rem] h-56 w-56 rounded-full bg-[rgba(216,175,163,0.36)] blur-3xl" />
             <div className="absolute bottom-[-6rem] left-[-5rem] h-64 w-64 rounded-full bg-[rgba(122,46,53,0.08)] blur-3xl" />
@@ -164,30 +173,32 @@ export default async function HomePage() {
               <p className="eyebrow mb-5">Daily Edit</p>
 
               <h1 className="font-display text-[4.1rem] leading-[0.82] text-[var(--espresso)] md:text-[6.3rem]">
-                Good afternoon,
+                {greeting},
                 <br />
                 Stephanie.
               </h1>
 
               <p className="mt-6 max-w-xl text-[1rem] leading-7 text-[var(--ink-soft)]">
-                Your style OS is ready. Today’s focus is polished, breathable,
-                intentional — built for office life, Puerto Rico heat, and your
-                evolving capsule.
+                Your wardrobe, wishlist, and saved looks are connected.
+                Today&apos;s edit is based on your real closet.
               </p>
 
-              <div className="mt-7 flex flex-wrap gap-2">
-                <span className="edit-chip edit-chip-active">Office day</span>
-                <span className="edit-chip">Warm palette</span>
-                <span className="edit-chip">PR heat</span>
-                <span className="edit-chip">Elevated casual</span>
-              </div>
+              {covered.length > 0 && (
+                <div className="mt-7 flex flex-wrap gap-2">
+                  {covered.slice(0, 4).map(({ cat, label, count }) => (
+                    <span key={cat} className="edit-chip">
+                      {count} {label}
+                    </span>
+                  ))}
+                </div>
+              )}
 
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href="/outfits"
                   className="edit-button-primary px-6 py-3 text-[0.62rem] font-bold uppercase tracking-[0.18em] no-underline"
                 >
-                  Build today’s edit
+                  Build today&apos;s edit
                 </Link>
                 <Link
                   href="/planner"
@@ -199,50 +210,57 @@ export default async function HomePage() {
             </div>
           </section>
 
+          {/* ── Right hero — real closet stats + calendar state ─── */}
           <section className="edit-card p-5 md:p-6">
             <div className="mb-5 flex items-center justify-between">
               <div>
-                <p className="eyebrow mb-2">Today’s edit</p>
+                <p className="eyebrow mb-2">Wardrobe</p>
                 <h2 className="font-display text-4xl leading-none text-[var(--espresso)]">
-                  Style plan
+                  Live data
                 </h2>
               </div>
-              <div className="grid h-14 w-14 place-items-center rounded-full bg-[var(--burgundy)] text-sm font-bold text-white">
-                82
-              </div>
+              <span className="rounded-full bg-[rgba(29,24,20,0.07)] px-3 py-1 text-[0.52rem] font-bold uppercase tracking-[0.16em] text-[var(--espresso)]">
+                Live
+              </span>
             </div>
 
-            <div className="rounded-[1.75rem] bg-[linear-gradient(135deg,var(--blush),rgba(255,253,252,0.74))] p-5">
-              <p className="font-display text-3xl leading-none text-[var(--espresso)]">
-                Blazer open, clean base, structured bottom.
-              </p>
-              <p className="mt-4 text-sm leading-6 text-[var(--ink-soft)]">
-                Keep the silhouette sharp but breathable. Add one warm color
-                signal so the outfit feels styled, not basic.
-              </p>
+            <div className="grid gap-2">
+              <RealStatRow
+                label="Owned pieces"
+                value={ownedCount}
+                href="/closet"
+              />
+              <RealStatRow
+                label="Wishlist items"
+                value={wishlistCount}
+                href="/wishlist"
+              />
+              <RealStatRow
+                label="Saved looks"
+                value={savedLooksCount}
+                href="/outfits"
+              />
             </div>
 
-            <div className="mt-4 grid gap-3">
-              <MiniItem
-                title="Outfit Planning"
-                subtitle="10:00 AM · Office polished, tropical-safe"
-                tone="rose"
-              />
-              <MiniItem
-                title="Gym"
-                subtitle="12:30 PM · Pack the reset pieces"
-                tone="olive"
-              />
-              <MiniItem
-                title="Wishlist Review"
-                subtitle="Check color fit and duplicate risk"
-                tone="plum"
-              />
-            </div>
+            <Link
+              href="/planner"
+              className="mt-4 block rounded-[1.35rem] border border-dashed border-[rgba(48,35,31,0.14)] p-4 no-underline"
+            >
+              <p className="text-[0.55rem] font-bold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+                Calendar
+              </p>
+              <p className="mt-1 font-display text-xl leading-snug text-[var(--espresso)]">
+                Not connected yet
+              </p>
+              <p className="mt-1 text-sm text-[var(--ink-soft)]">
+                Open planner to connect your schedule →
+              </p>
+            </Link>
           </section>
         </div>
 
         <div className="mb-6 grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
+          {/* ── Closet intelligence — real gap data ─────────────── */}
           <section className="edit-card p-5 md:p-6">
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
@@ -293,6 +311,7 @@ export default async function HomePage() {
             )}
           </section>
 
+          {/* ── Quick actions — correct routes ───────────────────── */}
           <section className="edit-card-glass p-5 md:p-6">
             <div className="mb-5 flex items-center justify-between">
               <div>
@@ -304,7 +323,10 @@ export default async function HomePage() {
             </div>
 
             <div className="grid gap-3 md:grid-cols-2">
-              <Link href="/closet" className="rounded-[1.5rem] bg-white/52 p-5 no-underline">
+              <Link
+                href="/closet/add"
+                className="rounded-[1.5rem] bg-white/52 p-5 no-underline"
+              >
                 <p className="font-display text-3xl leading-none text-[var(--espresso)]">
                   Add closet piece
                 </p>
@@ -313,7 +335,10 @@ export default async function HomePage() {
                 </p>
               </Link>
 
-              <Link href="/wishlist" className="rounded-[1.5rem] bg-white/52 p-5 no-underline">
+              <Link
+                href="/wishlist"
+                className="rounded-[1.5rem] bg-white/52 p-5 no-underline"
+              >
                 <p className="font-display text-3xl leading-none text-[var(--espresso)]">
                   Review wishlist
                 </p>
@@ -322,7 +347,10 @@ export default async function HomePage() {
                 </p>
               </Link>
 
-              <Link href="/outfits" className="rounded-[1.5rem] bg-white/52 p-5 no-underline">
+              <Link
+                href="/outfits"
+                className="rounded-[1.5rem] bg-white/52 p-5 no-underline"
+              >
                 <p className="font-display text-3xl leading-none text-[var(--espresso)]">
                   Build outfit
                 </p>
@@ -331,7 +359,10 @@ export default async function HomePage() {
                 </p>
               </Link>
 
-              <Link href="/planner" className="rounded-[1.5rem] bg-white/52 p-5 no-underline">
+              <Link
+                href="/planner"
+                className="rounded-[1.5rem] bg-white/52 p-5 no-underline"
+              >
                 <p className="font-display text-3xl leading-none text-[var(--espresso)]">
                   Plan the week
                 </p>
@@ -343,12 +374,13 @@ export default async function HomePage() {
           </section>
         </div>
 
+        {/* ── Bottom stats — real counts from Supabase ─────────── */}
         <section className="grid gap-4 md:grid-cols-3">
           <StatCard
             label="Owned pieces"
             value={ownedCount}
             href="/closet"
-            note="Active pieces in your closet — the AI’s raw material."
+            note="Active pieces in your closet — the AI's raw material."
           />
           <StatCard
             label="Wishlist edits"

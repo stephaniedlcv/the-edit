@@ -1,0 +1,165 @@
+Vamos a implementar Phase 2A — Home honesto en THE EDIT, branch redesign-v1.
+
+Contexto:
+Ya completamos Phase 1 Cromática Foundation:
+- Fraunces + Instrument Sans
+- Tokens Cromática
+- Nav dark pill
+- Add button cromático
+- CSS viejo de nav limpiado
+- Build limpio
+- Push completo
+
+Ahora quiero limpiar el Home para que no muestre datos falsos ni hardcoded. Esta fase NO es todavía Home magazine cover completo ni Espina Cromática.
+
+IMPORTANTE:
+- No implementes todavía Espina Cromática.
+- No implementes todavía Color River.
+- No crees endpoint nuevo todavía.
+- No cambies navegación.
+- No cambies rutas.
+- No cambies payloads.
+- No toques Supabase migrations.
+- No hagas rediseño total del Home.
+- No metas números hardcodeados nuevos.
+- No inventes eventos, scores ni agenda.
+- Si un dato no existe o no se puede calcular con data real, muestra un estado honesto.
+
+Objetivo:
+Convertir `/` en un Home honesto:
+- Saludo real o neutral.
+- Sin score fijo “82”.
+- Sin agenda inventada.
+- Quick actions correctas.
+- Copy más alineado con Cromática, pero sin maqueta falsa.
+- Mantener el layout actual lo más estable posible.
+
+Antes de editar:
+1. Ejecuta:
+   `git status -sb`
+2. Confirma que estás en branch `redesign-v1`.
+3. Si el árbol no está limpio, detente y repórtalo.
+4. Inspecciona:
+   - `src/app/page.tsx`
+   - cualquier componente importado por el Home
+   - cualquier helper de data usado por Home
+   - `src/lib/wardrobe/data.ts`
+   - `src/lib/wishlist/data.ts`
+   - `src/lib/outfits/data.ts`
+   - `src/lib/calendar.ts` y/o `src/app/api/calendar/route.ts` si existen
+
+Tareas permitidas:
+
+1. Saludo honesto
+Problema:
+El Home dice algo como “Good afternoon, Stephanie.” de forma hardcoded.
+
+Cambio requerido:
+- Haz el saludo dinámico por hora real.
+- Usa timezone `America/Puerto_Rico` si es posible.
+- Rangos sugeridos:
+  - Good morning: 5:00–11:59
+  - Good afternoon: 12:00–17:59
+  - Good evening: 18:00–4:59
+- Si por server rendering/hydration hay riesgo, usa una frase neutral tipo:
+  “Today’s edit, Stephanie.”
+- No hardcodees una hora falsa.
+
+2. Eliminar score fijo 82
+Problema:
+El Home muestra un score “82” que no está calculado.
+
+Cambio requerido:
+- Elimina el número fijo si no se puede calcular de forma real.
+- Si hay una forma simple y segura de calcular un score con datos reales ya disponibles, puedes hacerlo, pero debe estar justificado.
+- Ejemplos de métricas aceptables solo si usan datos reales:
+  - porcentaje de piezas con foto
+  - promedio de scores reales de items
+  - número real de saved looks
+  - número real de wishlist items
+- Si no existe un cálculo confiable, reemplaza el círculo “82” por un badge no numérico:
+  “Ready”
+  “Live data”
+  “Real stats”
+  o elimínalo visualmente.
+- No inventes otro número.
+
+3. Agenda / calendar honesto
+Problema:
+El Home tiene mini-agenda hardcoded, por ejemplo “Outfit Planning”, “Gym”, “Wishlist Review”.
+
+Cambio requerido:
+- Quita o reemplaza cualquier agenda inventada.
+- Si existe integración real de calendario y se puede usar sin crear endpoint nuevo, úsala.
+- Si no se puede confirmar o no está configurada, muestra un estado honesto:
+  “Calendar not connected yet.”
+  “No calendar events available.”
+  o un módulo simple que lleve a `/planner`.
+- No muestres eventos falsos.
+
+4. Quick actions correctas
+Revisa todos los links de acciones rápidas en Home.
+
+Correcciones mínimas:
+- “Add closet piece” debe ir a `/closet/add`.
+- “Build outfit” debe ir a `/outfits`.
+- “Review wishlist” debe ir a `/wishlist`.
+- “View calendar” o “Planner” debe ir a `/planner`.
+- No inventes rutas nuevas.
+
+5. Copy alineado a Cromática, sin datos falsos
+Puedes ajustar copy del Home para acercarlo a Cromática, pero sin prometer features que aún no existen.
+
+Ejemplos de copy permitido:
+- “Your closet data is live.”
+- “Today’s edit is based on your real closet.”
+- “Color intelligence is coming next.”
+- “Your wardrobe, wishlist, and saved looks are connected.”
+
+Evita copy falso como:
+- “Your color spectrum is ready” si aún no hay Espina.
+- “Today’s cover is published” si aún no existe portada.
+- “Outfit selected for tomorrow” si no viene de datos reales.
+
+6. Mantener visual estable
+- No cambies toda la estructura del Home.
+- No cambies el nav.
+- No cambies el layout global.
+- No agregues componentes grandes nuevos todavía.
+- Mantén Cromática Foundation: Fraunces, tokens, nav dark, add cromático.
+
+7. Manejo de errores
+Si alguna data real falla:
+- No uses mock silencioso para ocultar el error.
+- Muestra un estado honesto o deja que el error existente sea visible.
+- No agregues fake success ni fallback inventado.
+
+Validación:
+Después de editar ejecuta:
+- `npm run typecheck` si existe.
+- `npm run build`.
+
+Si `typecheck` no existe, dilo claramente y ejecuta el comando disponible más cercano.
+
+Revisión visual:
+Levanta preview y revisa `/`.
+
+Confirma específicamente:
+1. Ya no aparece score fijo “82”.
+2. Ya no aparece agenda falsa.
+3. El saludo no está hardcodeado incorrectamente.
+4. Los links rápidos apuntan a rutas correctas.
+5. El Home sigue viéndose bien con Cromática Foundation.
+6. El bottom nav no tapa contenido.
+
+Entrega final:
+Dame:
+1. Archivos modificados.
+2. Qué datos hardcoded removiste.
+3. Qué datos reales se usan ahora.
+4. Qué quedó como estado honesto porque aún no hay data real.
+5. Resultado de typecheck/build.
+6. Screenshot o descripción visual del Home.
+7. Qué NO tocaste.
+8. Recomendación para Phase 2B.
+No hagas commit todavía hasta que yo revise el resultado.
