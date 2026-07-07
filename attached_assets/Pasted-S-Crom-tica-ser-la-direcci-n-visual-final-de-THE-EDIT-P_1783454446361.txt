@@ -1,0 +1,73 @@
+Sí, Cromática será la dirección visual final de THE EDIT.
+
+Pero antes de implementar Fase 1, quiero una Fase 0 de confirmación técnica y de datos. No edites código todavía.
+
+Objetivo:
+Confirmar si la app ya tiene la estructura de datos necesaria para soportar Cromática de forma real, sin hardcodear ni inventar contenido.
+
+Revisa específicamente:
+
+1. Supabase / schema / types
+- Confirma si cada wardrobe item tiene algún campo de color usable:
+  - color
+  - color_family
+  - colorFamily
+  - dominantColor
+  - paletteFamily
+  - o equivalente
+- Confirma si wishlist items también tienen color family.
+- Confirma si outfits/saved looks tienen piezas asociadas suficientes para calcular color dominante.
+
+2. Código existente
+Busca y reporta dónde viven:
+- dark-autumn-palette.ts
+- taxonomy de colores
+- mappers de Supabase
+- types/wardrobe
+- cualquier helper relacionado con color family
+- cualquier uso actual de color en gallery, item detail, wishlist u outfits
+
+3. Cobertura real de datos
+Si puedes inferirlo desde seed/mock/data actual:
+- cuántas piezas tienen color asignado
+- cuántas no tienen color
+- qué familias de color existen
+- si los nombres de colores están normalizados o mezclados
+- si hay suficiente data para generar la Espina Cromática sin hardcodear
+
+4. Riesgo del concepto
+Dime claramente:
+- Qué partes de Cromática se pueden implementar ya con datos reales.
+- Qué partes requieren normalización primero.
+- Qué partes serían mock/hardcoded si las hacemos ahora.
+- Qué NO debemos implementar todavía.
+
+5. Navegación y CSS
+No implementes la nav dark todavía.
+El audit encontró varias generaciones de nav en globals.css. Antes de crear una nueva variante, confirma:
+- cuál nav está viva actualmente
+- qué clases CSS de nav están muertas
+- qué habría que limpiar antes de aplicar la nav Cromática
+
+6. Fonts
+Confirma dónde se cargan las fonts actualmente:
+- layout.tsx
+- globals.css
+- next/font
+- Google Fonts
+Y dime qué implicaría cambiar de Cormorant/Inter a Fraunces/Instrument Sans.
+
+Entrega:
+Quiero un reporte, no código.
+
+Formato:
+1. Veredicto: ¿Cromática es viable con la data actual? Sí / Parcial / No
+2. Campos de color encontrados
+3. Archivos relevantes
+4. Riesgos
+5. Qué se puede hacer en Fase 1 sin mentir con datos
+6. Qué debería esperar a Fase 2 o Fase 3
+7. Recomendación final de implementación por fases
+
+Regla:
+No cambies código todavía. Solo inspección.
