@@ -74,7 +74,7 @@ function StatCard({
   return (
     <Link href={href} className="edit-card block p-5 no-underline md:p-6">
       <p className="eyebrow mb-4">{label}</p>
-      <p className="font-display text-[4.2rem] leading-none text-[var(--espresso)]">
+      <p className="font-display text-[3rem] leading-none text-[var(--espresso)] sm:text-[4.2rem]">
         {String(value).padStart(2, "0")}
       </p>
       <p className="mt-4 text-sm leading-6 text-[var(--ink-soft)]">{note}</p>
@@ -172,7 +172,7 @@ export default async function HomePage() {
             <div className="relative">
               <p className="eyebrow mb-5">Daily Edit</p>
 
-              <h1 className="font-display text-[4.1rem] leading-[0.82] text-[var(--espresso)] md:text-[6.3rem]">
+              <h1 className="font-display text-[2.55rem] leading-[0.88] text-[var(--espresso)] sm:text-[4.1rem] sm:leading-[0.82] md:text-[6.3rem]">
                 {greeting},
                 <br />
                 Stephanie.
