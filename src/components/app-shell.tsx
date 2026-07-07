@@ -10,7 +10,7 @@ type AppShellProps = { children: React.ReactNode };
 
 function HomeIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round">
       <path d="M3.5 10.25 12 3.75l8.5 6.5V20a1.25 1.25 0 0 1-1.25 1.25H4.75A1.25 1.25 0 0 1 3.5 20v-9.75Z" />
       <path d="M9.25 21.25v-7.5h5.5v7.5" />
     </svg>
@@ -19,7 +19,7 @@ function HomeIcon() {
 
 function ClosetIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 4.25c0-1.15.9-2 2.05-2 1.05 0 1.95.75 1.95 1.8 0 1.25-1.1 1.85-2.05 2.32L12 7.35" />
       <path d="M12 7.35 5.25 11.2a1.6 1.6 0 0 0-.8 1.38v.22h15.1v-.22a1.6 1.6 0 0 0-.8-1.38L12 7.35Z" />
       <path d="M5.1 12.8v6.45c0 .83.67 1.5 1.5 1.5h10.8c.83 0 1.5-.67 1.5-1.5V12.8" />
@@ -48,7 +48,7 @@ function AddIcon({ open }: { open: boolean }) {
 
 function StyleIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3.5" y="3.5" width="7.25" height="9.25" rx="2" />
       <rect x="13.25" y="3.5" width="7.25" height="5.75" rx="2" />
       <rect x="13.25" y="11.25" width="7.25" height="9.25" rx="2" />
@@ -59,7 +59,7 @@ function StyleIcon() {
 
 function WishlistIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round">
       <path d="M20.15 5.35a5.05 5.05 0 0 0-7.15 0L12 6.35l-1-1a5.05 5.05 0 1 0-7.15 7.15l1 1L12 20.65l7.15-7.15 1-1a5.05 5.05 0 0 0 0-7.15Z" />
     </svg>
   );
@@ -80,6 +80,28 @@ function HeartIcon() {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M20.15 5.35a5.05 5.05 0 0 0-7.15 0L12 6.35l-1-1a5.05 5.05 0 1 0-7.15 7.15l1 1L12 20.65l7.15-7.15 1-1a5.05 5.05 0 0 0 0-7.15Z" />
     </svg>
+  );
+}
+
+// ── Reusable slot pieces ───────────────────────────────────────────────────
+
+function InactiveContent({ icon: Icon, label }: { icon: () => React.ReactElement; label: string }) {
+  return (
+    <>
+      <span className="nav-slot-icon"><Icon /></span>
+      <span className="nav-slot-label">{label}</span>
+    </>
+  );
+}
+
+function ActiveContent({ icon: Icon, label }: { icon: () => React.ReactElement; label: string }) {
+  return (
+    <>
+      <span className="nav-slot-bubble" aria-hidden="true">
+        <span className="nav-slot-bubble-icon"><Icon /></span>
+      </span>
+      <span className="nav-slot-label">{label}</span>
+    </>
   );
 }
 
@@ -137,29 +159,19 @@ export function AppShell({ children }: AppShellProps) {
 
           {/* Home */}
           <Link href="/" className={`nav-slot${isHome ? " active" : ""}`}>
-            {isHome ? (
-              <span className="nav-slot-bubble" aria-hidden="true">
-                <span className="nav-slot-bubble-icon"><HomeIcon /></span>
-              </span>
-            ) : (
-              <span className="nav-slot-icon"><HomeIcon /></span>
-            )}
-            <span className="nav-slot-label">Home</span>
+            {isHome
+              ? <ActiveContent icon={HomeIcon} label="Home" />
+              : <InactiveContent icon={HomeIcon} label="Home" />}
           </Link>
 
           {/* Closet */}
           <Link href="/closet" className={`nav-slot${isCloset ? " active" : ""}`}>
-            {isCloset ? (
-              <span className="nav-slot-bubble" aria-hidden="true">
-                <span className="nav-slot-bubble-icon"><ClosetIcon /></span>
-              </span>
-            ) : (
-              <span className="nav-slot-icon"><ClosetIcon /></span>
-            )}
-            <span className="nav-slot-label">Closet</span>
+            {isCloset
+              ? <ActiveContent icon={ClosetIcon} label="Closet" />
+              : <InactiveContent icon={ClosetIcon} label="Closet" />}
           </Link>
 
-          {/* Add — button, not a route */}
+          {/* Add — button, opens action sheet */}
           <button
             ref={addSlotRef}
             onClick={() => setAddOpen((v) => !v)}
@@ -168,12 +180,9 @@ export function AppShell({ children }: AppShellProps) {
             aria-expanded={addOpen}
             aria-haspopup="menu"
           >
-            <span className="nav-slot-bubble" aria-hidden="true">
-              <span className="nav-slot-bubble-icon">
-                <AddIcon open={addOpen} />
-              </span>
-            </span>
-            <span className="nav-slot-label">Add</span>
+            {addOpen
+              ? <ActiveContent icon={() => <AddIcon open={true} />} label="Add" />
+              : <InactiveContent icon={() => <AddIcon open={false} />} label="Add" />}
 
             {/* Action sheet */}
             {addOpen && (
@@ -203,26 +212,16 @@ export function AppShell({ children }: AppShellProps) {
 
           {/* Style */}
           <Link href="/outfits" className={`nav-slot${isStyle ? " active" : ""}`}>
-            {isStyle ? (
-              <span className="nav-slot-bubble" aria-hidden="true">
-                <span className="nav-slot-bubble-icon"><StyleIcon /></span>
-              </span>
-            ) : (
-              <span className="nav-slot-icon"><StyleIcon /></span>
-            )}
-            <span className="nav-slot-label">Style</span>
+            {isStyle
+              ? <ActiveContent icon={StyleIcon} label="Style" />
+              : <InactiveContent icon={StyleIcon} label="Style" />}
           </Link>
 
           {/* Wishlist */}
           <Link href="/wishlist" className={`nav-slot${isWishlist ? " active" : ""}`}>
-            {isWishlist ? (
-              <span className="nav-slot-bubble" aria-hidden="true">
-                <span className="nav-slot-bubble-icon"><WishlistIcon /></span>
-              </span>
-            ) : (
-              <span className="nav-slot-icon"><WishlistIcon /></span>
-            )}
-            <span className="nav-slot-label">Wishlist</span>
+            {isWishlist
+              ? <ActiveContent icon={WishlistIcon} label="Wishlist" />
+              : <InactiveContent icon={WishlistIcon} label="Wishlist" />}
           </Link>
 
         </div>
