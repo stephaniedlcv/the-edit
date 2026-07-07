@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE EDIT — Concepto · Cromática</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gal:#EFEBE3;
+    --papel:#FAF7F0;
+    --tinta:#1D1814;
+    --tinta-suave:#6F675B;
+    --tinta-tenue:#A29889;
+    --line:rgba(29,24,20,0.1);
+    /* el espectro real de su clóset — Dark Autumn */
+    --c-espresso:#3E2C22; --c-camel:#B98A55; --c-crema:#EBDFC9; --c-oliva:#6B6D4C;
+    --c-burdeos:#77303A; --c-mostaza:#C3902F; --c-flama:#C6532F; --c-ciruela:#5A3A50;
+    --c-denim:#3A4B5F;
+    --r-panel:30px; --r-card:18px; --r-chip:100px;
+    --f-d:"Fraunces",Georgia,serif;
+    --f-u:"Instrument Sans",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--gal);color:var(--tinta);font-family:var(--f-u);-webkit-font-smoothing:antialiased;padding:56px 24px 90px}
+  .stage{max-width:1080px;margin:0 auto}
+  .spec-head{display:flex;align-items:baseline;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:14px}
+  .spec-eyebrow{font-size:10px;font-weight:600;letter-spacing:0.34em;text-transform:uppercase;color:var(--tinta-suave)}
+  .spec-title{font-family:var(--f-d);font-weight:300;font-size:clamp(36px,5vw,56px);letter-spacing:-0.02em;line-height:1;margin-top:12px}
+  .spec-title em{font-style:italic}
+  .spec-note{max-width:330px;font-size:13px;line-height:1.7;color:var(--tinta-suave)}
+  .rainbow-line{display:flex;height:3px;border-radius:2px;overflow:hidden;margin:28px 0 48px}
+  .rainbow-line span{height:100%}
+
+  .devices{display:flex;gap:46px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+  .device{width:392px;max-width:100%;border-radius:46px;overflow:hidden;background:var(--papel);
+    border:1px solid rgba(29,24,20,0.12);
+    box-shadow:0 30px 70px -28px rgba(29,24,20,0.4), inset 0 1px 0 rgba(255,255,255,0.9)}
+  .device-label{font-size:10px;font-weight:600;letter-spacing:0.3em;text-transform:uppercase;color:var(--tinta-tenue);text-align:center;margin:18px 0 8px}
+  .screen{min-height:830px;display:flex;flex-direction:column;position:relative}
+  .statusbar{display:flex;justify-content:space-between;padding:16px 30px 10px;font-size:12.5px;font-weight:600}
+
+  /* ---------- ESPINA CROMÁTICA (la firma) ---------- */
+  .spine-chroma{display:flex;align-items:flex-end;gap:3px;padding:14px 22px 0;height:64px}
+  .bar{flex-grow:1;border-radius:4px 4px 0 0;position:relative;min-width:10px;transition:height .3s}
+  .bar i{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-style:normal;font-size:8px;font-weight:600;color:var(--tinta-tenue);font-variant-numeric:tabular-nums}
+  .spine-base{height:1px;background:var(--tinta);margin:0 22px;opacity:0.85}
+  .spine-caption{display:flex;justify-content:space-between;padding:8px 24px 0;font-size:8.5px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--tinta-tenue)}
+
+  /* ---------- PORTADA ---------- */
+  .masthead{display:flex;justify-content:space-between;align-items:baseline;padding:18px 26px 0}
+  .masthead b{font-family:var(--f-d);font-weight:600;font-size:14px;letter-spacing:0.24em}
+  .masthead span{font-size:9.5px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--tinta-tenue)}
+
+  .cover{margin:20px 18px 0;position:relative}
+  .cover-date{display:flex;align-items:baseline;gap:14px;padding:0 8px}
+  .cover-date b{font-family:var(--f-d);font-weight:300;font-size:96px;line-height:0.8;letter-spacing:-0.045em}
+  .cover-date div span{display:block;font-size:10px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:var(--tinta-tenue)}
+  .cover-date div em{display:block;font-family:var(--f-d);font-style:italic;font-size:19px;margin-top:4px;color:var(--tinta)}
+
+  .cover-visual{margin-top:18px;border-radius:var(--r-panel);overflow:hidden;position:relative;aspect-ratio:4/4.1;
+    background:linear-gradient(150deg,var(--c-burdeos),#4E1F27 75%);
+    box-shadow:0 26px 56px -24px rgba(119,48,58,0.6)}
+  .cover-visual::after{content:"";position:absolute;inset:0;
+    background:radial-gradient(480px 300px at 85% 8%, rgba(235,223,201,0.2), transparent 60%)}
+  .cover-kicker{position:absolute;top:18px;left:20px;font-size:9px;font-weight:600;letter-spacing:0.3em;text-transform:uppercase;color:rgba(235,223,201,0.85);z-index:2}
+  .cover-line{position:absolute;left:0;right:0;bottom:0;padding:22px 22px 20px;z-index:2;
+    background:linear-gradient(180deg,transparent,rgba(30,10,14,0.55))}
+  .cover-line h2{font-family:var(--f-d);font-weight:300;font-size:33px;line-height:1.02;letter-spacing:-0.015em;color:#F6EDDF}
+  .cover-line h2 em{font-style:italic;color:#E9C89A}
+  .cover-line p{margin-top:8px;font-size:11.5px;color:rgba(246,237,223,0.75)}
+  .cover-swatch{position:absolute;top:18px;right:18px;display:flex;flex-direction:column;gap:6px;z-index:2}
+  .cover-swatch span{width:26px;height:26px;border-radius:50%;border:2px solid rgba(246,237,223,0.85);box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+
+  .cover-foot{display:flex;justify-content:space-between;align-items:center;padding:16px 8px 0}
+  .cover-foot a{font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--tinta);text-decoration:none;
+    border:1px solid var(--tinta);border-radius:var(--r-chip);padding:11px 20px}
+  .cover-foot a.solid{background:var(--tinta);color:var(--papel)}
+  .cover-foot span{font-size:11px;color:var(--tinta-tenue)}
+
+  .ticker{margin-top:22px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding:12px 0;overflow:hidden;white-space:nowrap}
+  .ticker div{display:inline-block;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--tinta-suave);
+    animation:tick 18s linear infinite}
+  .ticker b{color:var(--c-burdeos);margin:0 6px}
+  @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ---------- CLÓSET CROMÁTICO ---------- */
+  .cc-head{padding:16px 26px 0}
+  .cc-eyebrow{font-size:9.5px;font-weight:600;letter-spacing:0.3em;text-transform:uppercase;color:var(--tinta-tenue)}
+  .cc-title{font-family:var(--f-d);font-weight:300;font-size:44px;line-height:0.96;letter-spacing:-0.02em;margin-top:12px}
+  .cc-title em{font-style:italic;color:var(--c-burdeos)}
+  .cc-sub{margin-top:10px;font-size:12.5px;line-height:1.6;color:var(--tinta-suave);max-width:270px}
+
+  .river{padding:8px 18px 0}
+  .river-sec{margin-top:20px}
+  .river-head{display:flex;align-items:center;gap:12px;padding:0 6px}
+  .river-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+  .river-head b{font-family:var(--f-d);font-weight:400;font-size:21px;letter-spacing:-0.01em}
+  .river-head span{font-size:10px;font-weight:600;color:var(--tinta-tenue);font-variant-numeric:tabular-nums;margin-left:auto;letter-spacing:0.14em}
+  .river-row{display:flex;gap:10px;margin-top:12px;overflow:hidden}
+  .rp{width:108px;flex-shrink:0;border-radius:14px;overflow:hidden;background:#fff;
+    box-shadow:0 12px 26px -16px rgba(29,24,20,0.35)}
+  .rp-img{aspect-ratio:1/1.15;display:flex;align-items:flex-end;padding:8px}
+  .rp-img i{font-style:normal;font-size:7px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:rgba(250,247,240,0.92);
+    background:rgba(29,24,20,0.4);border-radius:var(--r-chip);padding:3px 7px}
+  .rp-img.claro i{color:var(--tinta);background:rgba(250,247,240,0.65)}
+  .rp-copy{padding:8px 10px 10px}
+  .rp-copy b{display:block;font-family:var(--f-d);font-weight:400;font-size:12.5px;line-height:1.15}
+  .rp-copy span{display:block;font-size:9px;color:var(--tinta-tenue);margin-top:2px}
+  .rp.mas{display:flex;align-items:center;justify-content:center;background:transparent;border:1px dashed rgba(29,24,20,0.25);box-shadow:none;aspect-ratio:auto}
+  .rp.mas b{font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--tinta-suave);font-family:var(--f-u)}
+
+  /* ---------- NAV ---------- */
+  .navwrap{margin-top:auto;padding:24px 18px 18px;position:sticky;bottom:0;
+    background:linear-gradient(180deg,transparent,rgba(250,247,240,0.94) 50%)}
+  .nav{display:flex;align-items:center;justify-content:space-between;background:var(--tinta);
+    border-radius:var(--r-chip);padding:10px 22px;box-shadow:0 22px 46px -16px rgba(29,24,20,0.55)}
+  .ns{display:flex;flex-direction:column;align-items:center;gap:4px;color:rgba(250,247,240,0.42);text-decoration:none}
+  .ns svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .ns span{font-size:8.5px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase}
+  .ns.on{color:#F6EDDF}
+  .nadd{width:50px;height:50px;border-radius:50%;margin-top:-4px;position:relative;display:flex;align-items:center;justify-content:center;
+    background:conic-gradient(var(--c-espresso),var(--c-camel),var(--c-mostaza),var(--c-flama),var(--c-burdeos),var(--c-ciruela),var(--c-oliva),var(--c-espresso));
+    box-shadow:0 12px 26px -8px rgba(29,24,20,0.6)}
+  .nadd::before{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--papel)}
+  .nadd svg{width:19px;height:19px;stroke:var(--tinta);stroke-width:2.2;stroke-linecap:round;fill:none;position:relative}
+
+  /* ---------- SPEC ---------- */
+  .spec{margin-top:76px}
+  .spec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:40px;margin-top:32px}
+  .spec-block h4{font-size:10px;font-weight:600;letter-spacing:0.3em;text-transform:uppercase;color:var(--tinta-suave);margin-bottom:16px}
+  .laws{font-size:12.5px;line-height:1.6;color:var(--tinta-suave)}
+  .laws li{margin-bottom:11px}
+  .laws b{color:var(--tinta);font-weight:600}
+  ol{padding-left:18px}
+  .idea-display{font-family:var(--f-d);font-weight:300;font-size:32px;letter-spacing:-0.02em;line-height:1.08}
+  .idea-display em{font-style:italic;color:var(--c-burdeos)}
+  .idea-ui{margin-top:12px;font-size:13.5px;line-height:1.68;color:var(--tinta-suave)}
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <header class="spec-head">
+    <div>
+      <p class="spec-eyebrow">The Edit · Concepto v4 — la innovadora</p>
+      <h1 class="spec-title">Cromá<em>tica.</em></h1>
+    </div>
+    <p class="spec-note">La app no tiene color propio: <b>toma prestado el tuyo.</b> Lienzo neutro de galería + tinta — y todo el color de la interfaz sale, en vivo, del ADN cromático de tus 190 piezas. El home es la portada de una revista que se publica cada día. El clóset se navega por color, no por carpetas.</p>
+  </header>
+  <div class="rainbow-line">
+    <span style="flex:34;background:var(--c-espresso)"></span>
+    <span style="flex:28;background:var(--c-camel)"></span>
+    <span style="flex:41;background:var(--c-crema)"></span>
+    <span style="flex:18;background:var(--c-oliva)"></span>
+    <span style="flex:16;background:var(--c-burdeos)"></span>
+    <span style="flex:12;background:var(--c-mostaza)"></span>
+    <span style="flex:9;background:var(--c-flama)"></span>
+    <span style="flex:11;background:var(--c-ciruela)"></span>
+    <span style="flex:8;background:var(--c-denim)"></span>
+  </div>
+
+  <div class="devices">
+
+    <!-- ============ PORTADA ============ -->
+    <div>
+      <div class="device">
+        <div class="screen">
+          <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+
+          <div class="masthead">
+            <b>THE EDIT</b>
+            <span>Edición diaria · Nº 188</span>
+          </div>
+
+          <div class="spine-chroma">
+            <span class="bar" style="height:78%;background:var(--c-espresso)"><i>34</i></span>
+            <span class="bar" style="height:64%;background:var(--c-camel)"><i>28</i></span>
+            <span class="bar" style="height:96%;background:var(--c-crema)"><i>41</i></span>
+            <span class="bar" style="height:42%;background:var(--c-oliva)"><i>18</i></span>
+            <span class="bar" style="height:38%;background:var(--c-burdeos)"><i>16</i></span>
+            <span class="bar" style="height:28%;background:var(--c-mostaza)"><i>12</i></span>
+            <span class="bar" style="height:22%;background:var(--c-flama)"><i>9</i></span>
+            <span class="bar" style="height:26%;background:var(--c-ciruela)"><i>11</i></span>
+            <span class="bar" style="height:19%;background:var(--c-denim)"><i>8</i></span>
+          </div>
+          <div class="spine-base"></div>
+          <div class="spine-caption"><span>Tu espectro</span><span>190 piezas</span></div>
+
+          <section class="cover">
+            <div class="cover-date">
+              <b>07</b>
+              <div>
+                <span>Julio · Martes</span>
+                <em>San Juan, 31° y sol</em>
+              </div>
+            </div>
+
+            <div class="cover-visual">
+              <p class="cover-kicker">La portada de hoy · Burdeos</p>
+              <div class="cover-swatch">
+                <span style="background:var(--c-burdeos)"></span>
+                <span style="background:var(--c-crema)"></span>
+                <span style="background:var(--c-camel)"></span>
+              </div>
+              <div class="cover-line">
+                <h2>El burdeos trabaja <em>hoy.</em></h2>
+                <p>Blazer espresso · base crema · trouser camel · acento burdeos — armonía 9.1</p>
+              </div>
+            </div>
+
+            <div class="cover-foot">
+              <a class="solid" href="#">Vestir esta portada</a>
+              <a href="#">Cambiar</a>
+            </div>
+          </section>
+
+          <div class="ticker">
+            <div>
+              12 wishlist <b>·</b> 2 en price watch <b>·</b> 8 looks guardados <b>·</b> crema domina tu espectro <b>·</b> te falta 1 zapato pulido <b>·</b>
+              12 wishlist <b>·</b> 2 en price watch <b>·</b> 8 looks guardados <b>·</b> crema domina tu espectro <b>·</b> te falta 1 zapato pulido <b>·</b>
+            </div>
+          </div>
+
+          <div class="navwrap">
+            <nav class="nav">
+              <a class="ns on" href="#"><svg viewBox="0 0 24 24"><path d="M3.5 10.5 12 4l8.5 6.5V20a1 1 0 0 1-1 1H4.5a1 1 0 0 1-1-1v-9.5Z"/></svg><span>Portada</span></a>
+              <a class="ns" href="#"><svg viewBox="0 0 24 24"><path d="M5.2 12.8v6.4c0 .8.7 1.5 1.5 1.5h10.6c.8 0 1.5-.7 1.5-1.5v-6.4M12 7.4 5.3 11.2a1.6 1.6 0 0 0-.8 1.4v.2h15v-.2a1.6 1.6 0 0 0-.8-1.4L12 7.4Z"/></svg><span>Clóset</span></a>
+              <span class="nadd"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+              <a class="ns" href="#"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7.2" height="9.2" rx="2"/><rect x="13.3" y="3.5" width="7.2" height="5.7" rx="2"/><rect x="13.3" y="11.3" width="7.2" height="9.2" rx="2"/><rect x="3.5" y="14.8" width="7.2" height="5.7" rx="2"/></svg><span>Style</span></a>
+              <a class="ns" href="#"><svg viewBox="0 0 24 24"><path d="M20.1 5.4a5 5 0 0 0-7.1 0L12 6.4l-1-1a5 5 0 1 0-7.1 7.1l1 1L12 20.6l7.1-7.1 1-1a5 5 0 0 0 0-7.1Z"/></svg><span>Wishlist</span></a>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <p class="device-label">Portada · una edición nueva cada día</p>
+    </div>
+
+    <!-- ============ CLÓSET CROMÁTICO ============ -->
+    <div>
+      <div class="device">
+        <div class="screen">
+          <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+
+          <header class="cc-head">
+            <p class="cc-eyebrow">Clóset · Vista cromática</p>
+            <h2 class="cc-title">Tu clóset,<br>por <em>color.</em></h2>
+            <p class="cc-sub">Toca una barra del espectro para entrar a esa familia. Así piensa tu validador Dark Autumn — ahora la app también.</p>
+          </header>
+
+          <div class="spine-chroma" style="height:56px">
+            <span class="bar" style="height:78%;background:var(--c-espresso)"></span>
+            <span class="bar" style="height:64%;background:var(--c-camel)"></span>
+            <span class="bar" style="height:96%;background:var(--c-crema)"></span>
+            <span class="bar" style="height:42%;background:var(--c-oliva)"></span>
+            <span class="bar" style="height:38%;background:var(--c-burdeos);outline:2px solid var(--tinta);outline-offset:2px;border-radius:4px"></span>
+            <span class="bar" style="height:28%;background:var(--c-mostaza)"></span>
+            <span class="bar" style="height:22%;background:var(--c-flama)"></span>
+            <span class="bar" style="height:26%;background:var(--c-ciruela)"></span>
+            <span class="bar" style="height:19%;background:var(--c-denim)"></span>
+          </div>
+          <div class="spine-base"></div>
+
+          <div class="river">
+            <div class="river-sec">
+              <div class="river-head">
+                <span class="river-dot" style="background:var(--c-burdeos)"></span>
+                <b>Burdeos</b>
+                <span>16 piezas · tu color de poder</span>
+              </div>
+              <div class="river-row">
+                <article class="rp">
+                  <div class="rp-img" style="background:linear-gradient(160deg,#8A3A44,#5E252D)"><i>Top</i></div>
+                  <div class="rp-copy"><b>Blusa satén</b><span>Burdeos · M</span></div>
+                </article>
+                <article class="rp">
+                  <div class="rp-img" style="background:linear-gradient(160deg,#7B333D,#54212A)"><i>Vestido</i></div>
+                  <div class="rp-copy"><b>Wrap midi</b><span>Vino · M</span></div>
+                </article>
+                <article class="rp">
+                  <div class="rp-img" style="background:linear-gradient(160deg,#93424C,#6B2B34)"><i>Bag</i></div>
+                  <div class="rp-copy"><b>Bolso estructurado</b><span>Granate</span></div>
+                </article>
+                <article class="rp mas"><b>+13</b></article>
+              </div>
+            </div>
+
+            <div class="river-sec">
+              <div class="river-head">
+                <span class="river-dot" style="background:var(--c-camel)"></span>
+                <b>Camel</b>
+                <span>28 piezas</span>
+              </div>
+              <div class="river-row">
+                <article class="rp">
+                  <div class="rp-img" style="background:linear-gradient(160deg,#C99E6B,#A87C4C)"><i>Bottom</i></div>
+                  <div class="rp-copy"><b>Trouser sastre</b><span>Camel · 8</span></div>
+                </article>
+                <article class="rp">
+                  <div class="rp-img" style="background:linear-gradient(160deg,#D2A876,#B08655)"><i>Outerwear</i></div>
+                  <div class="rp-copy"><b>Blazer liviano</b><span>Tostado · M</span></div>
+                </article>
+                <article class="rp">
+                  <div class="rp-img claro" style="background:linear-gradient(160deg,#E3C79C,#C9A671)"><i class="claro">Shoes</i></div>
+                  <div class="rp-copy"><b>Sandalia block</b><span>Miel · 7.5</span></div>
+                </article>
+                <article class="rp mas"><b>+25</b></article>
+              </div>
+            </div>
+
+            <div class="river-sec">
+              <div class="river-head">
+                <span class="river-dot" style="background:var(--c-crema)"></span>
+                <b>Crema</b>
+                <span>41 piezas · tu base</span>
+              </div>
+              <div class="river-row">
+                <article class="rp">
+                  <div class="rp-img" style="background:linear-gradient(160deg,#F2E8D8,#DECFB6)"><i class="claro" style="color:var(--tinta);background:rgba(250,247,240,0.7)">Top</i></div>
+                  <div class="rp-copy"><b>Camisa seda</b><span>Crema · M</span></div>
+                </article>
+                <article class="rp">
+                  <div class="rp-img" style="background:linear-gradient(160deg,#EFE4CF,#D8C6A8)"><i class="claro" style="color:var(--tinta);background:rgba(250,247,240,0.7)">Vestido</i></div>
+                  <div class="rp-copy"><b>Slip dress</b><span>Marfil · M</span></div>
+                </article>
+                <article class="rp mas"><b>+39</b></article>
+              </div>
+            </div>
+          </div>
+
+          <div class="navwrap">
+            <nav class="nav">
+              <a class="ns" href="#"><svg viewBox="0 0 24 24"><path d="M3.5 10.5 12 4l8.5 6.5V20a1 1 0 0 1-1 1H4.5a1 1 0 0 1-1-1v-9.5Z"/></svg><span>Portada</span></a>
+              <a class="ns on" href="#"><svg viewBox="0 0 24 24"><path d="M5.2 12.8v6.4c0 .8.7 1.5 1.5 1.5h10.6c.8 0 1.5-.7 1.5-1.5v-6.4M12 7.4 5.3 11.2a1.6 1.6 0 0 0-.8 1.4v.2h15v-.2a1.6 1.6 0 0 0-.8-1.4L12 7.4Z"/></svg><span>Clóset</span></a>
+              <span class="nadd"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+              <a class="ns" href="#"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7.2" height="9.2" rx="2"/><rect x="13.3" y="3.5" width="7.2" height="5.7" rx="2"/><rect x="13.3" y="11.3" width="7.2" height="9.2" rx="2"/><rect x="3.5" y="14.8" width="7.2" height="5.7" rx="2"/></svg><span>Style</span></a>
+              <a class="ns" href="#"><svg viewBox="0 0 24 24"><path d="M20.1 5.4a5 5 0 0 0-7.1 0L12 6.4l-1-1a5 5 0 1 0-7.1 7.1l1 1L12 20.6l7.1-7.1 1-1a5 5 0 0 0 0-7.1Z"/></svg><span>Wishlist</span></a>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <p class="device-label">Clóset · navegación por espectro</p>
+    </div>
+
+  </div>
+
+  <!-- ============ SPEC ============ -->
+  <section class="spec">
+    <div class="rainbow-line" style="margin:0 0 40px">
+      <span style="flex:34;background:var(--c-espresso)"></span>
+      <span style="flex:28;background:var(--c-camel)"></span>
+      <span style="flex:41;background:var(--c-crema)"></span>
+      <span style="flex:18;background:var(--c-oliva)"></span>
+      <span style="flex:16;background:var(--c-burdeos)"></span>
+      <span style="flex:12;background:var(--c-mostaza)"></span>
+      <span style="flex:9;background:var(--c-flama)"></span>
+      <span style="flex:11;background:var(--c-ciruela)"></span>
+      <span style="flex:8;background:var(--c-denim)"></span>
+    </div>
+    <div class="spec-grid">
+
+      <div class="spec-block">
+        <h4>La idea</h4>
+        <p class="idea-display">La paleta de la app <em>es tu clóset.</em></p>
+        <p class="idea-ui">Lienzo neutro (galería + tinta) y cero color decorativo. Cada acento que ves sale de tus piezas reales: la portada se tiñe del color protagonista del look del día, el clóset se organiza por tu espectro, y el botón de añadir es un anillo con tus 9 familias. Si tu clóset cambia, la app cambia. Ninguna otra app puede verse así — porque ninguna otra persona tiene tu espectro.</p>
+      </div>
+
+      <div class="spec-block">
+        <h4>Lo innovador</h4>
+        <ol class="laws">
+          <li><b>La espina cromática.</b> El histograma de tus 9 familias de color es a la vez data, identidad y navegación. Ya existe en tu código: <b>dark-autumn-palette.ts</b> tiene las 14 familias — esto es su cara visible.</li>
+          <li><b>El home es una portada.</b> Cada día se "publica" una edición: número, fecha, el look del día a página completa teñido de su color dominante. Abrir la app se siente como recibir tu revista.</li>
+          <li><b>Clóset por color, no por carpetas.</b> Es el modelo mental real de alguien que viste por colorimetría. Categoría queda como filtro secundario.</li>
+          <li><b>El ticker.</b> Una línea viva de datos reales (wishlist, price watch, gaps) — movimiento con propósito, no decoración.</li>
+        </ol>
+      </div>
+
+      <div class="spec-block">
+        <h4>Riesgos honestos</h4>
+        <ol class="laws">
+          <li><b>Es la más ambiciosa de construir:</b> la portada teñida y el espectro necesitan que las fotos y colorFamily estén limpias en las 190 piezas (ya lo están casi todas).</li>
+          <li><b>El drama depende del contenido:</b> si un día no hay look propuesto, la portada necesita un fallback editorial elegante.</li>
+          <li><b>Compatibilidad total:</b> conserva Lenguaje B (radios suaves, glass en nav) y todas las leyes del 10. Puede combinarse con cualquier paleta anterior como "modo".</li>
+        </ol>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
