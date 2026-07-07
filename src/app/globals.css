@@ -1332,6 +1332,93 @@ header a[aria-label="THE EDIT home"] {
    THE EDIT — Closet dashboard v2 polish
    =========================================================== */
 
+/* ── Page Hero — glass editorial card (PageHeader component) ─────────────── */
+
+.page-hero-shell {
+  margin: 0.75rem 1rem 1rem;
+  padding: 1.5rem 1.25rem;
+  border-radius: 1.55rem;
+  background:
+    radial-gradient(circle at 90% 8%, rgba(216, 175, 163, 0.22), transparent 18rem),
+    rgba(255, 253, 252, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.94),
+    0 14px 38px rgba(74, 52, 42, 0.09);
+}
+
+.page-hero-grid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.page-hero-title {
+  font-family: var(--font-cormorant), serif;
+  font-size: clamp(2.6rem, 8vw, 4rem);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  color: var(--espresso);
+}
+
+.page-hero-desc {
+  margin-top: 0.85rem;
+  max-width: 42rem;
+  font-size: 0.95rem;
+  line-height: 1.72;
+  color: var(--ink-soft);
+}
+
+.page-hero-aside {
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.page-hero-aside-eyebrow {
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+
+.page-hero-aside-text {
+  font-family: var(--font-cormorant), serif;
+  font-size: 1.22rem;
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--coffee);
+  margin-top: 0.5rem;
+}
+
+.page-hero-children {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+@media (min-width: 768px) {
+  .page-hero-shell {
+    margin: 1rem 1.5rem 1.25rem;
+    padding: 2rem 1.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-hero-grid {
+    grid-template-columns: minmax(0, 1fr) 18rem;
+    align-items: end;
+  }
+
+  .page-hero-aside {
+    border-top: none;
+    padding-top: 0;
+    text-align: right;
+  }
+}
+
+/* ── Closet dashboard ────────────────────────────────────────────────────── */
+
 .closet-dashboard-v2 {
   color: var(--espresso);
 }
@@ -1726,382 +1813,6 @@ header a[aria-label="THE EDIT home"] {
    THE EDIT — EMERGENCY FIX: Closet dashboard v2 styles
    =========================================================== */
 
-.closet-dashboard-v2 {
-  color: var(--espresso) !important;
-}
-
-.closet-dashboard-v2 > section {
-  display: block !important;
-}
-
-.closet-v2-hero {
-  display: grid !important;
-  gap: 1rem !important;
-  margin-bottom: 1rem !important;
-  padding: 1.25rem !important;
-  border-radius: 1.55rem !important;
-  border: 1px solid rgba(255, 255, 255, 0.70) !important;
-  background:
-    radial-gradient(circle at 92% 6%, rgba(216, 175, 163, 0.22), transparent 16rem),
-    rgba(255, 253, 252, 0.70) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.92),
-    0 14px 38px rgba(74, 52, 42, 0.08) !important;
-}
-
-.closet-v2-hero h1 {
-  font-family: var(--font-cormorant), serif !important;
-  font-size: clamp(2.85rem, 10vw, 4.5rem) !important;
-  line-height: 0.88 !important;
-  color: var(--espresso) !important;
-}
-
-.closet-v2-hero p:not(.eyebrow) {
-  margin-top: 0.85rem !important;
-  max-width: 42rem !important;
-  font-size: 0.95rem !important;
-  line-height: 1.7 !important;
-  color: var(--ink-soft) !important;
-}
-
-.closet-v2-hero-count {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 1rem !important;
-  border-radius: 1.25rem !important;
-  background: rgba(255, 253, 252, 0.58) !important;
-  border: 1px solid rgba(48, 35, 31, 0.05) !important;
-  padding: 1rem !important;
-}
-
-.closet-v2-hero-count span {
-  font-family: var(--font-cormorant), serif !important;
-  font-size: 3.2rem !important;
-  line-height: 0.9 !important;
-  color: var(--burgundy) !important;
-}
-
-.closet-v2-hero-count small {
-  font-size: 0.58rem !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.18em !important;
-  text-transform: uppercase !important;
-  color: var(--coffee) !important;
-}
-
-.closet-v2-actions {
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 0.75rem !important;
-  margin-bottom: 1rem !important;
-}
-
-.closet-action-tile {
-  display: block !important;
-  border-radius: 1.25rem !important;
-  background: rgba(255, 253, 252, 0.68) !important;
-  border: 1px solid rgba(255, 255, 255, 0.68) !important;
-  padding: 1rem !important;
-  color: var(--espresso) !important;
-  text-decoration: none !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.88),
-    0 10px 26px rgba(74, 52, 42, 0.06) !important;
-}
-
-.closet-action-tile.primary {
-  background: var(--burgundy) !important;
-  color: #fff !important;
-}
-
-.closet-action-tile span {
-  display: block !important;
-  font-family: var(--font-cormorant), serif !important;
-  font-size: 1.85rem !important;
-  line-height: 0.95 !important;
-}
-
-.closet-action-tile small {
-  display: block !important;
-  margin-top: 0.5rem !important;
-  font-size: 0.8rem !important;
-  line-height: 1.4 !important;
-  color: inherit !important;
-  opacity: 0.72 !important;
-}
-
-.closet-v2-stats {
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 0.75rem !important;
-  margin-bottom: 1rem !important;
-}
-
-.closet-stat-tile {
-  display: grid !important;
-  gap: 0.35rem !important;
-  border-radius: 1.25rem !important;
-  background: rgba(255, 253, 252, 0.66) !important;
-  border: 1px solid rgba(255, 255, 255, 0.68) !important;
-  padding: 1rem !important;
-  text-decoration: none !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.88),
-    0 10px 26px rgba(74, 52, 42, 0.06) !important;
-}
-
-.closet-stat-label {
-  font-size: 0.55rem !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.18em !important;
-  text-transform: uppercase !important;
-  color: var(--burgundy) !important;
-}
-
-.closet-stat-value {
-  font-family: var(--font-cormorant), serif !important;
-  font-size: 2.9rem !important;
-  line-height: 0.85 !important;
-  color: var(--espresso) !important;
-}
-
-.closet-stat-note {
-  font-size: 0.78rem !important;
-  line-height: 1.35 !important;
-  color: var(--ink-soft) !important;
-}
-
-.closet-v2-grid {
-  display: grid !important;
-  gap: 1rem !important;
-  margin-bottom: 1rem !important;
-}
-
-.closet-v2-panel {
-  border-radius: 1.55rem !important;
-  background: rgba(255, 253, 252, 0.66) !important;
-  border: 1px solid rgba(255, 255, 255, 0.70) !important;
-  padding: 1.15rem !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.90),
-    0 14px 38px rgba(74, 52, 42, 0.07) !important;
-}
-
-.closet-v2-section-head {
-  display: flex !important;
-  align-items: end !important;
-  justify-content: space-between !important;
-  gap: 1rem !important;
-  margin-bottom: 1rem !important;
-}
-
-.closet-v2-section-head h2 {
-  font-family: var(--font-cormorant), serif !important;
-  font-size: 2.4rem !important;
-  line-height: 0.92 !important;
-  color: var(--espresso) !important;
-}
-
-.closet-mini-link {
-  flex: 0 0 auto !important;
-  border-radius: 999px !important;
-  background: rgba(255,255,255,0.62) !important;
-  padding: 0.65rem 0.85rem !important;
-  font-size: 0.5rem !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.16em !important;
-  text-transform: uppercase !important;
-  color: var(--burgundy) !important;
-  text-decoration: none !important;
-}
-
-.closet-insight-list {
-  display: grid !important;
-  gap: 0.65rem !important;
-}
-
-.closet-insight-card {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 1rem !important;
-  border-radius: 1.15rem !important;
-  background: rgba(255,255,255,0.54) !important;
-  padding: 0.9rem !important;
-}
-
-.closet-insight-card p {
-  font-size: 0.58rem !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.18em !important;
-  text-transform: uppercase !important;
-  color: var(--burgundy) !important;
-}
-
-.closet-insight-card span {
-  display: block !important;
-  margin-top: 0.35rem !important;
-  font-size: 0.82rem !important;
-  line-height: 1.45 !important;
-  color: var(--ink-soft) !important;
-}
-
-.closet-insight-card strong {
-  flex: 0 0 auto !important;
-  border-radius: 999px !important;
-  background: rgba(122,46,53,0.08) !important;
-  padding: 0.45rem 0.65rem !important;
-  font-size: 0.56rem !important;
-  color: var(--burgundy) !important;
-}
-
-.closet-category-grid {
-  display: grid !important;
-  gap: 0.55rem !important;
-}
-
-.closet-category-pill {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 1rem !important;
-  border-radius: 999px !important;
-  border: 1px solid rgba(122,46,53,0.10) !important;
-  background: rgba(255,255,255,0.52) !important;
-  padding: 0.8rem 0.9rem !important;
-  text-decoration: none !important;
-}
-
-.closet-category-pill span {
-  font-size: 0.58rem !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.16em !important;
-  text-transform: uppercase !important;
-  color: var(--coffee) !important;
-}
-
-.closet-category-pill strong {
-  border-radius: 999px !important;
-  background: rgba(122,46,53,0.08) !important;
-  padding: 0.35rem 0.55rem !important;
-  font-size: 0.52rem !important;
-  color: var(--burgundy) !important;
-}
-
-.closet-recent-grid {
-  display: grid !important;
-  gap: 0.9rem !important;
-}
-
-.closet-recent-card {
-  overflow: hidden !important;
-  border-radius: 1.35rem !important;
-  background: rgba(255,255,255,0.62) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.88),
-    0 12px 30px rgba(74, 52, 42, 0.07) !important;
-}
-
-.closet-recent-image {
-  position: relative !important;
-  height: 17rem !important;
-  margin: 0.75rem !important;
-  border-radius: 1.15rem !important;
-  background:
-    linear-gradient(145deg, rgba(244,232,223,0.88), rgba(255,253,252,0.66)) !important;
-  overflow: hidden !important;
-}
-
-.closet-recent-type,
-.closet-recent-score {
-  position: absolute !important;
-  top: 0.75rem !important;
-  border-radius: 999px !important;
-  background: rgba(255,255,255,0.78) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-}
-
-.closet-recent-type {
-  left: 0.75rem !important;
-  padding: 0.45rem 0.7rem !important;
-  font-size: 0.48rem !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.14em !important;
-  text-transform: uppercase !important;
-  color: var(--espresso) !important;
-}
-
-.closet-recent-score {
-  right: 0.75rem !important;
-  display: grid !important;
-  height: 2.7rem !important;
-  width: 2.7rem !important;
-  place-items: center !important;
-  background: var(--burgundy) !important;
-  font-family: var(--font-cormorant), serif !important;
-  font-size: 1.15rem !important;
-  color: #fff !important;
-}
-
-.closet-recent-copy {
-  padding: 0.1rem 1rem 1rem !important;
-}
-
-.closet-recent-copy p {
-  font-size: 0.52rem !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.16em !important;
-  text-transform: uppercase !important;
-  color: var(--burgundy) !important;
-}
-
-.closet-recent-copy h3 {
-  margin-top: 0.4rem !important;
-  display: -webkit-box !important;
-  overflow: hidden !important;
-  -webkit-line-clamp: 2 !important;
-  -webkit-box-orient: vertical !important;
-  font-family: var(--font-cormorant), serif !important;
-  font-size: 1.65rem !important;
-  line-height: 0.98 !important;
-  color: var(--espresso) !important;
-}
-
-@media (min-width: 720px) {
-  .closet-v2-hero {
-    grid-template-columns: minmax(0, 1fr) 14rem !important;
-    align-items: stretch !important;
-    padding: 1.5rem !important;
-  }
-
-  .closet-v2-hero-count {
-    display: grid !important;
-    place-items: center !important;
-    text-align: center !important;
-  }
-
-  .closet-v2-actions {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  }
-
-  .closet-v2-stats {
-    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-  }
-
-  .closet-v2-grid {
-    grid-template-columns: 1fr 1fr !important;
-  }
-
-  .closet-category-grid {
-    grid-template-columns: 1fr 1fr !important;
-  }
-
-  .closet-recent-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  }
-}
 
 @media (max-width: 520px) {
   .closet-v2-hero h1 {
