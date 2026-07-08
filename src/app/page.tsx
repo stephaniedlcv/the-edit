@@ -6,6 +6,17 @@ import type { WardrobeItem } from "@/types/wardrobe";
 
 export const dynamic = "force-dynamic";
 
+// ─── Edition number ─────────────────────────────────────────────────────────
+// Anchored to the first commit of the cromatica-v1 branch (2026-06-29).
+// Nº = floor((today − epoch) / 1 day) + 1 — never uses piece count.
+
+const EDITION_EPOCH = new Date("2026-06-29T14:28:06Z");
+
+function getEditionNumber(): number {
+  const msPerDay = 24 * 60 * 60 * 1000;
+  return Math.max(1, Math.floor((Date.now() - EDITION_EPOCH.getTime()) / msPerDay) + 1);
+}
+
 // ─── Server-side helpers ────────────────────────────────────────────────────
 
 /** Real server date in Puerto Rico time, labels in Spanish. */
@@ -25,6 +36,7 @@ function getEditionDate() {
 interface FamilySummary {
   family: string;
   label: string;
+  labelEs: string;
   count: number;
   hex: string;
 }
@@ -32,7 +44,7 @@ interface FamilySummary {
 interface ClosetSummary {
   totalPieces: number;
   activeFamilies: number;
-  emptyFamilies: { family: string; label: string }[];
+  emptyFamilies: { family: string; labelEs: string }[];
   dominant: FamilySummary | null;
   topFamilies: FamilySummary[];
 }
@@ -47,6 +59,7 @@ function buildClosetSummary(
     .map<FamilySummary>((e) => ({
       family: String(e.family),
       label: e.meta.label,
+      labelEs: e.meta.labelEs,
       count: e.count,
       hex: e.meta.hex,
     }))
@@ -54,7 +67,7 @@ function buildClosetSummary(
 
   const emptyFamilies = entries
     .filter((e) => e.count === 0)
-    .map((e) => ({ family: String(e.family), label: e.meta.label }));
+    .map((e) => ({ family: String(e.family), labelEs: e.meta.labelEs }));
 
   return {
     totalPieces,
@@ -65,30 +78,26 @@ function buildClosetSummary(
   };
 }
 
-/** Ticker items — derived strictly from real closet data, no fake copy. */
+/** Ticker items — derived strictly from real closet data. */
 function buildTickerItems(summary: ClosetSummary): string[] {
   if (summary.totalPieces === 0) return [];
   const items: string[] = [];
 
   if (summary.dominant) {
     items.push(
-      `${summary.dominant.label.toUpperCase()} DOMINA TU ESPECTRO · ${summary.dominant.count} PIEZAS`,
+      `${summary.dominant.labelEs.toUpperCase()} DOMINA TU ESPECTRO · ${summary.dominant.count} PIEZAS`,
     );
   }
   if (summary.topFamilies.length > 1) {
     items.push(
-      `${summary.topFamilies[1].label.toUpperCase()} EN SEGUNDO LUGAR · ${summary.topFamilies[1].count} PIEZAS`,
+      `${summary.topFamilies[1].labelEs.toUpperCase()} EN SEGUNDO LUGAR · ${summary.topFamilies[1].count} PIEZAS`,
     );
   }
   if (summary.emptyFamilies.length > 0) {
-    items.push(
-      `TE FALTA ${summary.emptyFamilies[0].label.toUpperCase()} EN TU PALETA`,
-    );
+    items.push(`TE FALTA ${summary.emptyFamilies[0].labelEs.toUpperCase()} EN TU PALETA`);
   }
   if (summary.emptyFamilies.length > 1) {
-    items.push(
-      `Y TAMBIÉN ${summary.emptyFamilies[1].label.toUpperCase()}`,
-    );
+    items.push(`Y TAMBIÉN ${summary.emptyFamilies[1].labelEs.toUpperCase()}`);
   }
   items.push(
     `${summary.totalPieces} PIEZAS · ${summary.activeFamilies} FAMILIAS ACTIVAS`,
@@ -96,7 +105,7 @@ function buildTickerItems(summary: ClosetSummary): string[] {
   return items;
 }
 
-/** Perceived luminance [0–1]. > 0.45 = fondo claro → texto oscuro. */
+/** Perceived luminance [0–1]. > 0.45 = light background → dark text. */
 function hexLuminance(hex: string): number {
   const clean = hex.replace("#", "");
   if (clean.length !== 6) return 0.5;
@@ -104,6 +113,18 @@ function hexLuminance(hex: string): number {
   const g = parseInt(clean.slice(2, 4), 16) / 255;
   const b = parseInt(clean.slice(4, 6), 16) / 255;
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+/** Darkens a hex by reducing each channel by `ratio` (0–1). */
+function darkenHex(hex: string, ratio: number): string {
+  const clean = hex.replace("#", "");
+  if (clean.length !== 6) return hex;
+  const factor = 1 - ratio;
+  const r = Math.round(parseInt(clean.slice(0, 2), 16) * factor);
+  const g = Math.round(parseInt(clean.slice(2, 4), 16) * factor);
+  const b = Math.round(parseInt(clean.slice(4, 6), 16) * factor);
+  const h = (v: number) => Math.max(0, Math.min(255, v)).toString(16).padStart(2, "0");
+  return `#${h(r)}${h(g)}${h(b)}`;
 }
 
 // ─── Small presentational helpers ──────────────────────────────────────────
@@ -120,6 +141,7 @@ function QuickChip({ href, label }: { href: string; label: string }) {
         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
         "focus-visible:outline-[var(--tinta)]",
       ].join(" ")}
+      style={{ fontFamily: "var(--font-sans)" }}
     >
       {label}
     </Link>
@@ -133,12 +155,21 @@ export default async function HomePage() {
   const summary = buildClosetSummary(entries);
   const tickerItems = buildTickerItems(summary);
   const { day, month, weekday } = getEditionDate();
+  const editionNumber = getEditionNumber();
 
   const isLightBg =
     summary.dominant ? hexLuminance(summary.dominant.hex) > 0.45 : false;
   const coverTextColor = isLightBg ? "var(--tinta)" : "var(--papel)";
-  const coverBtnBg = isLightBg ? "var(--tinta)" : "var(--papel)";
-  const coverBtnText = isLightBg ? "var(--papel)" : "var(--tinta)";
+  const coverBtnBg    = isLightBg ? "var(--tinta)" : "var(--papel)";
+  const coverBtnText  = isLightBg ? "var(--papel)" : "var(--tinta)";
+
+  // Gradient: linear 150° hex → darken 12% + soft radial light top-right
+  const coverBg = summary.dominant
+    ? [
+        `radial-gradient(ellipse at 85% 12%, rgba(255,253,245,0.15) 0%, transparent 55%)`,
+        `linear-gradient(150deg, ${summary.dominant.hex} 0%, ${darkenHex(summary.dominant.hex, 0.12)} 100%)`,
+      ].join(", ")
+    : "var(--tinta)";
 
   return (
     <section className="min-h-screen bg-[var(--gal)] px-4 pb-28 pt-6 md:px-6 md:pt-10">
@@ -167,14 +198,12 @@ export default async function HomePage() {
           >
             The Edit
           </p>
-          {summary.totalPieces > 0 && (
-            <p
-              className="text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-[var(--tinta-tenue)]"
-              style={{ fontFamily: "var(--font-sans)" }}
-            >
-              Edición diaria · Nº {summary.totalPieces}
-            </p>
-          )}
+          <p
+            className="text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-[var(--tinta-tenue)]"
+            style={{ fontFamily: "var(--font-sans)" }}
+          >
+            Edición diaria · Nº {editionNumber}
+          </p>
         </header>
 
         {/* ── 2. ChromaSpine con labels ──────────────────────────────────── */}
@@ -199,7 +228,7 @@ export default async function HomePage() {
               hrefBase="/closet/gallery"
               size="sm"
               ariaLabel="Tu clóset organizado por familia de color"
-              className="rounded-[var(--r-card)]"
+              className="rounded-[var(--r-card)] overflow-hidden"
             />
           </div>
         ) : (
@@ -237,7 +266,7 @@ export default async function HomePage() {
           <>
             <div
               className="relative overflow-hidden rounded-[var(--r-panel)] p-7 md:p-9"
-              style={{ backgroundColor: summary.dominant.hex }}
+              style={{ background: coverBg }}
             >
               {/* Swatches apilados en la esquina superior derecha */}
               {summary.topFamilies.length > 1 && (
@@ -247,7 +276,7 @@ export default async function HomePage() {
                       key={f.family}
                       className="h-[1.15rem] w-[1.15rem] rounded-full ring-1 ring-inset ring-white/25"
                       style={{ backgroundColor: f.hex }}
-                      title={`${f.label} — ${f.count} piezas`}
+                      title={`${f.labelEs} — ${f.count} piezas`}
                       aria-hidden="true"
                     />
                   ))}
@@ -259,17 +288,17 @@ export default async function HomePage() {
                 className="text-[0.58rem] font-bold uppercase tracking-[0.22em] opacity-70 pr-12"
                 style={{ color: coverTextColor, fontFamily: "var(--font-sans)" }}
               >
-                La portada de hoy · {summary.dominant.label}
+                La portada de hoy · {summary.dominant.labelEs}
               </p>
 
-              {/* Título editorial con "hoy." en itálico */}
+              {/* Título editorial: "El {familia} trabaja hoy." con itálico */}
               <p
                 role="heading"
                 aria-level={1}
-                className="mt-5 max-w-[14rem] text-[2.2rem] leading-[1.0] font-light sm:text-[2.7rem] sm:max-w-[17rem] pr-8"
+                className="mt-5 max-w-[14rem] text-[2.2rem] leading-[1.05] font-light sm:text-[2.7rem] sm:max-w-[17rem] pr-8"
                 style={{ color: coverTextColor, fontFamily: "var(--font-serif)" }}
               >
-                El {summary.dominant.label.toLowerCase()} trabaja{" "}
+                El {summary.dominant.labelEs.toLowerCase()} trabaja{" "}
                 <em>hoy.</em>
               </p>
 
@@ -281,10 +310,10 @@ export default async function HomePage() {
                 {summary.dominant.count} piezas · tu familia dominante
               </p>
 
-              {/* CTAs */}
-              <div className="mt-7 flex flex-wrap gap-3">
+              {/* CTA único — lógica real */}
+              <div className="mt-7">
                 <Link
-                  href={`/closet/gallery`}
+                  href={`/closet/gallery?colorFamily=${summary.dominant.family}`}
                   className="inline-flex h-10 items-center justify-center rounded-[var(--r-chip)] px-5 text-[0.65rem] font-bold uppercase tracking-[0.14em] no-underline transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                   style={{
                     backgroundColor: coverBtnBg,
@@ -292,25 +321,14 @@ export default async function HomePage() {
                     fontFamily: "var(--font-sans)",
                   }}
                 >
-                  Vestir esta portada
-                </Link>
-                <Link
-                  href="/closet/gallery"
-                  className="inline-flex h-10 items-center justify-center rounded-[var(--r-chip)] border px-5 text-[0.65rem] font-bold uppercase tracking-[0.14em] no-underline transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                  style={{
-                    borderColor: coverTextColor,
-                    color: coverTextColor,
-                    fontFamily: "var(--font-sans)",
-                  }}
-                >
-                  Cambiar
+                  Ver esta familia
                 </Link>
               </div>
             </div>
 
             {/* ── 5. Ticker de datos reales ─────────────────────────────── */}
             {tickerItems.length > 0 && (
-              <div className="relative overflow-hidden border-y border-[var(--line)] py-2">
+              <div className="relative overflow-hidden border-y border-[var(--line)] py-[0.45rem]">
                 <div className="te-ticker-track">
                   {[...tickerItems, ...tickerItems].map((item, i) => (
                     <span
@@ -319,9 +337,7 @@ export default async function HomePage() {
                       style={{ fontFamily: "var(--font-sans)" }}
                     >
                       {item}
-                      <span className="mx-5 opacity-30" aria-hidden="true">
-                        ·
-                      </span>
+                      <span className="mx-5 opacity-30" aria-hidden="true">·</span>
                     </span>
                   ))}
                 </div>

@@ -1,39 +1,33 @@
 "use client";
 
 /**
- * ChromaSpine — Cromática spectral strip  (Fase 4A)
+ * ChromaSpine — Cromática spectral histogram  (Fase 5A.4)
  *
- * Renders a sequence of color-family segments ordered by spectralOrder,
- * with each segment's visual weight (width or height) proportional to
- * piece count via √-scaling (prevents a dominant family from overwhelming
- * the layout: √36/√1 = 6×, vs raw 36×).
+ * Renders color-family bars as a histogram:
+ *   - Bar HEIGHT is proportional to piece count (normalised to max, min 18%)
+ *   - Bar WIDTH is equal (flex: 1) — all families share the horizontal space
+ *   - Container has a fixed height per size (sm: 40px, md: 52px, lg: 64px)
+ *   - Bars are bottom-aligned (align-items: flex-end)
+ *   - A 1 px tinta baseline runs below the strip at full width
+ *   - Corners: border-radius 4px 4px 0 0 (top only)
+ *   - Gap: 2px (sm/md), 3px (lg)
+ *   - White / cream families keep a hairline border (borderHex from meta)
  *
- * Visual treatments:
+ * 17 active families + specials comfortably fit at 375 px with gap 2 px.
+ * (18 × 8 min-width + 17 × 2 gap = 178 px — no overflow risk.)
+ *
+ * Visual treatments (unchanged):
  *   kind "hue"      → solid backgroundColor from meta.hex
- *   kind "special"  → gradient treatments (never flat):
- *                        multicolor → CSS linear-gradient sampling Cromática hues
- *                        metallic   → warm antique-gold shimmer
- *                        statement  → outline-only (border + transparent bg)
- *   kind "unknown"  → greige (#C8C0B0) with visible border
+ *   kind "special"  → gradient treatments (multicolor / metallic / statement)
+ *   kind "unknown"  → greige (#C8C0B0)
  *
- * Interaction modes (priority: hrefBase > onSelect > static):
- *   hrefBase → <Link href={hrefBase}?colorFamily={family}>
- *   onSelect → <button onClick>
- *   neither  → static <div role="img">
+ * Interaction modes (priority: hrefBase > onSelect > static) — unchanged.
  *
  * Accessibility:
  *   - role="group" + aria-label on container
- *   - aria-label and title on every segment
- *   - focus-visible ring on interactive segments
- *   - count is in aria-label even when showCounts=false
- *   - no movement animations (respects prefers-reduced-motion by default)
- *
- * Responsive:
- *   Horizontal: overflow-x auto for narrow viewports (scrollable strip).
- *   Vertical:   overflow-y auto.
- *   Never breaks layout — min segment size enforced.
- *
- * Does NOT import Supabase. No side effects. No `any`.
+ *   - aria-label and title on every bar
+ *   - focus-visible ring on interactive bars
+ *   - count is always in aria-label
  */
 
 import Link from "next/link";
@@ -50,35 +44,14 @@ export type ChromaSpineSize = "sm" | "md" | "lg";
 export type ChromaSpineOrientation = "horizontal" | "vertical";
 
 export interface ChromaSpineProps {
-  /**
-   * Entries to render. Each needs family, meta, and count.
-   * Build via getColorFamilyHistogram → map with getColorFamilyMeta,
-   * or supply SpectrumEntry[] directly from groupPiecesByFamily.
-   * ChromaSpine sorts by meta.spectralOrder internally — input order ignored.
-   */
   entries: SpectrumEntry[];
-  /** Family key of the currently selected segment (highlights with ring). */
   activeFamily?: string;
-  /**
-   * If set, each segment becomes a <button> that calls onSelect(family).
-   * Overridden by hrefBase.
-   */
   onSelect?: (family: SpectrumFamily) => void;
-  /**
-   * If set, each segment becomes a <Link href={hrefBase}?colorFamily={family}>.
-   * Takes priority over onSelect.
-   */
   hrefBase?: string;
-  /**
-   * Display piece count inside each segment.
-   * Hidden for size="sm" and for zero-count entries.
-   */
   showCounts?: boolean;
-  /** Visual scale of the strip. Default: "md". */
   size?: ChromaSpineSize;
-  /** Strip direction. Default: "horizontal". */
+  /** Retained for API compatibility. Currently only "horizontal" is rendered as histogram. */
   orientation?: ChromaSpineOrientation;
-  /** Accessible label for the container group. Default: "Color spectrum". */
   ariaLabel?: string;
   className?: string;
 }
@@ -86,36 +59,37 @@ export interface ChromaSpineProps {
 // ─── Size configuration ───────────────────────────────────────────────────────
 
 type SizeCfg = {
-  /** Fixed dimension (height in horizontal, width in vertical). */
-  thickness: number;
-  /** Minimum length of each segment (min-width / min-height). */
-  minLength: number;
+  /** Fixed container height in px. Bars fill a proportion of this. */
+  containerH: number;
+  /** Gap between bars in px. */
   gap: number;
   fontSize: string;
-  radius: number;
 };
 
 const SIZE_CFG: Record<ChromaSpineSize, SizeCfg> = {
-  sm: { thickness: 20, minLength: 10, gap: 2, fontSize: "0.44rem", radius: 3 },
-  md: { thickness: 32, minLength: 16, gap: 3, fontSize: "0.52rem", radius: 5 },
-  lg: { thickness: 48, minLength: 22, gap: 4, fontSize: "0.60rem", radius: 7 },
+  sm: { containerH: 40, gap: 2, fontSize: "0.44rem" },
+  md: { containerH: 52, gap: 2, fontSize: "0.52rem" },
+  lg: { containerH: 64, gap: 3, fontSize: "0.60rem" },
 };
+
+const BAR_RADIUS = "4px 4px 0 0";
+const MIN_H_RATIO = 0.18;
 
 // ─── Pure helpers ─────────────────────────────────────────────────────────────
 
 /**
- * √-scaled flex weight.
- * count=0 → 0.18 (visible but very thin)
- * count=max → 8.0
- * Ratio between min non-zero and max is √max instead of max.
+ * Computes bar height in px.
+ *   count = 0     → 18% of containerH (visible sliver, dimmed)
+ *   count = max   → 100% of containerH
+ *   Minimum enforced at 18% so zero-count families remain visible as stubs.
  */
-function scaledFlex(count: number, maxCount: number): number {
-  if (count === 0) return 0.18;
-  if (maxCount <= 0) return 1;
-  return Math.max(0.4, (Math.sqrt(count) / Math.sqrt(maxCount)) * 8);
+function barHeightPx(count: number, maxCount: number, containerH: number): number {
+  if (maxCount <= 0) return Math.round(MIN_H_RATIO * containerH);
+  const ratio = count === 0 ? MIN_H_RATIO : Math.max(MIN_H_RATIO, count / maxCount);
+  return Math.round(ratio * containerH);
 }
 
-/** Perceived luminance [0–1]. > 0.40 = light background. */
+/** Perceived luminance [0–1]. > 0.40 = light background → dark label. */
 function hexLuminance(hex: string): number {
   const clean = hex.replace("#", "");
   if (clean.length !== 6) return 0.5;
@@ -125,59 +99,45 @@ function hexLuminance(hex: string): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-/**
- * CSS background string for "special" families.
- * Never returns a flat hue — each family gets a distinct treatment.
- */
+/** CSS background string for "special" families. */
 function specialBackground(family: SpectrumFamily): string {
   if (family === "multicolor") {
-    // Samples 8 Cromática hues across spectral order (dark→warm→cool)
     return (
-      "linear-gradient(90deg," +
-      "#211C18 0%," +    // black
-      "#77303A 15%," +   // burgundy
-      "#C3902F 30%," +   // mustard
-      "#C6532F 44%," +   // orange
-      "#6B6D4C 58%," +   // olive
-      "#3A4B5F 73%," +   // blue
-      "#C98E8A 87%," +   // pink
-      "#EBDFC9 100%)"    // cream
+      "linear-gradient(180deg," +
+      "#211C18 0%," +
+      "#77303A 20%," +
+      "#C3902F 38%," +
+      "#C6532F 52%," +
+      "#6B6D4C 66%," +
+      "#3A4B5F 80%," +
+      "#C98E8A 92%," +
+      "#EBDFC9 100%)"
     );
   }
   if (family === "metallic") {
-    // Warm antique-gold shimmer
     return (
-      "linear-gradient(110deg," +
+      "linear-gradient(180deg," +
       "#7A5A1E 0%," +
-      "#C9A84C 25%," +
-      "#E8C86A 50%," +
-      "#B8902A 75%," +
+      "#C9A84C 30%," +
+      "#E8C86A 55%," +
+      "#B8902A 78%," +
       "#8C6A2F 100%)"
     );
   }
-  // "statement" uses transparent bg + border (handled in buildStyle)
   return "transparent";
 }
 
 /**
- * Computes the complete inline style for a single segment.
- * Handles flex sizing, background, border, active ring, and zero opacity.
+ * Computes the full inline style for a single histogram bar.
  */
 function buildStyle(
   meta: SpectrumMeta,
   isActive: boolean,
   count: number,
-  flex: number,
-  cfg: SizeCfg,
-  isHorizontal: boolean,
+  heightPx: number,
 ): CSSProperties {
-  // Proportional dimension
-  const grow: CSSProperties = isHorizontal
-    ? { flexGrow: flex, flexShrink: 1, width: 0, minWidth: cfg.minLength, height: cfg.thickness }
-    : { flexGrow: flex, flexShrink: 1, height: 0, minHeight: cfg.minLength, width: cfg.thickness };
-
-  // Background + border by kind
   let visual: CSSProperties;
+
   if (meta.kind === "special") {
     if (meta.id === "statement") {
       visual = { background: "transparent", border: `2px solid ${meta.hex}` };
@@ -185,24 +145,26 @@ function buildStyle(
       visual = { background: specialBackground(meta.id) };
     }
   } else {
-    // hue or unknown
     visual = { backgroundColor: meta.hex };
     if (meta.borderHex) {
       visual.border = `1px solid ${meta.borderHex}`;
     }
   }
 
-  // Active ring: inner white halo + outer family-colored ring
   const boxShadow = isActive
     ? `inset 0 0 0 2px rgba(255,255,255,0.55), 0 0 0 2px ${meta.hex}`
     : undefined;
 
   return {
-    ...grow,
-    ...visual,
-    borderRadius: cfg.radius,
+    // Equal-width columns — fills the container row proportionally
+    flex: "1 1 0",
+    width: 0,
+    minWidth: 8,
+    height: heightPx,
+    borderRadius: BAR_RADIUS,
     opacity: count === 0 ? 0.28 : 1,
     boxShadow,
+    ...visual,
   };
 }
 
@@ -213,10 +175,10 @@ type SegmentMode = "link" | "button" | "static";
 interface SegmentProps {
   entry: SpectrumEntry;
   maxCount: number;
+  containerH: number;
   isActive: boolean;
   showCounts: boolean;
   size: ChromaSpineSize;
-  isHorizontal: boolean;
   mode: SegmentMode;
   href?: string;
   onClickFn?: () => void;
@@ -229,20 +191,19 @@ const FOCUS_RING =
 function Segment({
   entry,
   maxCount,
+  containerH,
   isActive,
   showCounts,
   size,
-  isHorizontal,
   mode,
   href,
   onClickFn,
 }: SegmentProps) {
   const { meta, count } = entry;
   const cfg = SIZE_CFG[size];
-  const flex = scaledFlex(count, maxCount);
-  const style = buildStyle(meta, isActive, count, flex, cfg, isHorizontal);
+  const barH = barHeightPx(count, maxCount, containerH);
+  const style = buildStyle(meta, isActive, count, barH);
 
-  // Count label text color: adapted to background brightness
   const isOutlineOnly = meta.kind === "special" && meta.id === "statement";
   const countColor = isOutlineOnly
     ? meta.hex
@@ -257,10 +218,10 @@ function Segment({
 
   const inner = (
     <span
-      className="flex h-full w-full items-center justify-center overflow-hidden select-none"
+      className="flex h-full w-full items-end justify-center overflow-hidden select-none pb-[3px]"
       aria-hidden="true"
     >
-      {showCounts && size !== "sm" && count > 0 ? (
+      {showCounts && size !== "sm" && count > 0 && barH >= 20 ? (
         <span
           className="font-semibold tabular-nums leading-none whitespace-nowrap"
           style={{ fontSize: cfg.fontSize, color: countColor }}
@@ -303,12 +264,7 @@ function Segment({
   }
 
   return (
-    <div
-      style={style}
-      title={label}
-      aria-label={label}
-      role="img"
-    >
+    <div style={style} title={label} aria-label={label} role="img">
       {inner}
     </div>
   );
@@ -327,72 +283,78 @@ export function ChromaSpine({
   ariaLabel = "Color spectrum",
   className = "",
 }: ChromaSpineProps) {
-  // Sort by spectralOrder — mirrors sortFamiliesBySpectralOrder() from spectrum.ts
-  // but operates directly on SpectrumEntry[] to preserve the pieces field.
   const sorted = [...entries].sort(
     (a, b) => a.meta.spectralOrder - b.meta.spectralOrder,
   );
 
   const maxCount = sorted.reduce((m, e) => Math.max(m, e.count), 0);
 
-  // Determine interaction mode (hrefBase takes priority over onSelect)
   const globalMode: SegmentMode = hrefBase
     ? "link"
     : onSelect
       ? "button"
       : "static";
 
-  const isHorizontal = orientation === "horizontal";
   const cfg = SIZE_CFG[size];
 
+  // Histogram container: fixed height, bars align to the bottom
   const containerStyle: CSSProperties = {
     display: "flex",
-    flexDirection: isHorizontal ? "row" : "column",
-    alignItems: "stretch",
+    flexDirection: orientation === "vertical" ? "column" : "row",
+    alignItems: orientation === "vertical" ? "flex-start" : "flex-end",
+    height: orientation === "vertical" ? undefined : cfg.containerH,
+    width: orientation === "vertical" ? cfg.containerH : undefined,
     gap: cfg.gap,
-    ...(isHorizontal ? { overflowX: "auto" } : { overflowY: "auto" }),
+    overflowX: orientation === "horizontal" ? "auto" : undefined,
+    overflowY: orientation === "vertical" ? "auto" : undefined,
   };
 
   return (
-    <div
-      role="group"
-      aria-label={ariaLabel}
-      className={className}
-      style={containerStyle}
-    >
-      {sorted.map((entry) => {
-        const { family } = entry;
-        const isUnknown = family === "unknown";
+    <div className={className}>
+      <div
+        role="group"
+        aria-label={ariaLabel}
+        style={containerStyle}
+      >
+        {sorted.map((entry) => {
+          const { family } = entry;
+          const isUnknown = family === "unknown";
+          const segMode: SegmentMode = isUnknown ? "static" : globalMode;
+          const href =
+            segMode === "link" && hrefBase
+              ? `${hrefBase}?colorFamily=${family}`
+              : undefined;
+          const onClickFn =
+            segMode === "button" && onSelect
+              ? () => onSelect(family)
+              : undefined;
 
-        // "unknown" is always static — no filter link for unrecognized families
-        const segMode: SegmentMode =
-          isUnknown ? "static" : globalMode;
-
-        const href =
-          segMode === "link" && hrefBase
-            ? `${hrefBase}?colorFamily=${family}`
-            : undefined;
-
-        const onClickFn =
-          segMode === "button" && onSelect
-            ? () => onSelect(family)
-            : undefined;
-
-        return (
-          <Segment
-            key={String(family)}
-            entry={entry}
-            maxCount={maxCount}
-            isActive={activeFamily === family}
-            showCounts={showCounts}
-            size={size}
-            isHorizontal={isHorizontal}
-            mode={segMode}
-            href={href}
-            onClickFn={onClickFn}
-          />
-        );
-      })}
+          return (
+            <Segment
+              key={String(family)}
+              entry={entry}
+              maxCount={maxCount}
+              containerH={cfg.containerH}
+              isActive={activeFamily === family}
+              showCounts={showCounts}
+              size={size}
+              mode={segMode}
+              href={href}
+              onClickFn={onClickFn}
+            />
+          );
+        })}
+      </div>
+      {/* 1 px tinta baseline */}
+      <div
+        aria-hidden="true"
+        style={{
+          height: 1,
+          background: "var(--tinta)",
+          opacity: 0.18,
+          marginTop: 0,
+        }}
+      />
     </div>
   );
 }

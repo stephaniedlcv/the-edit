@@ -137,16 +137,18 @@ export function AppShell({ children }: AppShellProps) {
 
   return (
     <div className="min-h-screen bg-[var(--page)]">
-      {/* Compact sticky header */}
-      <header className="nav-header sticky top-0 z-40 flex items-center justify-center border-b border-white/40 bg-[rgba(255,253,252,0.72)] backdrop-blur-2xl">
-        <Link
-          href="/"
-          className="nav-wordmark font-display font-bold uppercase leading-none tracking-[0.18em] text-[var(--espresso)] no-underline transition-colors hover:text-[var(--burgundy)]"
-          aria-label="THE EDIT home"
-        >
-          THE EDIT
-        </Link>
-      </header>
+      {/* Compact sticky header — hidden on "/" (editorial masthead owns that page) */}
+      {!isHome && (
+        <header className="nav-header sticky top-0 z-40 flex items-center justify-center border-b border-white/40 bg-[rgba(255,253,252,0.72)] backdrop-blur-2xl">
+          <Link
+            href="/"
+            className="nav-wordmark font-display font-bold uppercase leading-none tracking-[0.18em] text-[var(--espresso)] no-underline transition-colors hover:text-[var(--burgundy)]"
+            aria-label="THE EDIT home"
+          >
+            THE EDIT
+          </Link>
+        </header>
+      )}
 
       {/* Page content */}
       <main className="main-content mx-auto min-h-screen w-full max-w-[1180px] px-0">
