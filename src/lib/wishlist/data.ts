@@ -48,3 +48,20 @@ export async function getWishlistItems(): Promise<WishlistItem[]> {
   const mapped = data.map((item) => mapWishlistItem(item as never));
   return attachSignedWishlistImageUrls(mapped, supabase);
 }
+
+/** Lightweight count of active wishlist items — no image signing. */
+export async function getWishlistCount(): Promise<number> {
+  const supabase = getSupabaseServerClient();
+  if (!supabase) return mockWishlistItems.length;
+
+  const { count, error } = await supabase
+    .from("wishlist_items")
+    .select("*", { count: "exact", head: true })
+    .eq("is_archived", false);
+
+  if (error) {
+    console.error("Failed to count wishlist_items:", error.message);
+    return 0;
+  }
+  return count ?? 0;
+}

@@ -91,7 +91,7 @@ export function DailyLookCover({ candidates, editionNumber }: DailyLookCoverProp
       </p>
 
       {/* Subline 2: harmony score — only when > 0 */}
-      {look.colorScore > 0 && (
+      {look.colorScore > 0 && look.colorScore < 100 && (
         <p
           className="mt-1 text-[0.72rem] leading-[1.4] opacity-55 pr-12"
           style={{ color: look.textColor, fontFamily: "var(--font-sans)" }}

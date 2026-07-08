@@ -176,3 +176,20 @@ export async function getSavedOutfits() {
     error: null,
   };
 }
+
+/** Lightweight count of saved (non-deleted) outfits — no image signing. */
+export async function getSavedOutfitsCount(): Promise<number> {
+  const supabase = getSupabaseServerClient();
+  if (!supabase) return 0;
+
+  const { count, error } = await supabase
+    .from("saved_outfits")
+    .select("*", { count: "exact", head: true })
+    .neq("status", "deleted");
+
+  if (error) {
+    console.error("Failed to count saved_outfits:", error.message);
+    return 0;
+  }
+  return count ?? 0;
+}

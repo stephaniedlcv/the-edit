@@ -3,10 +3,14 @@ import { getClosetSpectrumEntries } from "@/lib/wardrobe/spectrum-data";
 import { getWardrobeItems } from "@/lib/wardrobe/data";
 import { composeOutfits } from "@/lib/style-profile/outfit-composer";
 import { SPECTRUM_META } from "@/lib/wardrobe/spectrum";
+import { getCalendarEvents } from "@/lib/calendar";
+import { getWishlistCount } from "@/lib/wishlist/data";
+import { getSavedOutfitsCount } from "@/lib/outfits/data";
 import { ChromaSpineBlock } from "@/components/chroma-spine";
 import { DailyLookCover } from "@/components/daily-look-cover";
 import type { LookCandidate } from "@/components/daily-look-cover";
 import type { SpectrumEntry } from "@/lib/wardrobe/spectrum";
+import type { CalendarCategory, CalendarEvent } from "@/lib/calendar";
 import type { ColorFamily, WardrobeCategory, WardrobeItem } from "@/types/wardrobe";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +23,28 @@ function getEditionNumber(): number {
   return Math.max(1, Math.floor((Date.now() - EDITION_EPOCH.getTime()) / msPerDay) + 1);
 }
 
-// ─── Server-side helpers ────────────────────────────────────────────────────
+// ─── PR time helpers ────────────────────────────────────────────────────────
+
+/** Current PR date as "YYYY-MM-DD" (en-CA gives ISO date format). */
+function getPRDateString(): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Puerto_Rico",
+    year: "numeric", month: "2-digit", day: "2-digit",
+  }).format(new Date());
+}
+
+/** Current hour in PR time (0–23). PR is UTC-4, no DST. */
+function getPRHour(): number {
+  const prMs = Date.now() - 4 * 60 * 60 * 1000;
+  return new Date(prMs).getUTCHours();
+}
+
+function getGreeting(): string {
+  const h = getPRHour();
+  if (h >= 5 && h < 12) return "Buenos días.";
+  if (h >= 12 && h < 20) return "Buenas tardes.";
+  return "Buenas noches.";
+}
 
 function getEditionDate() {
   const now = new Date();
@@ -29,6 +54,56 @@ function getEditionDate() {
   const weekday = new Intl.DateTimeFormat("es-PR", { weekday: "long", timeZone: pr }).format(now);
   return { day, month: month.toUpperCase(), weekday: weekday.toUpperCase() };
 }
+
+// ─── Calendar helpers ────────────────────────────────────────────────────────
+
+/** Format an event's start time in PR local time (e.g. "9:30 a. m."). */
+function formatEventTime(isoStart: string): string {
+  return new Intl.DateTimeFormat("es-PR", {
+    timeZone: "America/Puerto_Rico",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(new Date(isoStart));
+}
+
+/** Dot color hex per calendar category, using Dark Autumn palette. */
+const CATEGORY_DOT: Record<CalendarCategory, string> = {
+  personal: SPECTRUM_META.burgundy.hex,
+  holiday:  SPECTRUM_META.mustard.hex,
+  workout:  SPECTRUM_META.olive.hex,
+};
+
+/**
+ * Fetch today's calendar events in PR time.
+ * Returns [] if calendar is unconfigured or all sources fail.
+ * Uses UTC midnight boundaries for rrule.between compatibility.
+ */
+async function getTodayCalendarEvents(): Promise<CalendarEvent[]> {
+  const prDate = getPRDateString(); // "2026-07-08"
+  // UTC midnight as rangeStart — required for rrule.between (see memory)
+  const rangeStart = new Date(prDate + "T00:00:00.000Z");
+  // 28h window covers full PR day (UTC-4) including late-night events
+  const rangeEnd = new Date(rangeStart.getTime() + 28 * 60 * 60 * 1000);
+
+  try {
+    const result = await getCalendarEvents(rangeStart, rangeEnd);
+    if (!result.configured || result.events.length === 0) return [];
+
+    // Filter to events that land on today in PR time
+    return result.events.filter((ev) => {
+      const evPRDate = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Puerto_Rico",
+        year: "numeric", month: "2-digit", day: "2-digit",
+      }).format(new Date(ev.start));
+      return evPRDate === prDate;
+    });
+  } catch {
+    return [];
+  }
+}
+
+// ─── Closet summary ──────────────────────────────────────────────────────────
 
 interface FamilySummary { family: string; label: string; labelEs: string; count: number; hex: string; }
 interface ClosetSummary {
@@ -57,14 +132,25 @@ function buildClosetSummary(entries: SpectrumEntry<WardrobeItem>[]): ClosetSumma
   };
 }
 
-function buildTickerItems(summary: ClosetSummary): string[] {
+function buildTickerItems(
+  summary: ClosetSummary,
+  wishlistCount: number,
+  savedLooksCount: number,
+): string[] {
   if (summary.totalPieces === 0) return [];
   const items: string[] = [];
+
   if (summary.dominant) {
     items.push(`${summary.dominant.labelEs.toUpperCase()} DOMINA TU ESPECTRO · ${summary.dominant.count} PIEZAS`);
   }
   if (summary.topFamilies.length > 1) {
     items.push(`${summary.topFamilies[1].labelEs.toUpperCase()} EN SEGUNDO LUGAR · ${summary.topFamilies[1].count} PIEZAS`);
+  }
+  if (wishlistCount > 0) {
+    items.push(`${wishlistCount} ${wishlistCount === 1 ? "PIEZA EN WISHLIST" : "PIEZAS EN WISHLIST"}`);
+  }
+  if (savedLooksCount > 0) {
+    items.push(`${savedLooksCount} ${savedLooksCount === 1 ? "LOOK GUARDADO" : "LOOKS GUARDADOS"}`);
   }
   if (summary.emptyFamilies.length > 0) {
     items.push(`TE FALTA ${summary.emptyFamilies[0].labelEs.toUpperCase()} EN TU PALETA`);
@@ -76,7 +162,8 @@ function buildTickerItems(summary: ClosetSummary): string[] {
   return items;
 }
 
-/** Perceived luminance [0–1]. > 0.45 = light background → dark text. */
+// ─── Color helpers ───────────────────────────────────────────────────────────
+
 function hexLuminance(hex: string): number {
   const clean = hex.replace("#", "");
   if (clean.length !== 6) return 0.5;
@@ -99,10 +186,6 @@ function darkenHex(hex: string, ratio: number): string {
 
 // ─── Daily look helpers ──────────────────────────────────────────────────────
 
-/**
- * Spanish labels for each WardrobeCategory — used in the editorial title.
- * Prefer item.subcategory when it's short enough (≤12 chars) for more specificity.
- */
 const CATEGORY_LABELS_ES: Record<WardrobeCategory, string> = {
   top:       "Top",
   bottom:    "Pantalón",
@@ -114,27 +197,9 @@ const CATEGORY_LABELS_ES: Record<WardrobeCategory, string> = {
   jewelry:   "Joyería",
 };
 
-/**
- * Builds the editorial cover title from the two anchor pieces of a look.
- *
- * Format: "{categoryEs} {colorLabelEs}, base {baseColorLabelEs}."
- * Example: "Blazer negro, base crema."
- *
- * Falls back to "{categoryEs} {colorLabelEs}, hoy." when:
- *   — no bottom/base piece exists (dress look), or
- *   — the composed string exceeds ~45 characters.
- */
-function buildEditorialTitle(
-  anchor: WardrobeItem,
-  bottom: WardrobeItem | undefined,
-): string {
-  // Category label: use subcategory if it's a short, specific word
+function buildEditorialTitle(anchor: WardrobeItem, bottom: WardrobeItem | undefined): string {
   const sub = anchor.subcategory?.trim();
-  const categoryEs =
-    sub && sub.length <= 12
-      ? sub
-      : (CATEGORY_LABELS_ES[anchor.category] ?? "Pieza");
-
+  const categoryEs = sub && sub.length <= 12 ? sub : (CATEGORY_LABELS_ES[anchor.category] ?? "Pieza");
   const anchorMeta = SPECTRUM_META[anchor.colorFamily as ColorFamily];
   const anchorColor = anchorMeta?.labelEs?.toLowerCase() ?? "";
 
@@ -149,10 +214,6 @@ function buildEditorialTitle(
   return short.length <= 45 ? short : `${categoryEs.slice(0, 18)}, hoy.`;
 }
 
-/**
- * Stable daily index from Puerto Rico date (YYYY-MM-DD → hash → modulo).
- * Same date → same index all day. Changes at PR midnight.
- */
 function getDailyIndex(count: number): number {
   if (count === 0) return 0;
   const prDate = new Intl.DateTimeFormat("en-US", {
@@ -181,20 +242,15 @@ function buildLookCandidates(wardrobeItems: WardrobeItem[]): LookCandidate[] {
       .map((id) => itemById.get(id))
       .filter((p): p is WardrobeItem => p != null);
 
-    // ── Anchor + base pieces for editorial title ─────────────────────────
     const anchor =
       pieces.find((p) => p.category === "outerwear") ??
       pieces.find((p) => p.category === "dress") ??
       pieces.find((p) => p.category === "top") ??
       pieces[0];
-
     const bottom = pieces.find((p) => p.category === "bottom");
 
-    const editorialTitle = anchor
-      ? buildEditorialTitle(anchor, bottom)
-      : look.title;
+    const editorialTitle = anchor ? buildEditorialTitle(anchor, bottom) : look.title;
 
-    // ── Dominant colorFamily for gradient ────────────────────────────────
     const familyCounts: Record<string, number> = {};
     for (const p of pieces) {
       if (p.colorFamily) {
@@ -205,11 +261,9 @@ function buildLookCandidates(wardrobeItems: WardrobeItem[]): LookCandidate[] {
     const dominantFamily = (
       Object.entries(familyCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "black"
     ) as ColorFamily;
-
     const dominantMeta = SPECTRUM_META[dominantFamily] ?? SPECTRUM_META.black;
     const dominantHex = dominantMeta.hex;
 
-    // ── Swatches: up to 4 unique hexes ordered by piece ─────────────────
     const seenHex = new Set<string>();
     const swatchHexes: string[] = [];
     for (const p of pieces) {
@@ -229,12 +283,12 @@ function buildLookCandidates(wardrobeItems: WardrobeItem[]): LookCandidate[] {
     const isLight = hexLuminance(dominantHex) > 0.45;
 
     return {
-      outfitId:      look.id,
+      outfitId:        look.id,
       editorialTitle,
       anchorPieceName: anchor?.name ?? "",
-      pieceCount:    pieces.length,
-      colorScore:    look.colorScore,   // raw from validator (0–100, already rounded)
-      pieceIds:      look.pieceIds,
+      pieceCount:      pieces.length,
+      colorScore:      look.colorScore,
+      pieceIds:        look.pieceIds,
       swatchHexes,
       coverBg,
       textColor: isLight ? "var(--tinta)" : "var(--papel)",
@@ -247,17 +301,21 @@ function buildLookCandidates(wardrobeItems: WardrobeItem[]): LookCandidate[] {
 // ─── Home ───────────────────────────────────────────────────────────────────
 
 export default async function HomePage() {
-  const [entries, wardrobeItems] = await Promise.all([
+  const [entries, wardrobeItems, wishlistCount, savedLooksCount, todayEvents] = await Promise.all([
     getClosetSpectrumEntries({ includeEmpty: true }),
     getWardrobeItems(),
+    getWishlistCount().catch(() => 0),
+    getSavedOutfitsCount().catch(() => 0),
+    getTodayCalendarEvents(),
   ]);
 
-  const summary = buildClosetSummary(entries);
-  const tickerItems = buildTickerItems(summary);
+  const summary   = buildClosetSummary(entries);
+  const tickerItems = buildTickerItems(summary, wishlistCount, savedLooksCount);
   const { day, month, weekday } = getEditionDate();
   const editionNumber = getEditionNumber();
+  const greeting  = getGreeting();
 
-  // ── Daily look candidates ────────────────────────────────────────────────
+  // ── Daily look ───────────────────────────────────────────────────────────
   let lookCandidates: LookCandidate[] = [];
   try {
     lookCandidates = buildLookCandidates(wardrobeItems);
@@ -283,6 +341,10 @@ export default async function HomePage() {
       ].join(", ")
     : "var(--tinta)";
 
+  // ── Agenda: max 4 shown ──────────────────────────────────────────────────
+  const visibleEvents = todayEvents.slice(0, 4);
+  const extraEvents   = todayEvents.length - visibleEvents.length;
+
   return (
     <section className="min-h-screen bg-[var(--gal)] px-4 pb-28 pt-6 md:px-6 md:pt-10 [overflow-x:clip]">
       <style>{`
@@ -305,31 +367,40 @@ export default async function HomePage() {
         {/* ── 1. Masthead + histogram + caption */}
         <ChromaSpineBlock entries={entries} editionNumber={editionNumber} />
 
-        {/* ── 2. Fecha editorial */}
-        <div className="flex items-end gap-4">
-          <p
-            className="text-[4.2rem] leading-[0.8] text-[var(--tinta)]"
-            style={{ fontFamily: "var(--font-serif)", fontWeight: 300 }}
-          >
-            {day}
-          </p>
-          <div className="pb-1">
+        {/* ── 2. Fecha + saludo */}
+        <div>
+          <div className="flex items-end gap-4">
             <p
-              className="text-[0.7rem] font-bold uppercase tracking-[0.16em] text-[var(--tinta)]"
-              style={{ fontFamily: "var(--font-sans)" }}
+              className="text-[4.2rem] leading-[0.8] text-[var(--tinta)]"
+              style={{ fontFamily: "var(--font-serif)", fontWeight: 300 }}
             >
-              {month}
+              {day}
             </p>
-            <p
-              className="text-[0.7rem] font-bold uppercase tracking-[0.16em] text-[var(--tinta-tenue)]"
-              style={{ fontFamily: "var(--font-sans)" }}
-            >
-              {weekday}
-            </p>
+            <div className="pb-1">
+              <p
+                className="text-[0.7rem] font-bold uppercase tracking-[0.16em] text-[var(--tinta)]"
+                style={{ fontFamily: "var(--font-sans)" }}
+              >
+                {month}
+              </p>
+              <p
+                className="text-[0.7rem] font-bold uppercase tracking-[0.16em] text-[var(--tinta-tenue)]"
+                style={{ fontFamily: "var(--font-sans)" }}
+              >
+                {weekday}
+              </p>
+            </div>
           </div>
+          {/* Saludo contextual — solo texto, sin card */}
+          <p
+            className="mt-2 text-[0.8rem] text-[var(--tinta-tenue)] italic"
+            style={{ fontFamily: "var(--font-serif)" }}
+          >
+            {greeting}
+          </p>
         </div>
 
-        {/* ── 3. Cover: daily look (Fase 5B) → family fallback */}
+        {/* ── 3. Cover: look del día → fallback familia dominante */}
         {orderedCandidates.length > 0 ? (
           <DailyLookCover candidates={orderedCandidates} editionNumber={editionNumber} />
         ) : summary.dominant ? (
@@ -383,7 +454,56 @@ export default async function HomePage() {
           </div>
         ) : null}
 
-        {/* ── 4. Ticker */}
+        {/* ── 4. Hoy — agenda del día (solo si hay eventos) */}
+        {visibleEvents.length > 0 && (
+          <div>
+            <p
+              className="mb-3 text-[0.58rem] font-bold uppercase tracking-[0.18em] text-[var(--tinta-tenue)]"
+              style={{ fontFamily: "var(--font-sans)" }}
+            >
+              Hoy
+            </p>
+            <div className="flex flex-col">
+              {visibleEvents.map((ev) => (
+                <div
+                  key={ev.id}
+                  className="flex items-center gap-3 border-b border-[var(--line)] py-[0.6rem] last:border-b-0"
+                >
+                  {/* Hora */}
+                  <span
+                    className="w-[3.6rem] shrink-0 text-[0.68rem] tabular-nums text-[var(--tinta-tenue)]"
+                    style={{ fontFamily: "var(--font-sans)" }}
+                  >
+                    {ev.allDay ? "todo el día" : formatEventTime(ev.start)}
+                  </span>
+                  {/* Dot de categoría */}
+                  <span
+                    className="h-[0.45rem] w-[0.45rem] shrink-0 rounded-full"
+                    style={{ backgroundColor: CATEGORY_DOT[ev.category] }}
+                    aria-hidden="true"
+                  />
+                  {/* Título */}
+                  <span
+                    className="truncate text-[0.82rem] font-medium text-[var(--tinta)]"
+                    style={{ fontFamily: "var(--font-sans)" }}
+                  >
+                    {ev.title}
+                  </span>
+                </div>
+              ))}
+            </div>
+            {extraEvents > 0 && (
+              <p
+                className="mt-2 text-[0.65rem] text-[var(--tinta-tenue)]"
+                style={{ fontFamily: "var(--font-sans)" }}
+              >
+                y {extraEvents} {extraEvents === 1 ? "evento más" : "eventos más"}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* ── 5. Ticker */}
         {tickerItems.length > 0 && (
           <div className="relative w-full overflow-hidden border-y border-[var(--line)] py-[0.45rem]">
             <div className="te-ticker-track">

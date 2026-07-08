@@ -1,0 +1,15 @@
+Antes de cerrar el acta, quedan dos preguntas sin responder del prompt anterior — no dejes que se le escapen al Agent:
+
+"Armonía 100" sigue ahí. Un score perfecto es sospechoso. Que responda: ¿es el valor real de composeOutfits o un cap? Si el composer devuelve 100 para casi todo, el número no informa nada y es mejor quitarlo hasta calibrar el scoring (regla: verdad o no existe — y un número que siempre es 100 no dice verdad, dice ruido).
+189 vs 190 sigue sin explicación. Y ahora hay otra pista: café bajó de 27 a 26 en el ticker. O sea, se "perdió" una pieza café. ¿Archivaste/editaste una pieza ayer (legítimo), o un filtro nuevo en getWardrobeItems está excluyendo una silenciosamente (bug)? Es una sola pieza, pero es exactamente el tipo de fuga silenciosa que el audit original encontró en versión grande.
+
+Cuando responda esas dos, cerramos 5B y pasamos a 5C — la última de la Portada. Prompt listo:
+
+Fase 5C — Ticker enriquecido + agenda del día. Branch cromatica-v1. Última fase de la Portada.
+
+Ticker con datos completos y reales: wishlist count (desde lib/wishlist/data), looks guardados count (lib/outfits/data), familia dominante + segunda, familias vacías ("Te falta ciruela"), y el gap principal si closet-health expone uno computable server-side. Todo desde las funciones existentes — cero números hardcodeados. El ticker se construye como array de strings server-side; si un dato falla, se omite ese ítem (nunca placeholder).
+Sección "Hoy" (agenda): debajo de la cover, usar /api/calendar + lib/calendar.ts (existen, están huérfanos) para listar los eventos de HOY: fila por evento con hora + título, estilo del mockup (hora en tabular-nums, dot de color, título medium). Máximo 4 eventos + "y n más". Si no hay feed ICS configurado en env o no hay eventos hoy, la sección NO se renderiza — ni vacía ni con placeholder.
+Saludo contextual pequeño (opcional si cabe limpio): línea fina entre fecha y cover con saludo por hora real de PR ("Buenos días" / "Buenas tardes" / "Buenas noches") — solo texto, sin card.
+Orden final de la Portada: masthead+espina → fecha (+saludo) → cover del look → Hoy (si existe) → ticker. Verificar aire entre bloques (mín 20px) y que el nav no tape el último bloque.
+No tocar: cover, espina, spectrum, APIs (solo consumir), Supabase.
+Criterio de aceptación: screenshot 375px de la portada completa (scroll incluido si hace falta) + respuesta explícita a las 2 preguntas pendientes de 5B (armonía 100 y 189 vs 190). Cierre estándar: lint, typecheck, build, commit, push.
