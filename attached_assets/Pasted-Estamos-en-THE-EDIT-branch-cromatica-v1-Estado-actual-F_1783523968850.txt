@@ -1,0 +1,131 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Estado actual:
+- Fase 0 cerrada: branch `cromatica-v1` creado desde `redesign-v1`.
+- Fase 1B cerrada: componentes/libs muertos eliminados.
+- Fase 1C cerrada: CSS legacy de navegación eliminado.
+- Fase 1D cerrada: `<main>` anidados reemplazados por `<section>`.
+- Fase 2A cerrada: ColorFamily audit con 190/190 piezas válidas, 100% coverage.
+- Fase 2B cerrada: data honesty fixes.
+- Fase 2C cerrada: auth strategy documentada.
+- Fase 3A cerrada: tokens Cromática instalados y documentados.
+- Fase 3B cerrada: `src/lib/wardrobe/spectrum.ts` creado como fuente central para familias de color, metadata, histogramas, unknown y spectralOrder.
+- Último commit confirmado: `8ea4126 Add a central library for managing color family data and logic`.
+
+Ahora ejecuta Fase 3C — UI primitives.
+
+Objetivo:
+Crear primitivas visuales reutilizables para Cromática, sin migrar páginas completas todavía. Estas primitivas deben usar los tokens oficiales de Cromática y preparar la base para ChromaSpine, Portada, Closet, Wishlist y Outfits.
+
+Reglas:
+- No tocar Supabase.
+- No modificar datos.
+- No tocar rutas API.
+- No cambiar lógica de negocio.
+- No crear ChromaSpine todavía.
+- No migrar Home, Closet, Wishlist ni Outfits todavía.
+- No rediseñar páginas existentes.
+- No eliminar tokens legacy todavía.
+- Mantener cambios pequeños, tipados y reutilizables.
+- No usar `any`.
+
+Antes de programar, inspecciona:
+- `src/app/globals.css`
+- `src/lib/wardrobe/spectrum.ts`
+- componentes existentes en `src/components/ui/`
+- `src/components/page-header.tsx`
+- `src/components/closet-card.tsx`
+- `src/components/wishlist-card.tsx`
+- `src/components/saved-outfit-card.tsx`
+
+Tareas:
+
+1. Crear `src/components/ui/button.tsx`
+Debe exportar un componente `Button`.
+Debe soportar:
+- `variant`: `"solid" | "outline" | "ghost"`
+- `size`: `"sm" | "md" | "lg"`
+- `asChild` opcional si el proyecto ya usa patrón Slot; si no, no añadir dependencia nueva.
+- props normales de button.
+- estilos usando tokens Cromática.
+- focus visible.
+- disabled state.
+- sin colores decorativos fuera de tokens.
+
+2. Crear `src/components/ui/chip.tsx`
+Debe exportar `Chip`.
+Debe soportar:
+- `variant`: `"default" | "active" | "outline" | "color"`
+- `size`: `"sm" | "md"`
+- `colorFamily?`
+- si recibe `colorFamily`, usar `getColorFamilyMeta()` de `src/lib/wardrobe/spectrum.ts`.
+- si la familia tiene `borderHex`, usarlo para borde.
+- si `kind === "special"`, no fingir que es hue normal: usar tratamiento simple y honesto por ahora, por ejemplo borde + texto, sin inventar gradiente complejo todavía.
+- focus visible si es interactivo.
+- debe poder renderizar como `button` o `span` según props simples. Si complica, dejarlo como `span` visual y crear variante interactiva más adelante.
+
+3. Crear `src/components/ui/section-head.tsx`
+Debe exportar `SectionHead`.
+Debe soportar:
+- `eyebrow?`
+- `title`
+- `description?`
+- `actionLabel?`
+- `actionHref?`
+- `action?` opcional para nodo React
+Debe usar tipografía/tokens Cromática.
+No debe reemplazar PageHeader todavía.
+
+4. Crear `src/components/ui/piece-card.tsx`
+Debe exportar `PieceCard`.
+Debe soportar variantes:
+- `"gallery"`
+- `"compact"`
+- `"river"`
+
+Props mínimas:
+- `name`
+- `category?`
+- `imageUrl?`
+- `colorFamily?`
+- `href?`
+- `meta?` o `children?` opcional
+- `priority?` opcional si sirve para wishlist después
+
+Debe:
+- usar `getColorFamilyMeta()` para mostrar chip/swatch de color si hay `colorFamily`.
+- manejar imagen ausente con placeholder neutral Cromática.
+- no usar `next/image` todavía si eso requiere config o cambia comportamiento; usar `img` si es lo que ya usa la app.
+- si usa `href`, renderizar Link.
+- no romper SSR.
+- no depender de Supabase.
+
+5. Opcional pero recomendado:
+Crear una ruta temporal de dev `src/app/dev/ui/page.tsx` para visualizar las primitivas con ejemplos estáticos.
+Solo si no complica.
+Debe estar claramente marcada como temporal y se borrará antes del merge final.
+Si crear esta ruta puede afectar navegación o producción, omitirla y solo crear componentes.
+
+6. Export strategy:
+Si el proyecto usa barrel files en `src/components/ui`, seguir patrón existente.
+Si no hay barrel file, no crear uno innecesario.
+
+7. Estilos:
+Preferir clases Tailwind + tokens CSS.
+Si hace falta CSS global, mantenerlo mínimo.
+No inflar `globals.css` con muchas clases nuevas.
+No añadir librerías.
+
+8. Validación:
+Al final correr:
+npm run lint
+npm run typecheck
+npm run build
+
+Reportar:
+- archivos creados/modificados,
+- props de cada primitiva,
+- cómo cada una usa tokens Cromática,
+- cómo `Chip` y `PieceCard` usan `spectrum.ts`,
+- si se creó `/dev/ui` o no,
+- confirmación de que no se tocó Supabase, APIs, datos ni rutas existentes.
