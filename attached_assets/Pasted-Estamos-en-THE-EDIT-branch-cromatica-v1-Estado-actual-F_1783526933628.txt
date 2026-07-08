@@ -1,0 +1,148 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Estado actual:
+- Fase 0 cerrada: branch seguro `cromatica-v1`.
+- Fase 1B cerrada: componentes/libs muertos eliminados.
+- Fase 1C cerrada: CSS legacy de navegación eliminado.
+- Fase 1D cerrada: `<main>` anidados reemplazados por `<section>`.
+- Fase 2A cerrada: ColorFamily audit con 190/190 piezas válidas, 100% coverage.
+- Fase 2B cerrada: data honesty fixes.
+- Fase 2C cerrada: auth strategy documentada.
+- Fase 3A cerrada: tokens Cromática instalados.
+- Fase 3B cerrada: `src/lib/wardrobe/spectrum.ts` creado como fuente central para familias de color.
+- Fase 3C cerrada: UI primitives creadas: Button, Chip, SectionHead, PieceCard.
+- Fase 4A cerrada: `src/components/chroma-spine.tsx` creado con data estática/controlada.
+- Último commit confirmado: `e4c6e56 Add a visual spectrum bar to display color family data`.
+
+Ahora ejecuta Fase 4B — ChromaSpine live.
+
+Objetivo:
+Crear la capa live/data para convertir piezas reales del clóset en `SpectrumEntry[]` y dejar ChromaSpine lista para usarse con datos reales. Esta fase NO debe integrar todavía la espina en Home ni rediseñar pantallas principales. Solo preparar la data live y, si es útil, mostrar una preview live en `/dev/ui`.
+
+Reglas:
+- No tocar Supabase schema.
+- No modificar datos.
+- No tocar rutas API salvo que sea estrictamente necesario; preferir usar data helpers existentes.
+- No migrar Home.
+- No migrar Closet.
+- No migrar Wishlist.
+- No cambiar navegación existente.
+- No borrar `/dev/ui` todavía.
+- No añadir dependencias nuevas.
+- No usar `any`.
+- No mostrar datos falsos como reales.
+- Si no hay datos reales disponibles, devolver estado vacío honesto.
+
+Antes de programar, inspecciona:
+- `src/components/chroma-spine.tsx`
+- `src/lib/wardrobe/spectrum.ts`
+- `src/lib/wardrobe/data.ts`
+- `src/lib/supabase/mappers.ts`
+- `src/types/wardrobe.ts`
+- `src/app/dev/ui/page.tsx`
+- cualquier helper actual que lea closet items reales.
+
+Tareas:
+
+1. Crear un helper live:
+`src/lib/wardrobe/spectrum-data.ts`
+
+Debe exportar una función server-safe, por ejemplo:
+- `getClosetSpectrumEntries()`
+
+Objetivo de esa función:
+- leer piezas reales del clóset usando el helper existente más seguro del proyecto.
+- construir un histograma por `colorFamily`.
+- convertirlo a `SpectrumEntry[]`.
+- ordenar con `sortFamiliesBySpectralOrder()`.
+- manejar unknown de forma explícita.
+- excluir familias con count 0 por defecto.
+- opcionalmente permitir `includeEmpty`.
+
+2. Shape de la función:
+Puede ser algo como:
+
+`getClosetSpectrumEntries(options?: { includeEmpty?: boolean; includePieces?: boolean }): Promise<SpectrumEntry[]>`
+
+Requisitos:
+- Si `includePieces` es false o no se pasa, no cargar/pasar piezas dentro de cada entry si no hace falta.
+- Si `includePieces` es true, cada entry puede incluir `pieces`.
+- No duplicar queries innecesarias.
+- No traer más datos de los necesarios si el helper existente lo permite.
+- Si el helper actual ya trae todo el clóset, usar eso por ahora para mantenerlo simple.
+
+3. Crear helper puro si hace sentido:
+Si conviene separar lógica pura de data fetch, crear también una función:
+
+`buildSpectrumEntriesFromItems(items, options?)`
+
+Esta función debe:
+- aceptar array de items con `colorFamily`.
+- usar `getColorFamilyHistogram()`.
+- usar `getColorFamilyMeta()`.
+- devolver `SpectrumEntry[]`.
+- ser testeable sin Supabase.
+- no usar `any`.
+
+4. Revisar tipos:
+Asegurar que `SpectrumEntry` soporte lo necesario.
+Si hay que ajustar `spectrum.ts` mínimamente para mejorar tipos, hacerlo con cuidado y reportarlo.
+No reescribir spectrum.ts completo.
+
+5. Preview live en `/dev/ui`:
+Actualizar `src/app/dev/ui/page.tsx` para incluir una sección opcional:
+- “ChromaSpine live preview”
+- usar `await getClosetSpectrumEntries()`
+- renderizar `ChromaSpine` con esos entries.
+- si no hay datos, mostrar mensaje honesto: “No closet data available.”
+- mantener también la preview estática si ayuda a comparar.
+- no mostrar loading fake en server component.
+
+6. Counts reales:
+La preview live debe reflejar el clóset real actual.
+Según audit esperado, debe aproximarse a:
+black 36, brown 27, cream 23, white 22, burgundy 16, beige 16, olive 12, mustard 8, blue 6, gray 6, camel 5, denim 5, pink 3, multicolor 2, metallic 1, orange 1, statement 1.
+No hardcodear estos números en la live preview; solo usarlos para verificar visualmente.
+
+7. Links:
+Para preview live, se puede pasar:
+`hrefBase="/closet/gallery"`
+para confirmar que los segmentos generarían links a:
+`/closet/gallery?colorFamily=black`
+No modificar `/closet/gallery` todavía para leer ese query param. Eso será Fase 6B.
+
+8. Error handling:
+Si falla la lectura de datos reales:
+- no caer en datos mock como si fueran reales.
+- loguear error si el patrón del proyecto lo hace.
+- devolver `[]`.
+- la UI debe mostrar estado vacío honesto.
+
+9. Mantener ChromaSpine sin acoplar a Supabase:
+`src/components/chroma-spine.tsx` debe seguir siendo componente puro.
+No importar Supabase ni data helpers dentro del componente visual.
+
+10. No tocar:
+- Home
+- Closet
+- Wishlist
+- Outfits
+- APIs
+- Supabase schema
+- navegación
+- globals.css
+
+Al final correr:
+npm run lint
+npm run typecheck
+npm run build
+
+Reportar:
+- archivos creados/modificados,
+- funciones nuevas,
+- cómo se construyen los SpectrumEntry[] desde piezas reales,
+- si se actualizó spectrum.ts o no,
+- si se actualizó ChromaSpine o no,
+- cómo se maneja error/empty state,
+- resultado visual esperado en /dev/ui,
+- confirmación de que no se tocó Home, Closet, Wishlist, Outfits, Supabase, APIs, datos ni globals.css.

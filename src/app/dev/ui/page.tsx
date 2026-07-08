@@ -1,8 +1,7 @@
 /**
  * ⚠ DEV ONLY — Cromática UI primitives + ChromaSpine preview
  * Delete this route before merging cromatica-v1 → main.
- * Static page: no Supabase, no APIs, no auth required.
- * RSC — no "use client". Interactive ChromaSpine demos require a client wrapper.
+ * RSC (async) — no "use client". Interactive ChromaSpine requires a client wrapper.
  */
 
 import { Button } from "@/components/ui/button";
@@ -11,9 +10,10 @@ import { SectionHead } from "@/components/ui/section-head";
 import { PieceCard } from "@/components/ui/piece-card";
 import { ChromaSpine } from "@/components/chroma-spine";
 import { getColorFamilyMeta } from "@/lib/wardrobe/spectrum";
+import { getClosetSpectrumEntries } from "@/lib/wardrobe/spectrum-data";
 import type { SpectrumEntry } from "@/lib/wardrobe/spectrum";
 
-// ─── Static mock data ────────────────────────────────────────────────────────
+// ─── Static mock data (Fase 4A reference) ───────────────────────────────────
 
 const COLOR_FAMILIES = [
   "black", "brown", "cream", "white", "camel", "beige",
@@ -29,8 +29,8 @@ const MOCK_PIECES = [
 ];
 
 /**
- * Audit data (Fase 2A): 190 pieces across 17 active families.
- * plum count=0 included to demonstrate zero-count treatment.
+ * Controlled reference data (Fase 2A audit).
+ * Used to visually compare against live data — not shown as "live".
  */
 const AUDIT_ENTRIES: SpectrumEntry[] = [
   { family: "black",      meta: getColorFamilyMeta("black"),      count: 36 },
@@ -50,10 +50,10 @@ const AUDIT_ENTRIES: SpectrumEntry[] = [
   { family: "metallic",   meta: getColorFamilyMeta("metallic"),   count:  1 },
   { family: "orange",     meta: getColorFamilyMeta("orange"),     count:  1 },
   { family: "statement",  meta: getColorFamilyMeta("statement"),  count:  1 },
-  { family: "plum",       meta: getColorFamilyMeta("plum"),       count:  0 }, // absent in live data
+  { family: "plum",       meta: getColorFamilyMeta("plum"),       count:  0 },
 ];
 
-// ─── Section wrapper ──────────────────────────────────────────────────────────
+// ─── Layout helpers ───────────────────────────────────────────────────────────
 
 function DevSection({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -74,66 +74,133 @@ function SubLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
+function InfoNote({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="mt-2 text-[0.6rem] text-[var(--tinta-tenue)]">{children}</p>
+  );
+}
+
 // ─── Page ────────────────────────────────────────────────────────────────────
 
-export default function DevUiPage() {
+export default async function DevUiPage() {
+  // Fase 4B: live data fetch — never throws, returns [] on error.
+  // Fallback behavior: mockOwnedItems when Supabase is not configured.
+  const liveEntries = await getClosetSpectrumEntries({ includeEmpty: true });
+  const liveTotalCount = liveEntries.reduce((sum, e) => sum + e.count, 0);
+  const liveActiveCount = liveEntries.filter((e) => e.count > 0).length;
+
   return (
     <div className="min-h-screen bg-[var(--gal)] px-8 py-12">
+
       {/* Warning banner */}
       <div className="mb-10 rounded-[var(--r-card)] border border-[var(--c-mostaza)] bg-[var(--c-mostaza)]/10 px-6 py-4">
         <p className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-[var(--c-mostaza)]">
           ⚠ Dev only — delete before merge
         </p>
         <p className="mt-1 text-[0.82rem] text-[var(--tinta-suave)]">
-          Fase 3C–4A · Cromática UI primitives + ChromaSpine · Branch: cromatica-v1
+          Fase 3C–4B · Cromática UI primitives + ChromaSpine · Branch: cromatica-v1
         </p>
       </div>
 
       <div className="mx-auto max-w-5xl space-y-12">
 
-        {/* ─── ChromaSpine ─── */}
-        <DevSection label="ChromaSpine — Fase 4A">
+        {/* ─── ChromaSpine live (Fase 4B) ─── */}
+        <DevSection label="ChromaSpine — live data (Fase 4B)">
+          {liveEntries.length === 0 ? (
+            <div className="rounded-[var(--r-card)] border border-[var(--line)] bg-[var(--papel)] px-6 py-5">
+              <p className="text-[0.78rem] font-semibold text-[var(--tinta)]">
+                No closet data available.
+              </p>
+              <p className="mt-1 text-[0.72rem] text-[var(--tinta-suave)]">
+                getWardrobeItems() returned an empty array. Check Supabase connection
+                or wardrobe_items table.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-10">
+
+              <div>
+                <SubLabel>{"md · showCounts · hrefBase=\"/closet/gallery\""}</SubLabel>
+                <ChromaSpine
+                  entries={liveEntries}
+                  size="md"
+                  showCounts
+                  hrefBase="/closet/gallery"
+                  ariaLabel="Closet color spectrum — live"
+                />
+                <InfoNote>
+                  {liveTotalCount} pieces · {liveActiveCount} active families ·
+                  all 18 canonical shown (zeros faded) · segments link to
+                  /closet/gallery?colorFamily=&#123;family&#125;
+                </InfoNote>
+              </div>
+
+              <div>
+                <SubLabel>lg · showCounts</SubLabel>
+                <ChromaSpine
+                  entries={liveEntries}
+                  size="lg"
+                  showCounts
+                  ariaLabel="Closet color spectrum — live, large"
+                />
+              </div>
+
+              <div>
+                <SubLabel>sm · no counts</SubLabel>
+                <ChromaSpine
+                  entries={liveEntries}
+                  size="sm"
+                  ariaLabel="Closet color spectrum — live, small"
+                />
+              </div>
+
+              {/* Live data breakdown */}
+              <div className="rounded-[var(--r-card)] border border-[var(--line)] bg-[var(--papel)] px-5 py-4">
+                <p className="mb-3 text-[0.62rem] font-bold uppercase tracking-[0.16em] text-[var(--tinta-suave)]">
+                  Live data breakdown
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {liveEntries
+                    .filter((e) => e.count > 0)
+                    .map((e) => (
+                      <span
+                        key={String(e.family)}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--gal)] px-2.5 py-1 text-[0.58rem] text-[var(--tinta-suave)]"
+                      >
+                        <span
+                          className="inline-block h-2 w-2 rounded-full"
+                          style={{ backgroundColor: e.meta.hex }}
+                          aria-hidden="true"
+                        />
+                        {e.meta.label} {e.count}
+                      </span>
+                    ))}
+                </div>
+              </div>
+
+            </div>
+          )}
+        </DevSection>
+
+        {/* ─── ChromaSpine static reference (Fase 4A) ─── */}
+        <DevSection label="ChromaSpine — static reference (Fase 4A audit data)">
           <div className="space-y-10">
 
             <div>
-              <SubLabel>Full audit data — md, horizontal, showCounts</SubLabel>
+              <SubLabel>Full audit — md · showCounts · spectral order</SubLabel>
               <ChromaSpine
                 entries={AUDIT_ENTRIES}
                 size="md"
                 showCounts
-                ariaLabel="Closet color spectrum — full audit"
+                ariaLabel="Closet color spectrum — audit reference"
               />
-              <p className="mt-2 text-[0.6rem] text-[var(--tinta-tenue)]">
-                190 pieces · 17 active families · plum=0 (faded) · spectral order
-              </p>
+              <InfoNote>
+                190 pieces · 17 active families · plum=0 (faded) · hardcoded Fase 2A audit
+              </InfoNote>
             </div>
 
             <div>
-              <SubLabel>Size — sm</SubLabel>
-              <ChromaSpine entries={AUDIT_ENTRIES} size="sm" />
-            </div>
-
-            <div>
-              <SubLabel>Size — lg, showCounts</SubLabel>
-              <ChromaSpine entries={AUDIT_ENTRIES} size="lg" showCounts />
-            </div>
-
-            <div>
-              <SubLabel>With hrefBase — each segment is a Link</SubLabel>
-              <ChromaSpine
-                entries={AUDIT_ENTRIES}
-                size="md"
-                hrefBase="/closet/gallery"
-                showCounts
-                ariaLabel="Filter closet by color"
-              />
-              <p className="mt-2 text-[0.6rem] text-[var(--tinta-tenue)]">
-                Links to /closet/gallery?colorFamily=&#123;family&#125;
-              </p>
-            </div>
-
-            <div>
-              <SubLabel>Active family — burgundy highlighted</SubLabel>
+              <SubLabel>Active family — burgundy</SubLabel>
               <ChromaSpine
                 entries={AUDIT_ENTRIES}
                 size="md"
@@ -144,33 +211,40 @@ export default function DevUiPage() {
             </div>
 
             <div>
+              <SubLabel>Size — sm</SubLabel>
+              <ChromaSpine entries={AUDIT_ENTRIES} size="sm" />
+            </div>
+
+            <div>
+              <SubLabel>Size — lg · showCounts</SubLabel>
+              <ChromaSpine entries={AUDIT_ENTRIES} size="lg" showCounts />
+            </div>
+
+            <div>
               <SubLabel>Vertical orientation — lg</SubLabel>
-              <div className="flex h-40 gap-4">
+              <div className="flex h-40 gap-6">
                 <ChromaSpine
                   entries={AUDIT_ENTRIES}
                   size="lg"
                   orientation="vertical"
                   ariaLabel="Closet color spectrum — vertical"
                 />
-                <div className="flex flex-col justify-center">
-                  <p className="text-[0.62rem] text-[var(--tinta-tenue)]">
-                    Same entries, vertical axis.<br />
-                    Width = thickness (48px).<br />
-                    Height per segment ∝ √count.
-                  </p>
-                </div>
+                <p className="self-center text-[0.62rem] text-[var(--tinta-tenue)]">
+                  Width = thickness (48px).<br />
+                  Height ∝ √count per segment.<br />
+                  Spectral order top → bottom.
+                </p>
               </div>
             </div>
 
             <div className="rounded-[var(--r-card)] border border-[var(--line)] bg-[var(--papel)] px-5 py-4">
               <p className="text-[0.68rem] font-semibold text-[var(--tinta)]">
-                onSelect (interactive)
+                onSelect (interactive mode)
               </p>
               <p className="mt-1 text-[0.76rem] text-[var(--tinta-suave)]">
                 Providing <code className="font-mono text-[var(--tinta)]">onSelect</code> renders
-                each segment as a <code className="font-mono text-[var(--tinta)]">&lt;button&gt;</code>{" "}
-                with <code className="font-mono text-[var(--tinta)]">aria-pressed</code>.
-                Demo requires a Client Component wrapper — see chroma-spine.tsx.
+                each segment as <code className="font-mono text-[var(--tinta)]">&lt;button aria-pressed&gt;</code>.
+                Requires a Client Component wrapper — not demoed here (RSC page).
               </p>
             </div>
 
@@ -230,8 +304,8 @@ export default function DevUiPage() {
               <SubLabel>Interactive note</SubLabel>
               <p className="rounded-[var(--r-card)] border border-[var(--line)] bg-[var(--papel)] px-4 py-3 text-[0.78rem] text-[var(--tinta-suave)]">
                 Providing <code className="font-mono text-[var(--tinta)]">onClick</code> renders{" "}
-                <code className="font-mono text-[var(--tinta)]">&lt;button&gt;</code> with
-                focus ring. Omit for static <code className="font-mono text-[var(--tinta)]">&lt;span&gt;</code>.
+                <code className="font-mono text-[var(--tinta)]">&lt;button&gt;</code> with focus ring.
+                Omit for static <code className="font-mono text-[var(--tinta)]">&lt;span&gt;</code>.
                 Demo requires a Client Component.
               </p>
             </div>
