@@ -1,433 +1,346 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { getWardrobeItems } from "@/lib/wardrobe/data";
+import { buildSpectrumEntriesFromItems } from "@/lib/wardrobe/spectrum-data";
+import { SPECTRUM_META } from "@/lib/wardrobe/spectrum";
+import { ChromaSpineBlock } from "@/components/chroma-spine";
 import type { WardrobeCategory, WardrobeItem } from "@/types/wardrobe";
+import type { ColorFamily } from "@/types/wardrobe";
+import type { SpectrumEntry } from "@/lib/wardrobe/spectrum";
 
-const CATEGORY_LABELS: Record<WardrobeCategory, string> = {
+// ─── Constants ───────────────────────────────────────────────────────────────
+
+const CATEGORY_LABELS_ES: Record<WardrobeCategory, string> = {
+  top:       "Tops",
+  bottom:    "Pantalones",
+  dress:     "Vestidos",
   outerwear: "Outerwear",
-  top: "Tops",
-  bottom: "Bottoms",
-  dress: "Dresses",
-  shoes: "Shoes",
-  bag: "Bags",
-  accessory: "Accessories",
-  jewelry: "Jewelry",
+  shoes:     "Zapatos",
+  bag:       "Bolsos",
+  accessory: "Accesorios",
+  jewelry:   "Joyería",
 };
 
 const CATEGORY_ORDER: WardrobeCategory[] = [
-  "top",
-  "bottom",
-  "shoes",
-  "dress",
-  "bag",
-  "accessory",
-  "jewelry",
-  "outerwear",
+  "top", "bottom", "shoes", "dress", "bag", "accessory", "jewelry", "outerwear",
 ];
 
 const TARGETS: Partial<Record<WardrobeCategory, number>> = {
-  dress: 10,
-  bag: 6,
-  accessory: 15,
-  jewelry: 12,
-  outerwear: 2,
+  bag: 6, dress: 10, accessory: 15, jewelry: 12, outerwear: 2,
 };
 
-function getAverageScore(item: WardrobeItem) {
-  const scores = [
-    item.loveScore,
-    item.versatilityScore,
-    item.fitConfidenceScore,
-    item.capsuleValueScore,
-  ].filter((score): score is number => typeof score === "number");
+const MAX_VISIBLE = 4;
 
-  if (!scores.length) return null;
+// ─── Pure helpers ────────────────────────────────────────────────────────────
 
-  return Number(
-    (scores.reduce((total, score) => total + score, 0) / scores.length).toFixed(1),
-  );
+function darkenHex(hex: string, ratio: number): string {
+  const clean = hex.replace("#", "");
+  if (clean.length !== 6) return hex;
+  const f = 1 - ratio;
+  const r = Math.round(parseInt(clean.slice(0, 2), 16) * f);
+  const g = Math.round(parseInt(clean.slice(2, 4), 16) * f);
+  const b = Math.round(parseInt(clean.slice(4, 6), 16) * f);
+  const h = (v: number) => Math.max(0, Math.min(255, v)).toString(16).padStart(2, "0");
+  return `#${h(r)}${h(g)}${h(b)}`;
 }
 
-function getInsightCopy(category: WardrobeCategory, count: number, target: number) {
-  if (category === "dress") {
-    return "Good PR heat shortcut. Add only if it works for office, weekends, or easy dinners.";
+function hexLuminance(hex: string): number {
+  const clean = hex.replace("#", "");
+  if (clean.length !== 6) return 0.5;
+  const r = parseInt(clean.slice(0, 2), 16) / 255;
+  const g = parseInt(clean.slice(2, 4), 16) / 255;
+  const b = parseInt(clean.slice(4, 6), 16) / 255;
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function categoryGap(category: WardrobeCategory, count: number): string {
+  const target = TARGETS[category];
+  if (!target) return "";
+  const remaining = target - count;
+  if (remaining <= 0) return "";
+  return `Faltan ${remaining}`;
+}
+
+/** Round-robin across categories, highest-scored first, up to `limit` pieces. */
+function buildReadyToStyle(items: WardrobeItem[], limit = 6): WardrobeItem[] {
+  const sorted = [...items].sort((a, b) => {
+    const scoreA = (a.loveScore ?? 0) + (a.fitConfidenceScore ?? 0);
+    const scoreB = (b.loveScore ?? 0) + (b.fitConfidenceScore ?? 0);
+    return scoreB - scoreA;
+  });
+
+  const buckets = new Map<WardrobeCategory, WardrobeItem[]>();
+  for (const item of sorted) {
+    const bucket = buckets.get(item.category) ?? [];
+    bucket.push(item);
+    buckets.set(item.category, bucket);
   }
 
-  if (category === "bag") {
-    return "Almost covered. Prioritize structure, color, or polish — not another neutral duplicate.";
-  }
-
-  if (category === "accessory") {
-    return "Big opportunity area. Belts, earrings, hair pieces, and sunglasses can elevate basics fast.";
-  }
-
-  if (category === "jewelry") {
-    return "Repeatable staples will make simple outfits feel finished with less effort.";
-  }
-
-  if (category === "outerwear") {
-    return "Keep this light and breathable. One sharp layer can make work outfits feel styled.";
-  }
-
-  return `${count}/${target} covered. Add intentionally only if it creates new outfit formulas.`;
-}
-
-function StatTile({
-  label,
-  value,
-  note,
-  href = "/closet/gallery",
-}: {
-  label: string;
-  value: number;
-  note: string;
-  href?: string;
-}) {
-  return (
-    <Link href={href} className="closet-stat-tile no-underline">
-      <span className="closet-stat-label">{label}</span>
-      <span className="closet-stat-value">{value}</span>
-      <span className="closet-stat-note">{note}</span>
-    </Link>
-  );
-}
-
-function ActionTile({
-  title,
-  note,
-  href,
-  primary = false,
-}: {
-  title: string;
-  note: string;
-  href: string;
-  primary?: boolean;
-}) {
-  return (
-    <Link
-      href={href}
-      className={primary ? "closet-action-tile primary" : "closet-action-tile"}
-      style={primary ? { color: "#FFFDFC" } : undefined}
-    >
-      <span
-        className="font-display text-[1.8rem] leading-[0.92] tracking-[-0.025em]"
-        style={primary ? { color: "#FFFDFC" } : undefined}
-      >
-        {title}
-      </span>
-      <small style={primary ? { color: "#FFFDFC", opacity: 0.86 } : undefined}>
-        {note}
-      </small>
-    </Link>
-  );
-}
-
-function CategoryPill({
-  label,
-  count,
-}: {
-  label: string;
-  count: number;
-}) {
-  return (
-    <Link href="/closet/gallery" className="closet-category-pill">
-      <span>{label}</span>
-      <strong>{count}</strong>
-    </Link>
-  );
-}
-
-function RecentPiece({ item }: { item: WardrobeItem }) {
-  const score = getAverageScore(item);
-
-  return (
-    <Link href="/closet/gallery" className="closet-recent-card no-underline">
-      <div className="closet-recent-image">
-        {item.imageUrl ? (
-          <div
-            className="h-full w-full bg-contain bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${item.imageUrl})` }}
-            aria-label={item.name}
-          />
-        ) : (
-          <div className="grid h-full place-items-center p-4 text-center">
-            <p className="font-display text-2xl leading-none text-[var(--espresso)]">
-              {item.name}
-            </p>
-          </div>
-        )}
-
-        <span className="closet-recent-type">{CATEGORY_LABELS[item.category]}</span>
-
-        {score !== null ? (
-          <span className="closet-recent-score">{score}</span>
-        ) : null}
-      </div>
-
-      <div className="closet-recent-copy">
-        <p>{item.colorName} · {item.size ?? "Size"}</p>
-        <h3>{item.name}</h3>
-      </div>
-    </Link>
-  );
-}
-
-export default async function ClosetPage() {
-  const ownedItems = await getWardrobeItems();
-
-  const counts = ownedItems.reduce<Partial<Record<WardrobeCategory, number>>>(
-    (acc, item) => {
-      acc[item.category] = (acc[item.category] ?? 0) + 1;
-      return acc;
-    },
-    {},
-  );
-
-  const total = ownedItems.length;
-  const tops = counts.top ?? 0;
-  const bottoms = counts.bottom ?? 0;
-  const shoes = counts.shoes ?? 0;
-  const bags = counts.bag ?? 0;
-
-  const insightItems = CATEGORY_ORDER
-    .map((category) => {
-      const count = counts[category] ?? 0;
-      const target = TARGETS[category] ?? 0;
-
-      return {
-        category,
-        label: CATEGORY_LABELS[category],
-        count,
-        target,
-        needsAttention: target > 0 && count < target,
-      };
-    })
-    .filter((item) => item.needsAttention)
-    .slice(0, 3);
-
-  const categoryHighlights = CATEGORY_ORDER.map((category) => ({
-    category,
-    label: CATEGORY_LABELS[category],
-    count: counts[category] ?? 0,
-  }));
-
-  
-type ReadyToStyleCategoryInput = {
-  category?: unknown;
-  categoryName?: unknown;
-  type?: unknown;
-  section?: unknown;
-};
-
-function normalizeReadyToStyleCategory<T extends ReadyToStyleCategoryInput>(item: T) {
-  const raw = String(
-    item.category ??
-    item.categoryName ??
-    item.type ??
-    item.section ??
-    ""
-  ).toLowerCase();
-
-  if (raw.includes("top")) return "tops";
-  if (raw.includes("bottom")) return "bottoms";
-  if (raw.includes("shoe")) return "shoes";
-  if (raw.includes("dress")) return "dresses";
-  if (raw.includes("bag")) return "bags";
-  if (raw.includes("access")) return "accessories";
-  if (raw.includes("jewel")) return "jewelry";
-  if (raw.includes("outer")) return "outerwear";
-  return "other";
-}
-
-function buildReadyToStylePieces<T extends ReadyToStyleCategoryInput>(items: T[], limit = 8) {
-  const order = [
-    "tops",
-    "bottoms",
-    "shoes",
-    "dresses",
-    "bags",
-    "accessories",
-    "jewelry",
-    "outerwear",
-    "other",
-  ];
-
-  const buckets = new Map(order.map((key) => [key, [] as T[]]));
-
-  for (const item of items) {
-    const key = normalizeReadyToStyleCategory(item);
-    buckets.get(key)?.push(item);
-  }
-
-  const result: T[] = [];
+  const result: WardrobeItem[] = [];
   let added = true;
-
   while (result.length < limit && added) {
     added = false;
-
-    for (const key of order) {
-      const bucket = buckets.get(key);
+    for (const cat of CATEGORY_ORDER) {
+      const bucket = buckets.get(cat);
       if (bucket && bucket.length > 0) {
-        const nextItem = bucket.shift();
-      if (nextItem) {
-        result.push(nextItem);
-      }
+        result.push(bucket.shift()!);
         added = true;
         if (result.length >= limit) break;
       }
     }
   }
-
   return result;
 }
 
-const recentPieces = buildReadyToStylePieces(ownedItems, 8);
+// ─── Sub-components ──────────────────────────────────────────────────────────
 
+function PieceCard({ item, familyHex }: { item: WardrobeItem; familyHex?: string }) {
+  const hex = familyHex ?? SPECTRUM_META[item.colorFamily as ColorFamily]?.hex ?? "#8C7B6E";
+  const imgStyle: CSSProperties = item.imageUrl
+    ? { backgroundImage: `url(${item.imageUrl})`, backgroundSize: "cover", backgroundPosition: "center top" }
+    : { background: `linear-gradient(150deg, ${hex} 0%, ${darkenHex(hex, 0.14)} 100%)` };
+
+  const tagBg = hexLuminance(hex) > 0.5 ? "rgba(29,24,20,0.72)" : "rgba(255,253,252,0.88)";
+  const tagColor = hexLuminance(hex) > 0.5 ? "#FFFDFC" : "#1D1814";
 
   return (
-    <section className="closet-dashboard-v2 min-h-screen px-4 py-6 md:px-6 md:py-8">
-      <section className="mx-auto max-w-[1120px]">
-        <section className="closet-v2-hero">
+    <Link href={`/closet/item/${item.id}`} className="cl-card" aria-label={item.name}>
+      <div className="cl-card-img" style={imgStyle}>
+        <span className="cl-card-tag" style={{ background: tagBg, color: tagColor }}>
+          {CATEGORY_LABELS_ES[item.category]}
+        </span>
+      </div>
+      <div className="cl-card-copy">
+        <p className="cl-card-name">{item.name}</p>
+        {item.colorName && (
+          <p className="cl-card-meta">{item.colorName}</p>
+        )}
+      </div>
+    </Link>
+  );
+}
+
+function MoreCard({ href, count }: { href: string; count: number }) {
+  return (
+    <Link href={href} className="cl-card-more" aria-label={`Ver ${count} piezas más`}>
+      <span className="cl-card-more-n">+{count}</span>
+      <span className="cl-card-more-label">Ver todas</span>
+    </Link>
+  );
+}
+
+// ─── CL_STYLES — scoped to cl-* ──────────────────────────────────────────────
+
+const CL_STYLES = `
+.cl-wrap{min-height:100vh;background:var(--gal);padding:1.5rem 1rem 7rem;overflow-x:clip;}
+.cl-inner{margin:0 auto;max-width:760px;display:flex;flex-direction:column;gap:1.75rem;}
+
+/* eyebrow */
+.cl-eyebrow{font-family:var(--font-sans);font-size:0.58rem;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--tinta-tenue);margin-bottom:0.5rem;}
+.cl-h1{font-family:var(--font-serif);font-size:clamp(2rem,8vw,2.8rem);font-weight:300;line-height:1.0;color:var(--tinta);}
+
+/* river */
+.cl-river{display:flex;flex-direction:column;gap:0.65rem;}
+.cl-river-head{display:flex;align-items:center;gap:0.5rem;padding:0 2px;}
+.cl-river-dot{display:inline-block;width:0.5rem;height:0.5rem;border-radius:50%;flex-shrink:0;}
+.cl-river-label{font-family:var(--font-serif);font-size:1.0rem;font-weight:400;color:var(--tinta);flex:1;}
+.cl-river-count{font-family:var(--font-sans);font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--tinta-tenue);}
+
+/* scroll row */
+.cl-scroll{display:flex;gap:0.55rem;overflow-x:auto;padding-bottom:0.5rem;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;}
+.cl-scroll::-webkit-scrollbar{display:none;}
+.cl-scroll{scrollbar-width:none;}
+
+/* PieceCard */
+.cl-card{flex-shrink:0;width:112px;border-radius:10px;overflow:hidden;text-decoration:none;background:var(--line);scroll-snap-align:start;display:flex;flex-direction:column;transition:opacity 0.18s;}
+.cl-card:hover{opacity:0.84;}
+.cl-card-img{height:138px;position:relative;overflow:hidden;}
+.cl-card-tag{position:absolute;top:5px;left:5px;font-family:var(--font-sans);font-size:0.47rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 5px;border-radius:3px;}
+.cl-card-copy{padding:0.4rem 0.5rem 0.5rem;}
+.cl-card-name{font-family:var(--font-serif);font-size:0.7rem;color:var(--tinta);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cl-card-meta{font-family:var(--font-sans);font-size:0.55rem;color:var(--tinta-tenue);margin-top:0.12rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* +N more card */
+.cl-card-more{flex-shrink:0;width:112px;height:162px;border-radius:10px;border:1.5px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;text-decoration:none;scroll-snap-align:start;gap:0.2rem;transition:border-color 0.18s;}
+.cl-card-more:hover{border-color:var(--tinta-tenue);}
+.cl-card-more-n{font-family:var(--font-serif);font-size:1.55rem;font-weight:300;color:var(--tinta);}
+.cl-card-more-label{font-family:var(--font-sans);font-size:0.52rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--tinta-tenue);}
+
+/* section headers */
+.cl-section{display:flex;flex-direction:column;gap:0.65rem;}
+.cl-section-label{font-family:var(--font-sans);font-size:0.58rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--tinta-tenue);}
+.cl-section-title{font-family:var(--font-serif);font-size:1.5rem;font-weight:300;color:var(--tinta);line-height:1.05;}
+
+/* needs attention rows */
+.cl-attn-list{display:flex;flex-direction:column;}
+.cl-attn-row{display:flex;align-items:center;gap:0.65rem;padding:0.6rem 0;border-bottom:1px solid var(--line);text-decoration:none;}
+.cl-attn-row:last-child{border-bottom:none;}
+.cl-attn-name{font-family:var(--font-sans);font-size:0.8rem;font-weight:500;color:var(--tinta);flex:1;}
+.cl-attn-gap{font-family:var(--font-sans);font-size:0.68rem;color:var(--tinta-tenue);}
+.cl-attn-ratio{font-family:var(--font-sans);font-size:0.68rem;font-variant-numeric:tabular-nums;color:var(--tinta-tenue);min-width:2.2rem;text-align:right;}
+
+/* ready to style */
+.cl-ready-scroll{display:flex;gap:0.55rem;overflow-x:auto;padding-bottom:0.5rem;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;}
+.cl-ready-scroll::-webkit-scrollbar{display:none;}
+.cl-ready-scroll{scrollbar-width:none;}
+
+/* add CTA */
+.cl-add{display:inline-flex;align-items:center;height:2.6rem;padding:0 1.4rem;border-radius:100px;background:var(--tinta);color:var(--papel);font-family:var(--font-sans);font-size:0.65rem;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;text-decoration:none;transition:opacity 0.18s;align-self:flex-start;}
+.cl-add:hover{opacity:0.8;}
+
+/* divider */
+.cl-divider{height:1px;background:var(--line);border:none;margin:0;}
+`;
+
+// ─── Page ────────────────────────────────────────────────────────────────────
+
+export default async function ClosetPage() {
+  const items = await getWardrobeItems();
+
+  // One DB call, two pure derivations
+  const entriesForSpine = buildSpectrumEntriesFromItems(items, { includeEmpty: true });
+  const entriesWithPieces = buildSpectrumEntriesFromItems<WardrobeItem>(items, {
+    includeEmpty: false,
+    includePieces: true,
+  });
+
+  // Rivers: families with pieces, sorted by count desc
+  const rivers = [...entriesWithPieces]
+    .filter((e) => e.count > 0)
+    .sort((a, b) => b.count - a.count) as SpectrumEntry<WardrobeItem>[];
+
+  // Category counts for "Needs attention"
+  const categoryCounts = items.reduce<Partial<Record<WardrobeCategory, number>>>((acc, item) => {
+    acc[item.category] = (acc[item.category] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  const needsAttention = CATEGORY_ORDER
+    .filter((cat) => {
+      const target = TARGETS[cat];
+      return target && (categoryCounts[cat] ?? 0) < target;
+    })
+    .slice(0, 4)
+    .map((cat) => ({
+      category: cat,
+      label: CATEGORY_LABELS_ES[cat],
+      count: categoryCounts[cat] ?? 0,
+      target: TARGETS[cat]!,
+    }));
+
+  // Ready to style
+  const readyItems = buildReadyToStyle(items, 6);
+
+  const burgundyHex = SPECTRUM_META.burgundy?.hex ?? "#6B2D3E";
+
+  return (
+    <section className="cl-wrap">
+      <style href="closet-cromatic" precedence="component">{CL_STYLES}</style>
+
+      <div className="cl-inner">
+
+        {/* ── 1. Header */}
+        <div>
+          <p className="cl-eyebrow">Clóset · Vista cromática</p>
+          <p className="cl-h1">
+            Tu clóset, por{" "}
+            <em style={{ fontStyle: "italic", color: burgundyHex }}>color.</em>
+          </p>
+        </div>
+
+        {/* ── 2. Espina cromática (sin masthead) */}
+        <ChromaSpineBlock entries={entriesForSpine} showMasthead={false} />
+
+        {/* ── 3. Ríos por familia */}
+        {rivers.length === 0 ? (
           <div>
-            <p className="eyebrow mb-2">Closet</p>
-            <h1 className="font-display text-[3.25rem] leading-[0.86] tracking-[-0.035em] text-[var(--espresso)] md:text-[4.75rem]">
-              Wardrobe dashboard
-            </h1>
-            <p>
-              Your private closet overview — what you own, what is strong, what needs
-              attention, and what is ready to style.
+            <p className="cl-section-label">Tu espectro</p>
+            <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.82rem", color: "var(--tinta-tenue)" }}>
+              Aún no tienes piezas registradas.{" "}
+              <Link href="/closet/add" style={{ color: "var(--tinta)", textDecoration: "underline" }}>
+                Añade la primera.
+              </Link>
             </p>
           </div>
+        ) : (
+          rivers.map((entry) => {
+            const pieces = (entry.pieces ?? []) as WardrobeItem[];
+            const visible = pieces.slice(0, MAX_VISIBLE);
+            const remaining = pieces.length - visible.length;
+            const galleryHref = `/closet/gallery?colorFamily=${String(entry.family)}`;
 
-          <div className="closet-v2-hero-count">
-            <span>{total}</span>
-            <small>owned pieces</small>
-          </div>
-        </section>
-
-        <section className="closet-v2-actions">
-          <ActionTile
-            title="Browse gallery"
-            note="View all pieces"
-            href="/closet/gallery"
-            primary
-          />
-          <ActionTile
-            title="Add piece"
-            note="Upload item"
-            href="/closet/add"
-          />
-          <ActionTile
-            title="Build look"
-            note="Create outfit"
-            href="/outfits"
-          />
-          <ActionTile
-            title="Wishlist"
-            note="Review gaps"
-            href="/wishlist"
-          />
-        </section>
-
-        <section className="closet-v2-stats">
-          <StatTile label="Owned" value={total} note="Total closet" />
-          <StatTile label="Tops" value={tops} note="Strongest base" />
-          <StatTile label="Bottoms" value={bottoms} note="Outfit anchors" />
-          <StatTile label="Shoes" value={shoes} note="Style finishers" />
-          <StatTile label="Bags" value={bags} note="Polish layer" />
-        </section>
-
-        <section className="closet-v2-grid">
-          <div className="closet-v2-panel">
-            <div className="closet-v2-section-head">
-              <div>
-                <p className="eyebrow">Closet focus</p>
-                <h2 className="font-display text-[2.65rem] leading-[0.9] tracking-[-0.03em] text-[var(--espresso)]">
-                  Needs attention
-                </h2>
-              </div>
-              <Link href="/wishlist" className="closet-mini-link">
-                Review wishlist
-              </Link>
-            </div>
-
-            <div className="closet-insight-list">
-              {insightItems.length > 0 ? (
-                insightItems.map((item) => (
-                  <div key={item.category} className="closet-insight-card">
-                    <div>
-                      <p>{item.label}</p>
-                      <span>{getInsightCopy(item.category, item.count, item.target)}</span>
-                    </div>
-
-                    <strong>
-                      {item.count}/{item.target}
-                    </strong>
-                  </div>
-                ))
-              ) : (
-                <div className="closet-insight-card">
-                  <div>
-                    <p>Styling focus</p>
-                    <span>
-                      Your main categories are covered. Focus on creating repeatable outfits
-                      from what you own.
-                    </span>
-                  </div>
-                  <strong>OK</strong>
+            return (
+              <div key={String(entry.family)} className="cl-river">
+                {/* River header */}
+                <div className="cl-river-head">
+                  <span
+                    className="cl-river-dot"
+                    style={{ backgroundColor: entry.meta.hex }}
+                    aria-hidden="true"
+                  />
+                  <span className="cl-river-label">{entry.meta.labelEs}</span>
+                  <span className="cl-river-count">{entry.count} {entry.count === 1 ? "pieza" : "piezas"}</span>
                 </div>
-              )}
-            </div>
-          </div>
 
-          <div className="closet-v2-panel">
-            <div className="closet-v2-section-head">
-              <div>
-                <p className="eyebrow">Categories</p>
-                <h2 className="font-display text-[2.65rem] leading-[0.9] tracking-[-0.03em] text-[var(--espresso)]">
-                  Browse by section
-                </h2>
+                {/* Scroll row */}
+                <div className="cl-scroll">
+                  {visible.map((item) => (
+                    <PieceCard key={item.id} item={item} familyHex={entry.meta.hex} />
+                  ))}
+                  {remaining > 0 && (
+                    <MoreCard href={galleryHref} count={remaining} />
+                  )}
+                </div>
               </div>
-              <Link href="/closet/gallery" className="closet-mini-link">
-                View all
-              </Link>
-            </div>
+            );
+          })
+        )}
 
-            <div className="closet-category-grid">
-              {categoryHighlights.map((item) => (
-                <CategoryPill
+        <hr className="cl-divider" />
+
+        {/* ── 4. Necesita atención */}
+        {needsAttention.length > 0 && (
+          <div className="cl-section">
+            <p className="cl-section-label">Clóset focus</p>
+            <p className="cl-section-title">Necesita atención</p>
+            <div className="cl-attn-list">
+              {needsAttention.map((item) => (
+                <Link
                   key={item.category}
-                  label={item.label}
-                  count={item.count}
-                />
+                  href="/wishlist"
+                  className="cl-attn-row"
+                  aria-label={`${item.label}: ${item.count} de ${item.target}`}
+                >
+                  <span className="cl-attn-name">{item.label}</span>
+                  <span className="cl-attn-gap">{categoryGap(item.category, item.count)}</span>
+                  <span className="cl-attn-ratio">{item.count}/{item.target}</span>
+                </Link>
               ))}
             </div>
           </div>
-        </section>
+        )}
 
-        {recentPieces.length > 0 ? (
-          <section className="closet-v2-panel">
-            <div className="closet-v2-section-head">
-              <div>
-                <p className="eyebrow">Recent pieces</p>
-                <h2 className="font-display text-[2.65rem] leading-[0.9] tracking-[-0.03em] text-[var(--espresso)]">
-                  Ready to style
-                </h2>
-              </div>
-              <Link href="/closet/gallery" className="closet-mini-link">
-                Open gallery
-              </Link>
-            </div>
-
-            <div className="closet-recent-grid">
-              {recentPieces.map((item) => (
-                <RecentPiece key={item.id} item={item} />
+        {/* ── 5. Listas para vestir */}
+        {readyItems.length > 0 && (
+          <div className="cl-section">
+            <p className="cl-section-label">Destacadas</p>
+            <p className="cl-section-title">Listas para vestir</p>
+            <div className="cl-ready-scroll">
+              {readyItems.map((item) => (
+                <PieceCard key={item.id} item={item} />
               ))}
             </div>
-          </section>
-        ) : null}
-      </section>
+          </div>
+        )}
+
+        {/* ── 6. Add CTA */}
+        <Link href="/closet/add" className="cl-add">
+          + Añadir pieza
+        </Link>
+
+      </div>
     </section>
   );
 }

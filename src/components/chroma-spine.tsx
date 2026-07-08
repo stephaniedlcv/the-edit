@@ -28,7 +28,8 @@ export type ChromaSpineOrientation = "horizontal" | "vertical";
 
 export interface ChromaSpineBlockProps {
   entries: SpectrumEntry[];
-  editionNumber: number;
+  editionNumber?: number;
+  showMasthead?: boolean;
   className?: string;
 }
 
@@ -130,6 +131,7 @@ function ChromaStyles() {
 export function ChromaSpineBlock({
   entries,
   editionNumber,
+  showMasthead = true,
   className = "",
 }: ChromaSpineBlockProps) {
   const sorted = [...entries].sort(
@@ -142,10 +144,12 @@ export function ChromaSpineBlock({
     <div className={className}>
       <ChromaStyles />
 
-      <div role="banner" className="cs-masthead">
-        <b>THE EDIT</b>
-        <span>EDICIÓN DIARIA · Nº {editionNumber}</span>
-      </div>
+      {showMasthead && (
+        <div role="banner" className="cs-masthead">
+          <b>THE EDIT</b>
+          <span>EDICIÓN DIARIA · Nº {editionNumber}</span>
+        </div>
+      )}
 
       <div
         className="cs-spine"

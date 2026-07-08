@@ -1,0 +1,14 @@
+Fase 6A — Clóset cromático (solo "Tienes"). Branch cromatica-v1. Rediseñar /closet según el mockup del clóset unificado (referencia: the-edit-closet-unificado-perfil.html), SOLO la capa de piezas propias — el wishlist/fantasmas llega en 6D.
+
+Header: eyebrow "CLÓSET · VISTA CROMÁTICA" + título serif "Tu clóset, por color." (con "color." en itálica burdeos) — mismo patrón tipográfico de la Portada.
+ChromaSpine reutilizada: el mismo ChromaSpineBlock de Home pero variante sin masthead (prop showMasthead={false} o componente ChromaSpine core) — barras clicables a /closet/gallery?colorFamily=X.
+Ríos por familia: para cada familia con count > 0, ordenadas por count desc: header de río (dot del hex + labelEs en serif + "{n} piezas" derecha) + fila horizontal scrolleable de PieceCards compactas (thumbnail/gradiente de la pieza + tag categoría + nombre serif truncado 1 línea + meta) + card final "+{restantes}" → gallery filtrada a esa familia. Máximo 3–4 piezas visibles por río; scroll horizontal con overflow-x:auto y snap.
+Piezas con imagen real si existe signed URL; fallback al gradiente del hex de su familia (patrón actual de la app).
+Preservar (rediseñado en tokens Cromática, debajo de los ríos): "Needs attention" y "Ready to style" — ítems con link directo a /closet/item/[id].
+Clases con namespace virgen (prefijo cl-) — cero reutilización de clases legacy de globals.css.
+No tocar: gallery (es 6B), wishlist, nav, APIs, Supabase.
+Criterio de aceptación: screenshot 375px mostrando espina + 3 ríos con piezas reales + scroll horizontal funcionando. Cierre estándar.
+
+
+Y el mapa de lo que sigue para que veas el camino: 6B gallery con URL filters (?colorFamily= ya lo estamos usando desde 3 lugares — esta fase lo hace funcionar de verdad), 6C item detail/edit/add en Cromática, 6D la capa fantasma del wishlist + toggle Todo/Tienes/Quieres, y Fase 7 el Perfil + el cambio de nav (Wishlist → Perfil).
+Una pregunta antes de que arranque 6A: ¿/closet/gallery ya lee ?colorFamily= o los links de la espina hoy llevan a la gallery sin filtrar? Si no lo lee, dile al Agent que en 6A los links de la espina y los "+N" pueden apuntar a la gallery normal temporalmente — el deep-link se activa en 6B. Mejor un link honesto sin filtro que un query param que no hace nada.
