@@ -127,27 +127,6 @@ function darkenHex(hex: string, ratio: number): string {
   return `#${h(r)}${h(g)}${h(b)}`;
 }
 
-// ─── Small presentational helpers ──────────────────────────────────────────
-
-function QuickChip({ href, label }: { href: string; label: string }) {
-  return (
-    <Link
-      href={href}
-      className={[
-        "inline-flex h-8 items-center justify-center rounded-[var(--r-chip)] px-4",
-        "border border-[var(--line-strong)] bg-[var(--papel)] text-[0.64rem] font-semibold",
-        "uppercase tracking-[0.10em] text-[var(--tinta-suave)] no-underline transition-colors",
-        "hover:border-[var(--tinta)] hover:text-[var(--tinta)]",
-        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
-        "focus-visible:outline-[var(--tinta)]",
-      ].join(" ")}
-      style={{ fontFamily: "var(--font-sans)" }}
-    >
-      {label}
-    </Link>
-  );
-}
-
 // ─── Home ───────────────────────────────────────────────────────────────────
 
 export default async function HomePage() {
@@ -307,14 +286,7 @@ export default async function HomePage() {
           </>
         )}
 
-        {/* ── 6. Acciones rápidas ──────────────────────────────────────── */}
-        <div className="flex flex-wrap gap-2">
-          <QuickChip href="/closet" label="Clóset" />
-          <QuickChip href="/closet/gallery" label="Galería" />
-          <QuickChip href="/wishlist" label="Wishlist" />
-          <QuickChip href="/outfits" label="Outfits" />
-          <QuickChip href="/closet/add" label="Añadir" />
-        </div>
+        {/* Fase 5C: quick-actions go here */}
 
       </section>
     </section>

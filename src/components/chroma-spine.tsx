@@ -142,10 +142,10 @@ export function ChromaSpineBlock({
     <div className={className}>
       <ChromaStyles />
 
-      <header className="cs-masthead">
+      <div role="banner" className="cs-masthead">
         <b>THE EDIT</b>
         <span>EDICIÓN DIARIA · Nº {editionNumber}</span>
-      </header>
+      </div>
 
       <div
         className="cs-spine"
