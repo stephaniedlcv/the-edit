@@ -172,17 +172,19 @@ export default async function HomePage() {
     : "var(--tinta)";
 
   return (
-    <section className="min-h-screen bg-[var(--gal)] px-4 pb-28 pt-6 md:px-6 md:pt-10">
-      {/* CSS for marquee animation — server-safe, no JS required */}
+    /* overflow-x-hidden: cinturón de seguridad — ningún hijo puede causar scroll horizontal */
+    <section className="min-h-screen overflow-x-hidden bg-[var(--gal)] px-4 pb-28 pt-6 md:px-6 md:pt-10">
+      {/* CSS para marquee — display:block evita que inline-block contribuya al scrollWidth */}
       <style>{`
         @keyframes te-ticker {
           0%   { transform: translateX(0); }
           100% { transform: translateX(-50%); }
         }
         .te-ticker-track {
-          animation: te-ticker 34s linear infinite;
+          display: block;
+          width: max-content;
           white-space: nowrap;
-          display: inline-block;
+          animation: te-ticker 34s linear infinite;
           will-change: transform;
         }
         .te-ticker-track:hover { animation-play-state: paused; }
@@ -328,7 +330,7 @@ export default async function HomePage() {
 
             {/* ── 5. Ticker de datos reales ─────────────────────────────── */}
             {tickerItems.length > 0 && (
-              <div className="relative overflow-hidden border-y border-[var(--line)] py-[0.45rem]">
+              <div className="relative w-full overflow-hidden border-y border-[var(--line)] py-[0.45rem]">
                 <div className="te-ticker-track">
                   {[...tickerItems, ...tickerItems].map((item, i) => (
                     <span

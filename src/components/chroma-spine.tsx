@@ -1,33 +1,21 @@
 "use client";
 
 /**
- * ChromaSpine — Cromática spectral histogram  (Fase 5A.4)
+ * ChromaSpine — Cromática spectral histogram  (Fase 5A.5)
  *
- * Renders color-family bars as a histogram:
- *   - Bar HEIGHT is proportional to piece count (normalised to max, min 18%)
- *   - Bar WIDTH is equal (flex: 1) — all families share the horizontal space
- *   - Container has a fixed height per size (sm: 40px, md: 52px, lg: 64px)
- *   - Bars are bottom-aligned (align-items: flex-end)
- *   - A 1 px tinta baseline runs below the strip at full width
- *   - Corners: border-radius 4px 4px 0 0 (top only)
- *   - Gap: 2px (sm/md), 3px (lg)
- *   - White / cream families keep a hairline border (borderHex from meta)
+ * All structural CSS lives in the cs-* namespace (cs-root, cs-bar,
+ * cs-bar-inner, cs-baseline) injected via a deduped <style> tag.
+ * These class names do NOT exist in globals.css, so the 262 !important
+ * rules there cannot target them.
  *
- * 17 active families + specials comfortably fit at 375 px with gap 2 px.
- * (18 × 8 min-width + 17 × 2 gap = 178 px — no overflow risk.)
+ * Dynamic per-bar values (height, background, opacity, shadow, border)
+ * are passed via CSS custom properties set on each element's style
+ * attribute and consumed by .cs-bar via var() references — also protected
+ * by !important so no external rule can override the resolved value.
  *
- * Visual treatments (unchanged):
- *   kind "hue"      → solid backgroundColor from meta.hex
- *   kind "special"  → gradient treatments (multicolor / metallic / statement)
- *   kind "unknown"  → greige (#C8C0B0)
- *
- * Interaction modes (priority: hrefBase > onSelect > static) — unchanged.
- *
- * Accessibility:
- *   - role="group" + aria-label on container
- *   - aria-label and title on every bar
- *   - focus-visible ring on interactive bars
- *   - count is always in aria-label
+ * Bar heights use the CSS max() function: max(18%, N%) where N is the
+ * bar's share of the maximum family count. Parent has a definite height
+ * (via --cs-container-h), so percentage heights resolve correctly.
  */
 
 import Link from "next/link";
@@ -50,7 +38,6 @@ export interface ChromaSpineProps {
   hrefBase?: string;
   showCounts?: boolean;
   size?: ChromaSpineSize;
-  /** Retained for API compatibility. Currently only "horizontal" is rendered as histogram. */
   orientation?: ChromaSpineOrientation;
   ariaLabel?: string;
   className?: string;
@@ -59,10 +46,8 @@ export interface ChromaSpineProps {
 // ─── Size configuration ───────────────────────────────────────────────────────
 
 type SizeCfg = {
-  /** Fixed container height in px. Bars fill a proportion of this. */
-  containerH: number;
-  /** Gap between bars in px. */
-  gap: number;
+  containerH: number; // px
+  gap: number;        // px
   fontSize: string;
 };
 
@@ -72,21 +57,62 @@ const SIZE_CFG: Record<ChromaSpineSize, SizeCfg> = {
   lg: { containerH: 64, gap: 3, fontSize: "0.60rem" },
 };
 
-const BAR_RADIUS = "4px 4px 0 0";
-const MIN_H_RATIO = 0.18;
+// ─── cs-* component styles (injected once, deduplicated by React) ─────────────
+
+const CS_STYLES = `
+  /* ChromaSpine histogram — cs-* namespace, safe from globals.css !important */
+  .cs-root {
+    display:         flex !important;
+    flex-direction:  row  !important;
+    align-items:     flex-end !important;
+    height:          var(--cs-container-h, 40px) !important;
+    gap:             var(--cs-gap, 2px) !important;
+    overflow-x:      auto !important;
+    overflow-y:      visible !important;
+  }
+  .cs-bar {
+    flex:            1 1 0 !important;
+    width:           0 !important;
+    min-width:       8px !important;
+    height:          var(--cs-h, 18%) !important;
+    border-radius:   4px 4px 0 0 !important;
+    background:      var(--cs-bg, #888) !important;
+    opacity:         var(--cs-op, 1) !important;
+    box-shadow:      var(--cs-shadow, none) !important;
+    border:          var(--cs-border, none) !important;
+    box-sizing:      border-box !important;
+    overflow:        hidden !important;
+  }
+  .cs-bar-inner {
+    display:         flex !important;
+    height:          100% !important;
+    width:           100% !important;
+    align-items:     flex-end !important;
+    justify-content: center !important;
+    overflow:        hidden !important;
+    padding-bottom:  3px !important;
+    user-select:     none !important;
+  }
+  .cs-baseline {
+    display:    block !important;
+    height:     1px !important;
+    background: var(--tinta, #1D1814) !important;
+    opacity:    0.18 !important;
+    margin-top: 0 !important;
+  }
+`;
 
 // ─── Pure helpers ─────────────────────────────────────────────────────────────
 
 /**
- * Computes bar height in px.
- *   count = 0     → 18% of containerH (visible sliver, dimmed)
- *   count = max   → 100% of containerH
- *   Minimum enforced at 18% so zero-count families remain visible as stubs.
+ * Returns a CSS height value using max() so min-height 18% is always enforced.
+ * Percentage resolves against the container's definite height (--cs-container-h).
  */
-function barHeightPx(count: number, maxCount: number, containerH: number): number {
-  if (maxCount <= 0) return Math.round(MIN_H_RATIO * containerH);
-  const ratio = count === 0 ? MIN_H_RATIO : Math.max(MIN_H_RATIO, count / maxCount);
-  return Math.round(ratio * containerH);
+function barHeightStyle(count: number, maxCount: number): string {
+  if (maxCount <= 0 || count === 0) return "18%";
+  const pct = Math.round((count / maxCount) * 100);
+  if (pct >= 18) return `${pct}%`;
+  return `max(18%, ${pct}%)`;
 }
 
 /** Perceived luminance [0–1]. > 0.40 = light background → dark label. */
@@ -99,72 +125,71 @@ function hexLuminance(hex: string): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-/** CSS background string for "special" families. */
+/** CSS background value for special families. */
 function specialBackground(family: SpectrumFamily): string {
   if (family === "multicolor") {
     return (
       "linear-gradient(180deg," +
-      "#211C18 0%," +
-      "#77303A 20%," +
-      "#C3902F 38%," +
-      "#C6532F 52%," +
-      "#6B6D4C 66%," +
-      "#3A4B5F 80%," +
-      "#C98E8A 92%," +
-      "#EBDFC9 100%)"
+      "#211C18 0%,#77303A 20%,#C3902F 38%," +
+      "#C6532F 52%,#6B6D4C 66%,#3A4B5F 80%," +
+      "#C98E8A 92%,#EBDFC9 100%)"
     );
   }
   if (family === "metallic") {
     return (
       "linear-gradient(180deg," +
-      "#7A5A1E 0%," +
-      "#C9A84C 30%," +
-      "#E8C86A 55%," +
-      "#B8902A 78%," +
-      "#8C6A2F 100%)"
+      "#7A5A1E 0%,#C9A84C 30%,#E8C86A 55%," +
+      "#B8902A 78%,#8C6A2F 100%)"
     );
   }
-  return "transparent";
+  return "transparent"; // statement: handled via --cs-border
 }
 
-/**
- * Computes the full inline style for a single histogram bar.
- */
-function buildStyle(
+// ─── Per-bar CSS custom property computation ──────────────────────────────────
+
+interface BarVars {
+  "--cs-h":      string;
+  "--cs-bg":     string;
+  "--cs-op":     number;
+  "--cs-shadow": string;
+  "--cs-border": string;
+}
+
+function buildBarVars(
   meta: SpectrumMeta,
   isActive: boolean,
   count: number,
-  heightPx: number,
-): CSSProperties {
-  let visual: CSSProperties;
+  maxCount: number,
+): BarVars {
+  const h = barHeightStyle(count, maxCount);
+
+  let bg: string;
+  let border = "none";
 
   if (meta.kind === "special") {
     if (meta.id === "statement") {
-      visual = { background: "transparent", border: `2px solid ${meta.hex}` };
+      bg = "transparent";
+      border = `2px solid ${meta.hex}`;
     } else {
-      visual = { background: specialBackground(meta.id) };
+      bg = specialBackground(meta.id);
     }
   } else {
-    visual = { backgroundColor: meta.hex };
+    bg = meta.hex;
     if (meta.borderHex) {
-      visual.border = `1px solid ${meta.borderHex}`;
+      border = `1px solid ${meta.borderHex}`;
     }
   }
 
-  const boxShadow = isActive
+  const shadow = isActive
     ? `inset 0 0 0 2px rgba(255,255,255,0.55), 0 0 0 2px ${meta.hex}`
-    : undefined;
+    : "none";
 
   return {
-    // Equal-width columns — fills the container row proportionally
-    flex: "1 1 0",
-    width: 0,
-    minWidth: 8,
-    height: heightPx,
-    borderRadius: BAR_RADIUS,
-    opacity: count === 0 ? 0.28 : 1,
-    boxShadow,
-    ...visual,
+    "--cs-h":      h,
+    "--cs-bg":     bg,
+    "--cs-op":     count === 0 ? 0.28 : 1,
+    "--cs-shadow": shadow,
+    "--cs-border": border,
   };
 }
 
@@ -173,14 +198,13 @@ function buildStyle(
 type SegmentMode = "link" | "button" | "static";
 
 interface SegmentProps {
-  entry: SpectrumEntry;
-  maxCount: number;
-  containerH: number;
-  isActive: boolean;
+  entry:     SpectrumEntry;
+  maxCount:  number;
+  isActive:  boolean;
   showCounts: boolean;
-  size: ChromaSpineSize;
-  mode: SegmentMode;
-  href?: string;
+  size:      ChromaSpineSize;
+  mode:      SegmentMode;
+  href?:     string;
   onClickFn?: () => void;
 }
 
@@ -191,7 +215,6 @@ const FOCUS_RING =
 function Segment({
   entry,
   maxCount,
-  containerH,
   isActive,
   showCounts,
   size,
@@ -201,15 +224,14 @@ function Segment({
 }: SegmentProps) {
   const { meta, count } = entry;
   const cfg = SIZE_CFG[size];
-  const barH = barHeightPx(count, maxCount, containerH);
-  const style = buildStyle(meta, isActive, count, barH);
+  const vars = buildBarVars(meta, isActive, count, maxCount);
 
   const isOutlineOnly = meta.kind === "special" && meta.id === "statement";
   const countColor = isOutlineOnly
     ? meta.hex
     : hexLuminance(meta.hex) > 0.40
-      ? "rgba(29, 24, 20, 0.72)"
-      : "rgba(255, 253, 252, 0.88)";
+      ? "rgba(29,24,20,0.72)"
+      : "rgba(255,253,252,0.88)";
 
   const label =
     count > 0
@@ -217,14 +239,11 @@ function Segment({
       : `${meta.label} — not in closet`;
 
   const inner = (
-    <span
-      className="flex h-full w-full items-end justify-center overflow-hidden select-none pb-[3px]"
-      aria-hidden="true"
-    >
-      {showCounts && size !== "sm" && count > 0 && barH >= 20 ? (
+    <span className="cs-bar-inner" aria-hidden="true">
+      {showCounts && size !== "sm" && count > 0 ? (
         <span
-          className="font-semibold tabular-nums leading-none whitespace-nowrap"
           style={{ fontSize: cfg.fontSize, color: countColor }}
+          className="font-semibold tabular-nums leading-none whitespace-nowrap"
         >
           {count}
         </span>
@@ -232,15 +251,19 @@ function Segment({
     </span>
   );
 
+  const commonProps = {
+    className: `cs-bar ${FOCUS_RING}`,
+    style: vars as CSSProperties,
+    title: label,
+    "aria-label": label,
+  };
+
   if (mode === "link" && href) {
     return (
       <Link
+        {...commonProps}
         href={href}
-        style={style}
-        title={label}
-        aria-label={label}
-        aria-current={isActive ? "true" : undefined}
-        className={FOCUS_RING}
+        aria-current={isActive ? ("true" as const) : undefined}
       >
         {inner}
       </Link>
@@ -250,13 +273,10 @@ function Segment({
   if (mode === "button" && onClickFn) {
     return (
       <button
+        {...commonProps}
         type="button"
         onClick={onClickFn}
-        style={style}
-        title={label}
-        aria-label={label}
         aria-pressed={isActive}
-        className={FOCUS_RING}
       >
         {inner}
       </button>
@@ -264,7 +284,7 @@ function Segment({
   }
 
   return (
-    <div style={style} title={label} aria-label={label} role="img">
+    <div {...commonProps} role="img">
       {inner}
     </div>
   );
@@ -279,7 +299,6 @@ export function ChromaSpine({
   hrefBase,
   showCounts = false,
   size = "md",
-  orientation = "horizontal",
   ariaLabel = "Color spectrum",
   className = "",
 }: ChromaSpineProps) {
@@ -297,64 +316,58 @@ export function ChromaSpine({
 
   const cfg = SIZE_CFG[size];
 
-  // Histogram container: fixed height, bars align to the bottom
-  const containerStyle: CSSProperties = {
-    display: "flex",
-    flexDirection: orientation === "vertical" ? "column" : "row",
-    alignItems: orientation === "vertical" ? "flex-start" : "flex-end",
-    height: orientation === "vertical" ? undefined : cfg.containerH,
-    width: orientation === "vertical" ? cfg.containerH : undefined,
-    gap: cfg.gap,
-    overflowX: orientation === "horizontal" ? "auto" : undefined,
-    overflowY: orientation === "vertical" ? "auto" : undefined,
-  };
+  // Container CSS custom properties for size-dependent values
+  const containerVars = {
+    "--cs-container-h": `${cfg.containerH}px`,
+    "--cs-gap": `${cfg.gap}px`,
+  } as CSSProperties;
 
   return (
-    <div className={className}>
-      <div
-        role="group"
-        aria-label={ariaLabel}
-        style={containerStyle}
-      >
-        {sorted.map((entry) => {
-          const { family } = entry;
-          const isUnknown = family === "unknown";
-          const segMode: SegmentMode = isUnknown ? "static" : globalMode;
-          const href =
-            segMode === "link" && hrefBase
-              ? `${hrefBase}?colorFamily=${family}`
-              : undefined;
-          const onClickFn =
-            segMode === "button" && onSelect
-              ? () => onSelect(family)
-              : undefined;
+    <>
+      {/* Deduplicated by React via href — renders only once per page */}
+      <style href="chroma-spine" precedence="component">
+        {CS_STYLES}
+      </style>
 
-          return (
-            <Segment
-              key={String(family)}
-              entry={entry}
-              maxCount={maxCount}
-              containerH={cfg.containerH}
-              isActive={activeFamily === family}
-              showCounts={showCounts}
-              size={size}
-              mode={segMode}
-              href={href}
-              onClickFn={onClickFn}
-            />
-          );
-        })}
+      <div className={className}>
+        <div
+          role="group"
+          aria-label={ariaLabel}
+          className="cs-root"
+          style={containerVars}
+        >
+          {sorted.map((entry) => {
+            const { family } = entry;
+            const isUnknown = family === "unknown";
+            const segMode: SegmentMode = isUnknown ? "static" : globalMode;
+            const href =
+              segMode === "link" && hrefBase
+                ? `${hrefBase}?colorFamily=${family}`
+                : undefined;
+            const onClickFn =
+              segMode === "button" && onSelect
+                ? () => onSelect(family)
+                : undefined;
+
+            return (
+              <Segment
+                key={String(family)}
+                entry={entry}
+                maxCount={maxCount}
+                isActive={activeFamily === family}
+                showCounts={showCounts}
+                size={size}
+                mode={segMode}
+                href={href}
+                onClickFn={onClickFn}
+              />
+            );
+          })}
+        </div>
+
+        {/* 1 px tinta baseline */}
+        <div aria-hidden="true" className="cs-baseline" />
       </div>
-      {/* 1 px tinta baseline */}
-      <div
-        aria-hidden="true"
-        style={{
-          height: 1,
-          background: "var(--tinta)",
-          opacity: 0.18,
-          marginTop: 0,
-        }}
-      />
-    </div>
+    </>
   );
 }
