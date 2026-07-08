@@ -21,8 +21,8 @@
   --ink: #30231F;
   --ink-soft: #6E554A;
 
-  --line: rgba(48, 35, 31, 0.10);
-  --line-strong: rgba(48, 35, 31, 0.16);
+  --line: rgba(29, 24, 20, 0.10);
+  --line-strong: rgba(29, 24, 20, 0.16);
 
   --blush: #E8C8BE;
   --dusty-rose: #D8AFA3;
@@ -55,6 +55,11 @@
   --tinta: #1D1814;
   --tinta-suave: #6F675B;
   --tinta-tenue: #A29889;
+
+  /* ─── Cromática radius scale ─── */
+  --r-panel: 30px;
+  --r-card: 18px;
+  --r-chip: 100px;
 
   /* Espectro cromático — Dark Autumn closet DNA */
   --c-espresso: #3E2C22;
