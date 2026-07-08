@@ -1,0 +1,130 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Estamos cerrando Fase 3B — Spectrum lib.
+
+Contexto:
+Replit ya creó `src/lib/wardrobe/spectrum.ts` con 18 familias canónicas, metadata, helpers e integración base para ChromaSpine. Antes de cerrar la fase, necesitamos ajustar la librería según el audit real y las decisiones de diseño finales.
+
+Objetivo:
+Actualizar `src/lib/wardrobe/spectrum.ts` para que sea la fuente central de verdad del espectro cromático, preparada para ChromaSpine, sin tocar UI, Supabase, datos, APIs ni rutas.
+
+Cambios requeridos:
+
+1. Verificar las familias canónicas contra `src/lib/taxonomy.ts`.
+   Usar las 18 familias reales:
+   black, brown, cream, white, beige, gray, camel, burgundy, olive, mustard, orange, pink, plum, blue, denim, multicolor, metallic, statement.
+   Si taxonomy.ts contiene alguna diferencia real, reportarla antes de inventar o cambiar.
+
+2. Ajustar metadata por familia para incluir:
+   - id
+   - label
+   - labelEs
+   - hex
+   - borderHex opcional
+   - kind: "hue" | "special" | "unknown"
+   - spectralOrder
+   - role si ya existe o es útil, pero no debe reemplazar `kind`.
+
+3. Clasificar:
+   - `kind: "hue"` para familias que son colores reales.
+   - `kind: "special"` para:
+     - multicolor
+     - metallic
+     - statement
+   - `kind: "unknown"` solo para unknown fallback.
+
+4. Hex sugeridos, cálidos y alineados a Dark Autumn:
+   - black: #211C18
+   - brown: #5B4232
+   - cream: #EBDFC9
+   - white: #F5F1E8
+   - beige: #D9C6A5
+   - gray: #8D8A84
+   - camel: #B98A55
+   - burgundy: #77303A
+   - olive: #6B6D4C
+   - mustard: #C3902F
+   - orange: #C6532F
+   - pink: #C98E8A
+   - plum: #5A3A50
+   - blue: #3A4B5F
+   - denim: #4E637A
+
+5. Para `cream` y `white`, agregar `borderHex` para que ChromaSpine pueda dibujar hairline visible sobre fondo galería.
+   Sugerencia:
+   - cream borderHex: rgba(29, 24, 20, 0.18) o hex equivalente cálido.
+   - white borderHex: rgba(29, 24, 20, 0.22) o hex equivalente cálido.
+   Si el tipo solo acepta string hex, usar un hex cálido suave documentado.
+
+6. Para `multicolor`, `metallic` y `statement`:
+   - mantener `kind: "special"`.
+   - no tratarlas como hue plano normal.
+   - pueden tener `hex` fallback opcional para previews simples, pero debe quedar documentado que ChromaSpine las pintará con tratamiento especial:
+     - multicolor = mini-gradient
+     - metallic = shimmer / metallic treatment
+     - statement = outline / emphasis treatment
+
+7. `spectralOrder` debe ser fijo y seguir este orden:
+   Neutrales oscuro→claro:
+   black, brown, gray, camel, beige, cream, white
+
+   Acentos cálidos:
+   mustard, orange, burgundy, pink, plum
+
+   Fríos / profundos:
+   olive, blue, denim
+
+   Especiales al final:
+   multicolor, metallic, statement
+
+8. Mantener helpers:
+   - getColorFamilyMeta()
+   - getColorFamilyHex()
+   - normalizeColorFamily()
+   - groupPiecesByFamily()
+   - getColorFamilyHistogram()
+   - sortFamiliesBySpectralOrder()
+   - sortFamiliesByCount()
+
+9. `getColorFamilyHistogram()`:
+   - debe excluir familias con count 0 por defecto.
+   - debe aceptar opción `includeEmpty`.
+   - debe incluir `"unknown"` si hay piezas desconocidas.
+   - nunca debe ocultar unknown si existe.
+
+10. `sortFamiliesByCount()`:
+   - debe quedarse como helper para ríos/listas del clóset.
+   - no debe ser el orden principal de ChromaSpine.
+
+11. Exportar tipos listos para ChromaSpine:
+   - SpectrumFamily
+   - SpectrumKind
+   - SpectrumMeta
+   - SpectrumEntry { family, meta, count, pieces? }
+   - WithColorFamily
+   - ColorFamilyHistogram
+   - SortedFamilyEntry, si aplica.
+
+12. No usar `any`.
+13. No tocar UI.
+14. No crear ChromaSpine todavía.
+15. No tocar Supabase.
+16. No tocar datos.
+17. No tocar APIs.
+18. No cambiar rutas.
+19. No modificar `scripts/audit-color-families.mjs` salvo que sea estrictamente necesario. Si importarlo desde TS complica la ejecución, no hacerlo.
+
+Al final correr:
+npm run lint
+npm run typecheck
+npm run build
+
+Reportar:
+- archivo modificado,
+- familias canónicas finales,
+- kind por familia,
+- spectralOrder final,
+- familias con borderHex,
+- helpers exportados,
+- comportamiento de unknown,
+- confirmación de que no se tocó UI/Supabase/APIs/datos.
