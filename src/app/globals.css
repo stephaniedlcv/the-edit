@@ -7,70 +7,103 @@
    =========================================================== */
 
 :root {
-  /* ─── THE EDIT — Warm Blush Luxury System ─── */
-  --page: #FBF6F1;
-  --paper: #FFFDFC;
+
+  /* ┌─────────────────────────────────────────────────────────────┐
+     │  CROMÁTICA — Tokens oficiales (fuente de verdad)            │
+     │  Úsalos en código nuevo. Las páginas migrarán en fases       │
+     │  posteriores (3B+). No retirar estos tokens nunca.           │
+     └─────────────────────────────────────────────────────────────┘ */
+
+  /* Superficies */
+  --gal:   #EFEBE3;   /* fondo galería — base de la app */
+  --papel: #FAF7F0;   /* superficie cálida — cards, panels */
+
+  /* Tinta */
+  --tinta:       #1D1814;   /* texto primario */
+  --tinta-suave: #6F675B;   /* texto secundario */
+  --tinta-tenue: #A29889;   /* texto terciario, placeholders */
+
+  /* Líneas */
+  --line:        rgba(29, 24, 20, 0.10);   /* borde estándar */
+  --line-strong: rgba(29, 24, 20, 0.16);   /* borde énfasis */
+
+  /* Radio de esquinas */
+  --r-panel: 30px;    /* paneles flotantes, nav */
+  --r-card:  18px;    /* cards de items */
+  --r-chip:  100px;   /* chips, pills, badges */
+
+
+  /* ┌─────────────────────────────────────────────────────────────┐
+     │  ESPECTRO CROMÁTICO — Dark Autumn closet DNA                │
+     │  Colores derivados de las familias reales del clóset.       │
+     │  Para ChromaSpine (Fase 3B+). No son decorativos.           │
+     └─────────────────────────────────────────────────────────────┘ */
+
+  --c-espresso: #3E2C22;
+  --c-camel:    #B98A55;
+  --c-crema:    #EBDFC9;
+  --c-oliva:    #6B6D4C;
+  --c-burdeos:  #77303A;
+  --c-mostaza:  #C3902F;
+  --c-flama:    #C6532F;
+  --c-ciruela:  #5A3A50;
+  --c-denim:    #3A4B5F;
+
+
+  /* ┌─────────────────────────────────────────────────────────────┐
+     │  ALIASES TEMPORALES — bridge legacy → Cromática             │
+     │  Los cuatro de abajo consolidan duplicados exactos:         │
+     │  el valor renderizado es idéntico, solo el nombre cambia.   │
+     │  --background y --foreground apuntan a los vars legacy      │
+     │  hasta que las páginas migren a --gal/--tinta.              │
+     └─────────────────────────────────────────────────────────────┘ */
+
+  --cream:      var(--paper);       /* idéntico: ambos #FFFDFC */
+  --brown:      var(--coffee);      /* idéntico: ambos #6E554A */
+  --rust:       var(--terracotta);  /* idéntico: ambos #C9826B */
+  --camel:      var(--gold);        /* idéntico: ambos #B08A57 */
+
+  --background: var(--page);        /* alias semántico Tailwind */
+  --foreground: var(--ink);         /* alias semántico Tailwind */
+
+
+  /* ┌─────────────────────────────────────────────────────────────┐
+     │  LEGACY — Pendientes de retiro                              │
+     │  Usados por páginas actuales. No eliminar hasta que cada    │
+     │  página migre a los tokens Cromática equivalentes.          │
+     │  Retirar gradualmente en Fases 4+.                          │
+     └─────────────────────────────────────────────────────────────┘ */
+
+  /* Superficies legacy (Blush System) */
+  --page:    #FBF6F1;
+  --paper:   #FFFDFC;
   --paper-2: rgba(255, 253, 252, 0.78);
   --paper-3: #F4E8DF;
 
-  --espresso: #30231F;
-  --coffee: #6E554A;
-  --caramel: #9A8174;
+  /* Tinta legacy */
+  --espresso:     #30231F;
+  --coffee:       #6E554A;
+  --caramel:      #9A8174;
   --caramel-soft: #C2AAA0;
+  --ink:          #30231F;
+  --ink-soft:     #6E554A;
 
-  --ink: #30231F;
-  --ink-soft: #6E554A;
-
-  --line: rgba(29, 24, 20, 0.10);
-  --line-strong: rgba(29, 24, 20, 0.16);
-
-  --blush: #E8C8BE;
-  --dusty-rose: #D8AFA3;
-  --rose-deep: #B98278;
-  --terracotta: #C9826B;
-  --burgundy: #7A2E35;
-  --plum: #5B3548;
-  --olive: #6E7352;
-  --gold: #B08A57;
-  --gold-soft: #C8A76D;
-  --gold-bright: #8F6E3F;
-
-  --accent: #B98278;
+  /* Accentos legacy (Blush palette — no equivalente directo en Cromática) */
+  --blush:        #E8C8BE;
+  --dusty-rose:   #D8AFA3;
+  --rose-deep:    #B98278;
+  --terracotta:   #C9826B;
+  --burgundy:     #7A2E35;
+  --plum:         #5B3548;
+  --olive:        #6E7352;
+  --gold:         #B08A57;
+  --gold-soft:    #C8A76D;
+  --gold-bright:  #8F6E3F;
+  --accent:       #B98278;
   --accent-strong: #7A2E35;
-  --mauve-glow: #D8CAD8;
+  --mauve-glow:   #D8CAD8;
   --glass-border: rgba(255, 255, 255, 0.62);
 
-  /* ─── Legacy aliases kept for compatibility ─── */
-  --cream: #FFFDFC;
-  --camel: #B08A57;
-  --brown: #6E554A;
-  --rust: #C9826B;
-
-  --background: var(--page);
-  --foreground: var(--ink);
-
-  /* ─── Cromática foundation tokens ─── */
-  --gal: #EFEBE3;
-  --papel: #FAF7F0;
-  --tinta: #1D1814;
-  --tinta-suave: #6F675B;
-  --tinta-tenue: #A29889;
-
-  /* ─── Cromática radius scale ─── */
-  --r-panel: 30px;
-  --r-card: 18px;
-  --r-chip: 100px;
-
-  /* Espectro cromático — Dark Autumn closet DNA */
-  --c-espresso: #3E2C22;
-  --c-camel: #B98A55;
-  --c-crema: #EBDFC9;
-  --c-oliva: #6B6D4C;
-  --c-burdeos: #77303A;
-  --c-mostaza: #C3902F;
-  --c-flama: #C6532F;
-  --c-ciruela: #5A3A50;
-  --c-denim: #3A4B5F;
 }
 
 * {
