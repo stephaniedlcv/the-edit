@@ -7,7 +7,7 @@ import { ChromaSpineBlock } from "@/components/chroma-spine";
 import { DailyLookCover } from "@/components/daily-look-cover";
 import type { LookCandidate } from "@/components/daily-look-cover";
 import type { SpectrumEntry } from "@/lib/wardrobe/spectrum";
-import type { ColorFamily, WardrobeItem } from "@/types/wardrobe";
+import type { ColorFamily, WardrobeCategory, WardrobeItem } from "@/types/wardrobe";
 
 export const dynamic = "force-dynamic";
 
@@ -97,18 +97,68 @@ function darkenHex(hex: string, ratio: number): string {
   return `#${h(r)}${h(g)}${h(b)}`;
 }
 
-// ─── Daily look — deterministic date seed ───────────────────────────────────
+// ─── Daily look helpers ──────────────────────────────────────────────────────
 
 /**
- * Returns a stable index for today derived from the YYYY-MM-DD string.
- * Same date → same index → same look all day. Changes at midnight PR time.
+ * Spanish labels for each WardrobeCategory — used in the editorial title.
+ * Prefer item.subcategory when it's short enough (≤12 chars) for more specificity.
+ */
+const CATEGORY_LABELS_ES: Record<WardrobeCategory, string> = {
+  top:       "Top",
+  bottom:    "Pantalón",
+  dress:     "Vestido",
+  outerwear: "Blazer",
+  shoes:     "Zapatos",
+  bag:       "Bolso",
+  accessory: "Accesorio",
+  jewelry:   "Joyería",
+};
+
+/**
+ * Builds the editorial cover title from the two anchor pieces of a look.
+ *
+ * Format: "{categoryEs} {colorLabelEs}, base {baseColorLabelEs}."
+ * Example: "Blazer negro, base crema."
+ *
+ * Falls back to "{categoryEs} {colorLabelEs}, hoy." when:
+ *   — no bottom/base piece exists (dress look), or
+ *   — the composed string exceeds ~45 characters.
+ */
+function buildEditorialTitle(
+  anchor: WardrobeItem,
+  bottom: WardrobeItem | undefined,
+): string {
+  // Category label: use subcategory if it's a short, specific word
+  const sub = anchor.subcategory?.trim();
+  const categoryEs =
+    sub && sub.length <= 12
+      ? sub
+      : (CATEGORY_LABELS_ES[anchor.category] ?? "Pieza");
+
+  const anchorMeta = SPECTRUM_META[anchor.colorFamily as ColorFamily];
+  const anchorColor = anchorMeta?.labelEs?.toLowerCase() ?? "";
+
+  if (bottom) {
+    const bottomMeta = SPECTRUM_META[bottom.colorFamily as ColorFamily];
+    const baseColor = bottomMeta?.labelEs?.toLowerCase() ?? "";
+    const full = `${categoryEs} ${anchorColor}, base ${baseColor}.`;
+    if (full.length <= 45) return full;
+  }
+
+  const short = `${categoryEs} ${anchorColor}, hoy.`;
+  return short.length <= 45 ? short : `${categoryEs.slice(0, 18)}, hoy.`;
+}
+
+/**
+ * Stable daily index from Puerto Rico date (YYYY-MM-DD → hash → modulo).
+ * Same date → same index all day. Changes at PR midnight.
  */
 function getDailyIndex(count: number): number {
   if (count === 0) return 0;
   const prDate = new Intl.DateTimeFormat("en-US", {
     timeZone: "America/Puerto_Rico",
     year: "numeric", month: "2-digit", day: "2-digit",
-  }).format(new Date()); // "MM/DD/YYYY"
+  }).format(new Date());
   let hash = 0;
   for (const ch of prDate) hash = ((hash * 31) + ch.charCodeAt(0)) >>> 0;
   return hash % count;
@@ -131,7 +181,20 @@ function buildLookCandidates(wardrobeItems: WardrobeItem[]): LookCandidate[] {
       .map((id) => itemById.get(id))
       .filter((p): p is WardrobeItem => p != null);
 
-    // Dominant colorFamily within this look
+    // ── Anchor + base pieces for editorial title ─────────────────────────
+    const anchor =
+      pieces.find((p) => p.category === "outerwear") ??
+      pieces.find((p) => p.category === "dress") ??
+      pieces.find((p) => p.category === "top") ??
+      pieces[0];
+
+    const bottom = pieces.find((p) => p.category === "bottom");
+
+    const editorialTitle = anchor
+      ? buildEditorialTitle(anchor, bottom)
+      : look.title;
+
+    // ── Dominant colorFamily for gradient ────────────────────────────────
     const familyCounts: Record<string, number> = {};
     for (const p of pieces) {
       if (p.colorFamily) {
@@ -146,18 +209,7 @@ function buildLookCandidates(wardrobeItems: WardrobeItem[]): LookCandidate[] {
     const dominantMeta = SPECTRUM_META[dominantFamily] ?? SPECTRUM_META.black;
     const dominantHex = dominantMeta.hex;
 
-    // Editorial title: anchor piece name + dominant color label
-    const anchor =
-      pieces.find((p) => p.category === "outerwear") ??
-      pieces.find((p) => p.category === "top") ??
-      pieces.find((p) => p.category === "dress") ??
-      pieces[0];
-
-    const editorialTitle = anchor
-      ? `${anchor.name}, base ${dominantMeta.labelEs.toLowerCase()}.`
-      : look.title;
-
-    // Swatches: up to 4 unique hexes, ordered by piece
+    // ── Swatches: up to 4 unique hexes ordered by piece ─────────────────
     const seenHex = new Set<string>();
     const swatchHexes: string[] = [];
     for (const p of pieces) {
@@ -177,11 +229,12 @@ function buildLookCandidates(wardrobeItems: WardrobeItem[]): LookCandidate[] {
     const isLight = hexLuminance(dominantHex) > 0.45;
 
     return {
-      outfitId: look.id,
+      outfitId:      look.id,
       editorialTitle,
-      pieceCount: pieces.length,
-      colorScore: Math.round(look.colorScore),
-      pieceIds: look.pieceIds,
+      anchorPieceName: anchor?.name ?? "",
+      pieceCount:    pieces.length,
+      colorScore:    look.colorScore,   // raw from validator (0–100, already rounded)
+      pieceIds:      look.pieceIds,
       swatchHexes,
       coverBg,
       textColor: isLight ? "var(--tinta)" : "var(--papel)",
@@ -194,7 +247,6 @@ function buildLookCandidates(wardrobeItems: WardrobeItem[]): LookCandidate[] {
 // ─── Home ───────────────────────────────────────────────────────────────────
 
 export default async function HomePage() {
-  // Fetch in parallel — spectrum entries (for spine/ticker) + full items (for looks)
   const [entries, wardrobeItems] = await Promise.all([
     getClosetSpectrumEntries({ includeEmpty: true }),
     getWardrobeItems(),
@@ -213,7 +265,6 @@ export default async function HomePage() {
     console.error("[HomePage] composeOutfits failed, using fallback cover:", err);
   }
 
-  // Rotate so today's picked index is first — stable across refreshes, changes at midnight
   const dailyStart = getDailyIndex(lookCandidates.length);
   const orderedCandidates =
     lookCandidates.length > 0
@@ -221,10 +272,10 @@ export default async function HomePage() {
       : [];
 
   // ── Fallback cover (family-dominant) ────────────────────────────────────
-  const isLightBg = summary.dominant ? hexLuminance(summary.dominant.hex) > 0.45 : false;
+  const isLightBg    = summary.dominant ? hexLuminance(summary.dominant.hex) > 0.45 : false;
   const coverTextColor = isLightBg ? "var(--tinta)" : "var(--papel)";
-  const coverBtnBg    = isLightBg ? "var(--tinta)" : "var(--papel)";
-  const coverBtnText  = isLightBg ? "var(--papel)" : "var(--tinta)";
+  const coverBtnBg     = isLightBg ? "var(--tinta)" : "var(--papel)";
+  const coverBtnText   = isLightBg ? "var(--papel)" : "var(--tinta)";
   const coverBg = summary.dominant
     ? [
         `radial-gradient(ellipse at 85% 12%, rgba(255,253,245,0.15) 0%, transparent 55%)`,
@@ -251,7 +302,7 @@ export default async function HomePage() {
 
       <section className="mx-auto flex max-w-[760px] flex-col gap-7">
 
-        {/* ── 1. Editorial masthead + histogram + caption */}
+        {/* ── 1. Masthead + histogram + caption */}
         <ChromaSpineBlock entries={entries} editionNumber={editionNumber} />
 
         {/* ── 2. Fecha editorial */}
@@ -278,7 +329,7 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* ── 3. Cover card: daily look (Fase 5B) → family fallback */}
+        {/* ── 3. Cover: daily look (Fase 5B) → family fallback */}
         {orderedCandidates.length > 0 ? (
           <DailyLookCover candidates={orderedCandidates} editionNumber={editionNumber} />
         ) : summary.dominant ? (
@@ -332,7 +383,7 @@ export default async function HomePage() {
           </div>
         ) : null}
 
-        {/* ── 4. Ticker de datos reales */}
+        {/* ── 4. Ticker */}
         {tickerItems.length > 0 && (
           <div className="relative w-full overflow-hidden border-y border-[var(--line)] py-[0.45rem]">
             <div className="te-ticker-track">

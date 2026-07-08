@@ -8,6 +8,7 @@ import { useState } from "react";
 export interface LookCandidate {
   outfitId: string;
   editorialTitle: string;
+  anchorPieceName: string;
   pieceCount: number;
   colorScore: number;
   pieceIds: string[];
@@ -32,7 +33,7 @@ export function DailyLookCover({ candidates, editionNumber }: DailyLookCoverProp
 
   const look = candidates[offset % candidates.length];
   const hasNext = candidates.length > 1;
-  const scoreLabel = look.colorScore > 0 ? `armonía ${look.colorScore}` : null;
+  const extraCount = look.pieceCount - 1;
 
   return (
     <div
@@ -61,26 +62,46 @@ export function DailyLookCover({ candidates, editionNumber }: DailyLookCoverProp
         El look de hoy · Nº {editionNumber}
       </p>
 
-      {/* Editorial title */}
+      {/* Editorial title — clamped to 3 lines max, font scales with viewport */}
       <p
         role="heading"
         aria-level={1}
-        className="mt-5 max-w-[14rem] text-[2.2rem] leading-[1.05] font-light sm:text-[2.7rem] sm:max-w-[17rem] pr-8"
-        style={{ color: look.textColor, fontFamily: "var(--font-serif)" }}
+        className="mt-5 pr-8 font-light"
+        style={{
+          color: look.textColor,
+          fontFamily: "var(--font-serif)",
+          fontSize: "clamp(26px, 7vw, 34px)",
+          lineHeight: 1.05,
+          display: "-webkit-box",
+          WebkitLineClamp: 3,
+          WebkitBoxOrient: "vertical",
+          overflow: "hidden",
+        }}
       >
         {look.editorialTitle}
       </p>
 
-      {/* Subline */}
+      {/* Subline 1: anchor piece name + count */}
       <p
-        className="mt-4 text-[0.82rem] leading-[1.5] opacity-75 pr-12"
+        className="mt-4 text-[0.82rem] leading-[1.4] opacity-75 pr-12 overflow-hidden text-ellipsis whitespace-nowrap"
         style={{ color: look.textColor, fontFamily: "var(--font-sans)" }}
       >
-        {look.pieceCount} piezas{scoreLabel ? ` · ${scoreLabel}` : ""}
+        {look.anchorPieceName}
+        {extraCount > 0 && ` + ${extraCount} ${extraCount === 1 ? "pieza más" : "piezas más"}`}
       </p>
 
+      {/* Subline 2: harmony score — only when > 0 */}
+      {look.colorScore > 0 && (
+        <p
+          className="mt-1 text-[0.72rem] leading-[1.4] opacity-55 pr-12"
+          style={{ color: look.textColor, fontFamily: "var(--font-sans)" }}
+        >
+          armonía {look.colorScore}
+        </p>
+      )}
+
       {/* CTAs */}
-      <div className="mt-7 flex flex-wrap items-center gap-4">
+      <div className="mt-6 flex flex-wrap items-center gap-4">
         {look.pieceIds[0] && (
           <Link
             href={`/outfits?pieceId=${look.pieceIds[0]}`}
