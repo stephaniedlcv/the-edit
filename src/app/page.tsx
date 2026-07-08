@@ -6,24 +6,20 @@ import type { WardrobeItem } from "@/types/wardrobe";
 
 export const dynamic = "force-dynamic";
 
-// ─── Server-side, honest helpers ───────────────────────────────────────────
+// ─── Server-side helpers ────────────────────────────────────────────────────
 
-/** Real server date pieces, Puerto Rico time. No fake location, no weather. */
+/** Real server date in Puerto Rico time, labels in Spanish. */
 function getEditionDate() {
   const now = new Date();
-  const day = new Intl.DateTimeFormat("en-US", {
-    day: "2-digit",
-    timeZone: "America/Puerto_Rico",
-  }).format(now);
-  const month = new Intl.DateTimeFormat("en-US", {
-    month: "long",
-    timeZone: "America/Puerto_Rico",
-  }).format(now);
-  const weekday = new Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    timeZone: "America/Puerto_Rico",
-  }).format(now);
-  return { day, month, weekday };
+  const pr = "America/Puerto_Rico";
+  const day = new Intl.DateTimeFormat("es-PR", { day: "2-digit", timeZone: pr }).format(now);
+  const month = new Intl.DateTimeFormat("es-PR", { month: "long", timeZone: pr }).format(now);
+  const weekday = new Intl.DateTimeFormat("es-PR", { weekday: "long", timeZone: pr }).format(now);
+  return {
+    day,
+    month: month.toUpperCase(),
+    weekday: weekday.toUpperCase(),
+  };
 }
 
 interface FamilySummary {
@@ -41,7 +37,6 @@ interface ClosetSummary {
   topFamilies: FamilySummary[];
 }
 
-/** Derives every summary number from the entries themselves — nothing hardcoded. */
 function buildClosetSummary(
   entries: SpectrumEntry<WardrobeItem>[],
 ): ClosetSummary {
@@ -70,30 +65,38 @@ function buildClosetSummary(
   };
 }
 
-/** One honest, data-derived insight. Returns null when there is nothing true to say yet. */
-function buildInsight(summary: ClosetSummary): string | null {
-  if (summary.totalPieces === 0) return null;
-
-  if (summary.emptyFamilies.length > 0) {
-    const [first] = summary.emptyFamilies;
-    return `Your spectrum has no pieces in ${first.label} yet.`;
-  }
+/** Ticker items — derived strictly from real closet data, no fake copy. */
+function buildTickerItems(summary: ClosetSummary): string[] {
+  if (summary.totalPieces === 0) return [];
+  const items: string[] = [];
 
   if (summary.dominant) {
-    const share = summary.dominant.count / summary.totalPieces;
-    if (share >= 0.15) {
-      return `${summary.dominant.label} dominates your closet right now, with ${summary.dominant.count} pieces.`;
-    }
+    items.push(
+      `${summary.dominant.label.toUpperCase()} DOMINA TU ESPECTRO · ${summary.dominant.count} PIEZAS`,
+    );
   }
-
-  if (summary.activeFamilies >= 12) {
-    return `Your closet already spans ${summary.activeFamilies} active color families.`;
+  if (summary.topFamilies.length > 1) {
+    items.push(
+      `${summary.topFamilies[1].label.toUpperCase()} EN SEGUNDO LUGAR · ${summary.topFamilies[1].count} PIEZAS`,
+    );
   }
-
-  return `Your closet holds ${summary.totalPieces} pieces across ${summary.activeFamilies} color families.`;
+  if (summary.emptyFamilies.length > 0) {
+    items.push(
+      `TE FALTA ${summary.emptyFamilies[0].label.toUpperCase()} EN TU PALETA`,
+    );
+  }
+  if (summary.emptyFamilies.length > 1) {
+    items.push(
+      `Y TAMBIÉN ${summary.emptyFamilies[1].label.toUpperCase()}`,
+    );
+  }
+  items.push(
+    `${summary.totalPieces} PIEZAS · ${summary.activeFamilies} FAMILIAS ACTIVAS`,
+  );
+  return items;
 }
 
-/** Perceived luminance [0–1]. > 0.45 = light background → use dark text. */
+/** Perceived luminance [0–1]. > 0.45 = fondo claro → texto oscuro. */
 function hexLuminance(hex: string): number {
   const clean = hex.replace("#", "");
   if (clean.length !== 6) return 0.5;
@@ -128,125 +131,214 @@ function QuickChip({ href, label }: { href: string; label: string }) {
 export default async function HomePage() {
   const entries = await getClosetSpectrumEntries({ includeEmpty: true });
   const summary = buildClosetSummary(entries);
-  const insight = buildInsight(summary);
+  const tickerItems = buildTickerItems(summary);
   const { day, month, weekday } = getEditionDate();
 
-  const coverTextColor =
-    summary.dominant && hexLuminance(summary.dominant.hex) > 0.45
-      ? "var(--tinta)"
-      : "var(--papel)";
+  const isLightBg =
+    summary.dominant ? hexLuminance(summary.dominant.hex) > 0.45 : false;
+  const coverTextColor = isLightBg ? "var(--tinta)" : "var(--papel)";
+  const coverBtnBg = isLightBg ? "var(--tinta)" : "var(--papel)";
+  const coverBtnText = isLightBg ? "var(--papel)" : "var(--tinta)";
 
   return (
     <section className="min-h-screen bg-[var(--gal)] px-4 pb-28 pt-6 md:px-6 md:pt-10">
+      {/* CSS for marquee animation — server-safe, no JS required */}
+      <style>{`
+        @keyframes te-ticker {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .te-ticker-track {
+          animation: te-ticker 34s linear infinite;
+          white-space: nowrap;
+          display: inline-block;
+          will-change: transform;
+        }
+        .te-ticker-track:hover { animation-play-state: paused; }
+      `}</style>
+
       <section className="mx-auto flex max-w-[760px] flex-col gap-7">
-        {/* ── 1+2. Compact masthead / daily edition row ─────────────── */}
+
+        {/* ── 1. Masthead row ────────────────────────────────────────────── */}
         <header className="flex items-center justify-between">
-          <p className="text-[0.68rem] font-bold uppercase tracking-[0.34em] text-[var(--tinta)]">
+          <p
+            className="text-[0.68rem] font-bold uppercase tracking-[0.34em] text-[var(--tinta)]"
+            style={{ fontFamily: "var(--font-sans)" }}
+          >
             The Edit
           </p>
           {summary.totalPieces > 0 && (
-            <p className="text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-[var(--tinta-tenue)]">
-              Daily edit · Nº {summary.totalPieces}
+            <p
+              className="text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-[var(--tinta-tenue)]"
+              style={{ fontFamily: "var(--font-sans)" }}
+            >
+              Edición diaria · Nº {summary.totalPieces}
             </p>
           )}
         </header>
 
-        {/* ── 3. Compact ChromaSpine — visual signature ──────────────── */}
+        {/* ── 2. ChromaSpine con labels ──────────────────────────────────── */}
         {entries.length > 0 ? (
-          <ChromaSpine
-            entries={entries}
-            hrefBase="/closet/gallery"
-            size="sm"
-            ariaLabel="Your closet, organized by color family"
-            className="rounded-[var(--r-card)]"
-          />
+          <div>
+            <div className="mb-2 flex items-center justify-between">
+              <p
+                className="text-[0.56rem] font-bold uppercase tracking-[0.22em] text-[var(--tinta-tenue)]"
+                style={{ fontFamily: "var(--font-sans)" }}
+              >
+                Tu espectro
+              </p>
+              <p
+                className="text-[0.56rem] font-bold uppercase tracking-[0.22em] text-[var(--tinta-tenue)]"
+                style={{ fontFamily: "var(--font-sans)" }}
+              >
+                {summary.totalPieces} piezas
+              </p>
+            </div>
+            <ChromaSpine
+              entries={entries}
+              hrefBase="/closet/gallery"
+              size="sm"
+              ariaLabel="Tu clóset organizado por familia de color"
+              className="rounded-[var(--r-card)]"
+            />
+          </div>
         ) : (
           <p className="text-sm text-[var(--tinta-suave)]">
-            No closet data yet — add your first piece to see your spectrum.
+            Aún no hay piezas — añade tu primera pieza para ver tu espectro.
           </p>
         )}
 
-        {/* ── 4. Editorial date block ─────────────────────────────────── */}
+        {/* ── 3. Bloque de fecha editorial ──────────────────────────────── */}
         <div className="flex items-end gap-4">
-          <p className="font-display text-[4.2rem] leading-[0.8] text-[var(--tinta)]">
+          <p
+            className="text-[4.2rem] leading-[0.8] text-[var(--tinta)]"
+            style={{ fontFamily: "var(--font-serif)", fontWeight: 300 }}
+          >
             {day}
           </p>
           <div className="pb-1">
-            <p className="text-[0.7rem] font-bold uppercase tracking-[0.16em] text-[var(--tinta)]">
+            <p
+              className="text-[0.7rem] font-bold uppercase tracking-[0.16em] text-[var(--tinta)]"
+              style={{ fontFamily: "var(--font-sans)" }}
+            >
               {month}
             </p>
-            <p className="text-[0.7rem] font-bold uppercase tracking-[0.16em] text-[var(--tinta-tenue)]">
+            <p
+              className="text-[0.7rem] font-bold uppercase tracking-[0.16em] text-[var(--tinta-tenue)]"
+              style={{ fontFamily: "var(--font-sans)" }}
+            >
               {weekday}
             </p>
           </div>
         </div>
 
-        {/* ── 5. Dominant-family cover card ───────────────────────────── */}
+        {/* ── 4. Cover card — portada del día ────────────────────────────── */}
         {summary.dominant && (
-          <div
-            className="relative overflow-hidden rounded-[var(--r-panel)] p-7 md:p-9"
-            style={{ backgroundColor: summary.dominant.hex }}
-          >
-            <p
-              className="text-[0.62rem] font-bold uppercase tracking-[0.2em] opacity-70"
-              style={{ color: coverTextColor }}
+          <>
+            <div
+              className="relative overflow-hidden rounded-[var(--r-panel)] p-7 md:p-9"
+              style={{ backgroundColor: summary.dominant.hex }}
             >
-              Today&apos;s cover · {summary.dominant.label}
-            </p>
-            <p
-              role="heading"
-              aria-level={1}
-              className="mt-4 max-w-md text-[2.1rem] leading-[1] font-medium sm:text-[2.6rem]"
-              style={{ color: coverTextColor, fontFamily: "var(--font-serif)" }}
-            >
-              {summary.dominant.label} leads your closet.
-            </p>
-            <p
-              className="mt-4 text-[0.9rem] opacity-80"
-              style={{ color: coverTextColor }}
-            >
-              {summary.dominant.count} pieces in this family.
-            </p>
+              {/* Swatches apilados en la esquina superior derecha */}
+              {summary.topFamilies.length > 1 && (
+                <div className="absolute right-7 top-7 flex flex-col gap-[0.35rem]">
+                  {summary.topFamilies.map((f) => (
+                    <span
+                      key={f.family}
+                      className="h-[1.15rem] w-[1.15rem] rounded-full ring-1 ring-inset ring-white/25"
+                      style={{ backgroundColor: f.hex }}
+                      title={`${f.label} — ${f.count} piezas`}
+                      aria-hidden="true"
+                    />
+                  ))}
+                </div>
+              )}
 
-            {summary.topFamilies.length > 1 && (
-              <div className="mt-6 flex gap-2">
-                {summary.topFamilies.map((f) => (
-                  <span
-                    key={f.family}
-                    className="h-3 w-3 rounded-full ring-1 ring-inset ring-white/40"
-                    style={{ backgroundColor: f.hex }}
-                    title={`${f.label} — ${f.count} pieces`}
-                    aria-hidden="true"
-                  />
-                ))}
+              {/* Eyebrow */}
+              <p
+                className="text-[0.58rem] font-bold uppercase tracking-[0.22em] opacity-70 pr-12"
+                style={{ color: coverTextColor, fontFamily: "var(--font-sans)" }}
+              >
+                La portada de hoy · {summary.dominant.label}
+              </p>
+
+              {/* Título editorial con "hoy." en itálico */}
+              <p
+                role="heading"
+                aria-level={1}
+                className="mt-5 max-w-[14rem] text-[2.2rem] leading-[1.0] font-light sm:text-[2.7rem] sm:max-w-[17rem] pr-8"
+                style={{ color: coverTextColor, fontFamily: "var(--font-serif)" }}
+              >
+                El {summary.dominant.label.toLowerCase()} trabaja{" "}
+                <em>hoy.</em>
+              </p>
+
+              {/* Subtext — dato real */}
+              <p
+                className="mt-4 text-[0.82rem] leading-[1.5] opacity-75 pr-12"
+                style={{ color: coverTextColor, fontFamily: "var(--font-sans)" }}
+              >
+                {summary.dominant.count} piezas · tu familia dominante
+              </p>
+
+              {/* CTAs */}
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Link
+                  href={`/closet/gallery`}
+                  className="inline-flex h-10 items-center justify-center rounded-[var(--r-chip)] px-5 text-[0.65rem] font-bold uppercase tracking-[0.14em] no-underline transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  style={{
+                    backgroundColor: coverBtnBg,
+                    color: coverBtnText,
+                    fontFamily: "var(--font-sans)",
+                  }}
+                >
+                  Vestir esta portada
+                </Link>
+                <Link
+                  href="/closet/gallery"
+                  className="inline-flex h-10 items-center justify-center rounded-[var(--r-chip)] border px-5 text-[0.65rem] font-bold uppercase tracking-[0.14em] no-underline transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  style={{
+                    borderColor: coverTextColor,
+                    color: coverTextColor,
+                    fontFamily: "var(--font-sans)",
+                  }}
+                >
+                  Cambiar
+                </Link>
+              </div>
+            </div>
+
+            {/* ── 5. Ticker de datos reales ─────────────────────────────── */}
+            {tickerItems.length > 0 && (
+              <div className="relative overflow-hidden border-y border-[var(--line)] py-2">
+                <div className="te-ticker-track">
+                  {[...tickerItems, ...tickerItems].map((item, i) => (
+                    <span
+                      key={i}
+                      className="text-[0.58rem] font-bold uppercase tracking-[0.18em] text-[var(--tinta-tenue)]"
+                      style={{ fontFamily: "var(--font-sans)" }}
+                    >
+                      {item}
+                      <span className="mx-5 opacity-30" aria-hidden="true">
+                        ·
+                      </span>
+                    </span>
+                  ))}
+                </div>
               </div>
             )}
-          </div>
+          </>
         )}
 
-        {/* ── 6+7. Micro stats + honest insight ───────────────────────── */}
-        {summary.totalPieces > 0 && (
-          <div>
-            <p className="text-[0.72rem] text-[var(--tinta-suave)]">
-              {summary.totalPieces} pieces · {summary.activeFamilies} active
-              families · {summary.emptyFamilies.length} empty
-            </p>
-            {insight && (
-              <p className="mt-2 text-[0.85rem] leading-6 text-[var(--tinta-tenue)]">
-                {insight}
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* ── 8. Quick actions as a chip row ──────────────────────────── */}
+        {/* ── 6. Acciones rápidas ──────────────────────────────────────── */}
         <div className="flex flex-wrap gap-2">
-          <QuickChip href="/closet" label="Closet" />
-          <QuickChip href="/closet/gallery" label="Gallery" />
+          <QuickChip href="/closet" label="Clóset" />
+          <QuickChip href="/closet/gallery" label="Galería" />
           <QuickChip href="/wishlist" label="Wishlist" />
           <QuickChip href="/outfits" label="Outfits" />
-          <QuickChip href="/closet/add" label="Add piece" />
+          <QuickChip href="/closet/add" label="Añadir" />
         </div>
+
       </section>
     </section>
   );
