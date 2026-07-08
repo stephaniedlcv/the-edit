@@ -1,0 +1,12 @@
+Aquí va 6B, la fase que convierte todos esos links en funcionalidad real:
+
+Fase 6B — Gallery con URL filters + migración Cromática. Branch cromatica-v1. La gallery es la página más usada de la app — cuidado quirúrgico: la lógica de filtrado existente NO se reescribe, se conecta.
+
+URL como fuente de verdad de filtros: closet-gallery-board.tsx lee useSearchParams al montar e inicializa: ?colorFamily=, ?category=, ?status=, ?q=. Cada cambio de filtro actualiza la URL con router.replace (scroll:false) — refresh conserva filtros, back desde un item conserva filtros, y los deep-links de la espina/ríos/portada funcionan. Validar valores contra la taxonomía (param inválido = ignorado, no crash).
+Mapeo colorFamily: verificar cómo filtra hoy la gallery por color (¿colorName? ¿colorFamily?) y conectar el param al campo correcto vía normalizeColorFamily de spectrum.ts. Si la gallery hoy filtra por otro campo de color, el param manda y el filtro interno se alinea a familias canónicas.
+Migración visual a Cromática (namespace gl-): header patrón editorial (eyebrow + "La galería." serif con itálica burdeos + count), search pill estilo mockup, chips de filtro en tokens nuevos (chip activo = tinta sólida), grid de PieceCards consistente con las de los ríos de 6A. La barra de filtros: una fila scrolleable de chips de familia (con dot de color) + fila de categorías — evaluar colapsar los filtros secundarios (status/vibe/score) en un botón "Filtros" que abre un panel, para que el grid empiece más arriba en mobile.
+next/image: migrar las imágenes de las cards a next/image con fill + sizes apropiados + lazy loading (configurar el hostname de Supabase en next.config si no está). Fallback de gradiente se mantiene para piezas sin foto.
+Estado "filtrado por espina": cuando llega ?colorFamily=X, mostrar sobre el grid una línea editorial: dot + "Familia: {labelEs} · {n} piezas" + link "Ver todo".
+Empty state existente se conserva (rediseñado en tokens).
+No tocar: lógica de datos, item detail (6C), wishlist, nav.
+Criterio de aceptación: (a) desde la Portada, tap en "VER ESTA FAMILIA" → gallery filtrada a negro con la línea "Familia: Negro"; (b) refresh mantiene el filtro; (c) quitar el filtro limpia la URL; (d) screenshot 375px del grid con imágenes reales cargando lazy — verificado por ti en tu teléfono si el screenshot tool sigue caído. Cierre estándar.

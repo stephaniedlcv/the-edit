@@ -1,9 +1,10 @@
 export const dynamic = "force-dynamic";
 
-import Link from "next/link";
+import { Suspense } from "react";
 import { getWardrobeItems } from "@/lib/wardrobe/data";
-import type { WardrobeCategory } from "@/types/wardrobe";
+import { SPECTRUM_META } from "@/lib/wardrobe/spectrum";
 import { ClosetGalleryBoard } from "@/components/ui/closet-gallery-board";
+import type { WardrobeCategory } from "@/types/wardrobe";
 
 export default async function ClosetGalleryPage() {
   const ownedItems = await getWardrobeItems();
@@ -16,39 +17,62 @@ export default async function ClosetGalleryPage() {
     {},
   );
 
+  const burgundyHex = SPECTRUM_META.burgundy?.hex ?? "#6B2D3E";
+
   return (
-    <section className="gallery-v2 min-h-screen px-4 py-6 md:px-6 md:py-8">
-      <section className="mx-auto max-w-[1120px]">
-        <section className="gallery-v2-hero">
-          <div>
-            <p className="eyebrow mb-2">Closet Gallery</p>
-            <h1 className="font-display">Browse pieces</h1>
-            <p>
-              A clean visual inventory of every owned piece, ready for styling,
-              outfit building, and capsule decisions.
+    <section
+      className="min-h-screen px-4 pb-28 pt-6 md:px-6 md:pt-10"
+      style={{ background: "var(--gal)", overflowX: "clip" }}
+    >
+      <div className="mx-auto max-w-[760px]">
+        {/* Header — Cromática pattern */}
+        <div className="mb-7">
+          <p
+            className="mb-2"
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontSize: "0.58rem",
+              fontWeight: 700,
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              color: "var(--tinta-tenue)",
+            }}
+          >
+            Clóset · Galería · {ownedItems.length} piezas
+          </p>
+          <p
+            style={{
+              fontFamily: "var(--font-serif)",
+              fontSize: "clamp(2rem,8vw,2.8rem)",
+              fontWeight: 300,
+              lineHeight: 1.0,
+              color: "var(--tinta)",
+            }}
+          >
+            La{" "}
+            <em style={{ fontStyle: "italic", color: burgundyHex }}>
+              galería.
+            </em>
+          </p>
+        </div>
+
+        <Suspense
+          fallback={
+            <p
+              style={{
+                fontFamily: "var(--font-sans)",
+                fontSize: "0.75rem",
+                color: "var(--tinta-tenue)",
+                padding: "2rem 0",
+              }}
+            >
+              Cargando…
             </p>
-          </div>
-
-          <div className="gallery-v2-count">
-            <span>{ownedItems.length}</span>
-            <small>owned pieces</small>
-          </div>
-        </section>
-
-        <nav className="gallery-v2-nav">
-          <Link href="/closet" className="gallery-v2-link primary">
-            Dashboard
-          </Link>
-          <Link href="/outfits" className="gallery-v2-link">
-            Build look
-          </Link>
-          <Link href="/wishlist" className="gallery-v2-link">
-            Wishlist
-          </Link>
-        </nav>
-
-        <ClosetGalleryBoard items={ownedItems} counts={counts} />
-      </section>
+          }
+        >
+          <ClosetGalleryBoard items={ownedItems} counts={counts} />
+        </Suspense>
+      </div>
     </section>
   );
 }
