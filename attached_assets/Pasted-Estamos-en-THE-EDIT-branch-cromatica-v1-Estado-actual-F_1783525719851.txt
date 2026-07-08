@@ -1,0 +1,151 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Estado actual:
+- Fase 0 cerrada: branch seguro `cromatica-v1`.
+- Fase 1B cerrada: componentes/libs muertos eliminados.
+- Fase 1C cerrada: CSS legacy de navegación eliminado.
+- Fase 1D cerrada: `<main>` anidados reemplazados por `<section>`.
+- Fase 2A cerrada: ColorFamily audit con 190/190 piezas válidas, 100% coverage.
+- Fase 2B cerrada: data honesty fixes.
+- Fase 2C cerrada: auth strategy documentada.
+- Fase 3A cerrada: tokens Cromática instalados.
+- Fase 3B cerrada: `src/lib/wardrobe/spectrum.ts` creado.
+- Fase 3C cerrada: UI primitives creadas: Button, Chip, SectionHead, PieceCard.
+- Último commit confirmado: `cab0c0c Add new UI components and a development preview page`.
+
+Ahora ejecuta Fase 4A — ChromaSpine static.
+
+Objetivo:
+Crear el componente visual `ChromaSpine` usando data estática/controlada, sin conectarlo todavía a Supabase, Home, Closet ni rutas existentes.
+
+Reglas:
+- No tocar Supabase.
+- No modificar datos.
+- No tocar rutas API.
+- No cambiar lógica de negocio.
+- No conectar a datos reales todavía.
+- No migrar Home.
+- No migrar Closet.
+- No migrar Wishlist.
+- No cambiar navegación existente.
+- No borrar `/dev/ui` todavía.
+- No añadir dependencias nuevas.
+- No usar `any`.
+
+Antes de programar, inspecciona:
+- `src/lib/wardrobe/spectrum.ts`
+- `src/components/ui/chip.tsx`
+- `src/components/ui/button.tsx`
+- `src/components/ui/piece-card.tsx`
+- `src/app/dev/ui/page.tsx`
+- `src/app/globals.css`
+
+Tareas:
+
+1. Crear componente:
+`src/components/chroma-spine.tsx`
+
+Debe exportar:
+- `ChromaSpine`
+- tipos de props necesarios, si aplica.
+
+2. Props requeridas:
+- `entries`
+- `activeFamily?`
+- `onSelect?`
+- `hrefBase?`
+- `showCounts?`
+- `size?`: `"sm" | "md" | "lg"`
+- `orientation?`: `"horizontal" | "vertical"` si no complica; si complica, empezar solo horizontal.
+- `ariaLabel?`
+- `className?`
+
+3. Shape de `entries`:
+Usar el tipo `SpectrumEntry` de `src/lib/wardrobe/spectrum.ts` si ya existe.
+Cada entry debe tener:
+- family
+- meta
+- count
+- pieces? opcional
+
+4. Orden:
+Debe renderizar usando `sortFamiliesBySpectralOrder()` de `spectrum.ts`.
+No ordenar por count para la espina principal.
+El count solo debe afectar la altura/ancho/intensidad visual de la barra.
+
+5. Visual:
+ChromaSpine debe ser una tira editorial de barras/píldoras cromáticas.
+Debe usar:
+- `meta.hex`
+- `meta.borderHex` para cream/white si existe
+- `meta.kind`
+
+Tratamientos:
+- `kind: "hue"` → barra sólida con background `meta.hex`.
+- `kind: "special"`:
+  - multicolor → tratamiento simple honesto, por ejemplo mini-gradient CSS inline o striped subtle.
+  - metallic → tratamiento simple honesto, por ejemplo linear-gradient cálido metálico.
+  - statement → outline/emphasis treatment.
+No fingir que special es un hue normal.
+- `unknown` → fallback greige con borde visible.
+
+6. Counts:
+- `count` debe escalar tamaño de barra de forma suave.
+- Evitar que una familia con count muy alto destruya el layout.
+- Usar escala min/max clamp.
+- Si count = 0 y aparece, renderizar muy pequeño o con opacity baja; pero por defecto la data estática puede omitir count 0.
+- Mostrar número solo si `showCounts` es true.
+
+7. Interacción:
+Si `hrefBase` existe, cada segmento debe ser un `Link` a:
+`{hrefBase}?colorFamily={family}`
+
+Si `onSelect` existe y no hay hrefBase, cada segmento debe ser un `button`.
+
+Si no hay `hrefBase` ni `onSelect`, cada segmento debe ser un `div`/`span` no interactivo.
+
+Debe tener:
+- aria-label por segmento: familia + count.
+- focus visible cuando sea interactivo.
+- active state si `activeFamily` coincide.
+- title opcional para hover.
+
+8. Accesibilidad:
+- `aria-label` general para el componente.
+- cada segmento interactivo debe tener label.
+- no depender solo del color: si showCounts está activo, mostrar count; si no, usar title/aria.
+- focus ring visible.
+- respetar prefers-reduced-motion; no hacer animaciones grandes.
+
+9. Responsive:
+Debe funcionar desde 360px.
+No debe romper layout.
+En horizontal puede permitir overflow-x suave si hace falta.
+Debe ser usable en mobile.
+
+10. Preview:
+Actualizar `src/app/dev/ui/page.tsx` para incluir una sección de ChromaSpine con data mock estática.
+Usar entries realistas basadas en el audit:
+black 36, brown 27, cream 23, white 22, burgundy 16, beige 16, olive 12, mustard 8, blue 6, gray 6, camel 5, denim 5, pink 3, multicolor 2, metallic 1, orange 1, statement 1.
+Incluir plum con count 0 solo si sirve para demostrar ausencia; si lo renderizas, debe verse sutil o estar marcado como 0.
+Mantener banner de `/dev/ui` como temporal.
+
+11. No crear rutas nuevas excepto usar la `/dev/ui` ya existente.
+12. No migrar Home ni Closet todavía.
+13. No tocar `globals.css` salvo que sea estrictamente necesario. Preferir Tailwind + style inline controlado.
+14. No modificar `spectrum.ts` salvo que falte un helper menor necesario para ChromaSpine. Si hay que tocarlo, reportar exactamente qué cambió y por qué.
+
+Al final correr:
+npm run lint
+npm run typecheck
+npm run build
+
+Reportar:
+- archivos creados/modificados,
+- props finales de ChromaSpine,
+- cómo se usa `spectrum.ts`,
+- cómo se manejan hue/special/unknown,
+- cómo se escala count,
+- cómo se maneja mobile/responsive,
+- si se tocó o no `globals.css`,
+- confirmación de que no se tocó Supabase, APIs, datos, Home, Closet ni rutas existentes.
