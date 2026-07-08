@@ -1,0 +1,122 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Estado actual:
+- Fase 0 cerrada: branch `cromatica-v1` creado desde `redesign-v1`.
+- Fase 1B cerrada: componentes/libs muertos eliminados.
+- Fase 1C cerrada: CSS legacy de navegación eliminado.
+- Fase 1D cerrada: `<main>` anidados reemplazados por `<section>`.
+- Fase 2A cerrada: ColorFamily audit con 190/190 piezas válidas, 100% coverage.
+- Fase 2B cerrada: data honesty fixes.
+- Fase 2C cerrada: auth strategy documentada.
+- Fase 3A cerrada: tokens Cromática instalados y documentados.
+- Último commit: `04e4bb5 Organize color and design tokens with clear documentation`.
+
+Ahora ejecuta Fase 3B — Spectrum lib.
+
+Objetivo:
+Crear una utilidad central para el sistema cromático del clóset. Esta librería será la fuente de verdad para traducir `colorFamily` a color visual, agrupar piezas por familia, generar histogramas y preparar la base técnica de ChromaSpine.
+
+Contexto:
+El audit de color confirmó:
+- 190 piezas activas.
+- 190 con `colorFamily` válida.
+- 0 missing.
+- 0 non-canonical.
+- 17 de 18 familias canónicas presentes.
+- `plum` está ausente del clóset actual.
+- El histograma real actual está dominado por black, brown, cream y white.
+
+Tareas:
+
+1. Inspeccionar antes de programar:
+- `src/lib/taxonomy.ts`
+- `src/lib/style-profile/dark-autumn-palette.ts`
+- `src/lib/wardrobe/data.ts`
+- `src/lib/supabase/mappers.ts`
+- `scripts/audit-color-families.mjs`
+
+2. Crear archivo:
+- `src/lib/wardrobe/spectrum.ts`
+
+3. El archivo debe exportar:
+- una lista/array ordenada de familias canónicas de color, usando los valores existentes del proyecto, no inventar una taxonomía nueva.
+- un map de metadata por familia:
+  - `value`
+  - `label`
+  - `hex`
+  - `role` si se puede inferir de la taxonomía existente: base, accent, statement, neutral, etc.
+  - `sortOrder`
+- función `getColorFamilyMeta(colorFamily)`
+- función `getColorFamilyHex(colorFamily)`
+- función `normalizeColorFamily(value)`
+- función `groupPiecesByFamily(items)`
+- función `getColorFamilyHistogram(items)`
+- función `sortFamiliesByCount(histogram, options?)`
+- tipos TypeScript exportados útiles para ChromaSpine.
+
+4. Debe aceptar items de forma flexible:
+- mínimo debe funcionar con objetos que tengan `colorFamily`.
+- si el item tiene `id`, `name`, `category`, no debe requerirlos.
+- no usar `any`; usar genéricos o tipos seguros.
+
+5. Debe manejar valores desconocidos de forma honesta:
+- si `colorFamily` viene null/vacío/desconocido, agruparlo bajo `"unknown"` o devolver metadata fallback clara.
+- no inventar familia válida si no existe.
+- no ocultar unknown.
+
+6. El hex representativo debe alinearse con los tokens Cromática/Dark Autumn ya existentes:
+- black
+- brown
+- cream
+- white
+- burgundy
+- beige
+- olive
+- mustard
+- blue
+- gray
+- camel
+- denim
+- pink
+- multicolor
+- metallic
+- orange
+- statement
+- plum
+
+Usa los tokens/hex ya definidos donde existan:
+- `--c-espresso`
+- `--c-camel`
+- `--c-crema`
+- `--c-oliva`
+- `--c-burdeos`
+- `--c-mostaza`
+- `--c-flama`
+- `--c-ciruela`
+- `--c-denim`
+
+Para familias que no tengan token exacto, usa un hex representativo razonable y documentado, preferiblemente basado en la paleta existente.
+
+7. Agregar un pequeño script de verificación o extender `scripts/audit-color-families.mjs` para importar `spectrum.ts` si es práctico.
+- Si importar TS desde MJS complica demasiado, no lo hagas en esta fase.
+- Prioriza mantener build limpio.
+
+8. No crear ChromaSpine todavía.
+9. No migrar UI.
+10. No tocar Supabase schema.
+11. No modificar datos.
+12. No cambiar rutas API.
+13. No rediseñar páginas.
+
+Al final correr:
+npm run lint
+npm run typecheck
+npm run build
+
+Reportar:
+- archivos modificados,
+- familias exportadas,
+- hex por familia,
+- funciones creadas,
+- cómo se manejará `unknown`,
+- confirmación de que no se tocó UI, APIs, Supabase ni datos.
