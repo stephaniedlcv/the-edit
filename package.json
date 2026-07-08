@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "sync:closet-photos": "node scripts/sync-closet-photos.mjs",
     "predev": "npm run sync:closet-photos",
-    "prebuild": "npm run sync:closet-photos"
+    "prebuild": "npm run sync:closet-photos",
+    "audit:colors": "node scripts/audit-color-families.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.2",
