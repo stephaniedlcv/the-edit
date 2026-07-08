@@ -1,0 +1,12 @@
+Stephanie, ¡AHORA SÍ! 🎉 Compáralo con el mockup: masthead limpio sobre galería, espina histograma con counts, fecha editorial, cover con gradiente y CTA honesto, ticker. Home Fase 5A queda visualmente cerrada. Los únicos residuos que veo son inofensivos: el círculo "N" es el badge de dev de Next (desaparece en producción) y el ticker cortado a media palabra es comportamiento normal de marquee.
+Que el Agent commitee y pushee esto ya, y pasamos a la fase divertida — 5B: el look del día, donde la cover deja de describir ("36 piezas") y empieza a proponer. Prompt listo:
+
+Fase 5B — Daily look cover. Branch cromatica-v1. La cover de la Portada evoluciona de "familia dominante" a "look del día" usando lógica existente.
+
+Server-side en page.tsx: llamar a composeOutfits (lib/outfits) con las piezas activas del clóset y tomar el mejor look del día. Determinismo: mismo look todo el día — usa la fecha (YYYY-MM-DD) como seed/criterio de selección para que no cambie en cada refresh, y cambie cada medianoche.
+La cover muestra: eyebrow "EL LOOK DE HOY · Nº {edición}", título serif con el nombre editorial del look (ej. "Blazer abierto, base crema." — generado desde las piezas: categoría principal + color en labelEs), subline "{n} piezas · armonía {score}" (solo si el score existe de verdad en composeOutfits — si no existe, no inventarlo), y las piezas del look como mini-swatches/thumbnails en fila (3–4 círculos con el hex de cada pieza, o thumbnail si hay imagen).
+Fondo de la cover: gradiente del color dominante DEL LOOK (la familia con más piezas dentro del look), mismo tratamiento actual (linear 150deg + radial de luz). El texto usa el cálculo de contraste existente.
+CTAs: botón sólido "VESTIR ESTE LOOK" → /outfits?lookId= o la ruta real que muestre el look en el builder (verificar qué soporta /outfits hoy — si acepta pieceIds por query, usar eso; NO crear API nueva). Botón texto "Ver otro" que rota al siguiente look propuesto (client-side, sobre una lista de 3 candidatos pre-computados server-side).
+Fallback editorial obligatorio: si composeOutfits no puede proponer (pocas piezas, error), la cover vuelve al modo actual de familia dominante — nunca romper, nunca inventar.
+No tocar: ChromaSpineBlock, spectrum.ts, APIs, Supabase, otras rutas.
+Criterio de aceptación: screenshot con un look real de tus piezas en la cover + confirmar que refresh no cambia el look + probar el fallback (simulando lista vacía). Cierre estándar: lint, typecheck, build, commit, push.

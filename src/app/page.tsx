@@ -1,15 +1,17 @@
 import Link from "next/link";
 import { getClosetSpectrumEntries } from "@/lib/wardrobe/spectrum-data";
+import { getWardrobeItems } from "@/lib/wardrobe/data";
+import { composeOutfits } from "@/lib/style-profile/outfit-composer";
+import { SPECTRUM_META } from "@/lib/wardrobe/spectrum";
 import { ChromaSpineBlock } from "@/components/chroma-spine";
+import { DailyLookCover } from "@/components/daily-look-cover";
+import type { LookCandidate } from "@/components/daily-look-cover";
 import type { SpectrumEntry } from "@/lib/wardrobe/spectrum";
-import type { WardrobeItem } from "@/types/wardrobe";
+import type { ColorFamily, WardrobeItem } from "@/types/wardrobe";
 
 export const dynamic = "force-dynamic";
 
 // ─── Edition number ─────────────────────────────────────────────────────────
-// Anchored to the first commit of the cromatica-v1 branch (2026-06-29).
-// Nº = floor((today − epoch) / 1 day) + 1 — never uses piece count.
-
 const EDITION_EPOCH = new Date("2026-06-29T14:28:06Z");
 
 function getEditionNumber(): number {
@@ -19,28 +21,16 @@ function getEditionNumber(): number {
 
 // ─── Server-side helpers ────────────────────────────────────────────────────
 
-/** Real server date in Puerto Rico time, labels in Spanish. */
 function getEditionDate() {
   const now = new Date();
   const pr = "America/Puerto_Rico";
   const day = new Intl.DateTimeFormat("es-PR", { day: "2-digit", timeZone: pr }).format(now);
   const month = new Intl.DateTimeFormat("es-PR", { month: "long", timeZone: pr }).format(now);
   const weekday = new Intl.DateTimeFormat("es-PR", { weekday: "long", timeZone: pr }).format(now);
-  return {
-    day,
-    month: month.toUpperCase(),
-    weekday: weekday.toUpperCase(),
-  };
+  return { day, month: month.toUpperCase(), weekday: weekday.toUpperCase() };
 }
 
-interface FamilySummary {
-  family: string;
-  label: string;
-  labelEs: string;
-  count: number;
-  hex: string;
-}
-
+interface FamilySummary { family: string; label: string; labelEs: string; count: number; hex: string; }
 interface ClosetSummary {
   totalPieces: number;
   activeFamilies: number;
@@ -49,49 +39,32 @@ interface ClosetSummary {
   topFamilies: FamilySummary[];
 }
 
-function buildClosetSummary(
-  entries: SpectrumEntry<WardrobeItem>[],
-): ClosetSummary {
+function buildClosetSummary(entries: SpectrumEntry<WardrobeItem>[]): ClosetSummary {
   const totalPieces = entries.reduce((sum, e) => sum + e.count, 0);
-
   const activeFamilies = entries
     .filter((e) => e.count > 0)
     .map<FamilySummary>((e) => ({
-      family: String(e.family),
-      label: e.meta.label,
-      labelEs: e.meta.labelEs,
-      count: e.count,
-      hex: e.meta.hex,
+      family: String(e.family), label: e.meta.label, labelEs: e.meta.labelEs,
+      count: e.count, hex: e.meta.hex,
     }))
     .sort((a, b) => b.count - a.count);
-
   const emptyFamilies = entries
     .filter((e) => e.count === 0)
     .map((e) => ({ family: String(e.family), labelEs: e.meta.labelEs }));
-
   return {
-    totalPieces,
-    activeFamilies: activeFamilies.length,
-    emptyFamilies,
-    dominant: activeFamilies[0] ?? null,
-    topFamilies: activeFamilies.slice(0, 3),
+    totalPieces, activeFamilies: activeFamilies.length, emptyFamilies,
+    dominant: activeFamilies[0] ?? null, topFamilies: activeFamilies.slice(0, 3),
   };
 }
 
-/** Ticker items — derived strictly from real closet data. */
 function buildTickerItems(summary: ClosetSummary): string[] {
   if (summary.totalPieces === 0) return [];
   const items: string[] = [];
-
   if (summary.dominant) {
-    items.push(
-      `${summary.dominant.labelEs.toUpperCase()} DOMINA TU ESPECTRO · ${summary.dominant.count} PIEZAS`,
-    );
+    items.push(`${summary.dominant.labelEs.toUpperCase()} DOMINA TU ESPECTRO · ${summary.dominant.count} PIEZAS`);
   }
   if (summary.topFamilies.length > 1) {
-    items.push(
-      `${summary.topFamilies[1].labelEs.toUpperCase()} EN SEGUNDO LUGAR · ${summary.topFamilies[1].count} PIEZAS`,
-    );
+    items.push(`${summary.topFamilies[1].labelEs.toUpperCase()} EN SEGUNDO LUGAR · ${summary.topFamilies[1].count} PIEZAS`);
   }
   if (summary.emptyFamilies.length > 0) {
     items.push(`TE FALTA ${summary.emptyFamilies[0].labelEs.toUpperCase()} EN TU PALETA`);
@@ -99,9 +72,7 @@ function buildTickerItems(summary: ClosetSummary): string[] {
   if (summary.emptyFamilies.length > 1) {
     items.push(`Y TAMBIÉN ${summary.emptyFamilies[1].labelEs.toUpperCase()}`);
   }
-  items.push(
-    `${summary.totalPieces} PIEZAS · ${summary.activeFamilies} FAMILIAS ACTIVAS`,
-  );
+  items.push(`${summary.totalPieces} PIEZAS · ${summary.activeFamilies} FAMILIAS ACTIVAS`);
   return items;
 }
 
@@ -115,7 +86,6 @@ function hexLuminance(hex: string): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-/** Darkens a hex by reducing each channel by `ratio` (0–1). */
 function darkenHex(hex: string, ratio: number): string {
   const clean = hex.replace("#", "");
   if (clean.length !== 6) return hex;
@@ -127,22 +97,134 @@ function darkenHex(hex: string, ratio: number): string {
   return `#${h(r)}${h(g)}${h(b)}`;
 }
 
+// ─── Daily look — deterministic date seed ───────────────────────────────────
+
+/**
+ * Returns a stable index for today derived from the YYYY-MM-DD string.
+ * Same date → same index → same look all day. Changes at midnight PR time.
+ */
+function getDailyIndex(count: number): number {
+  if (count === 0) return 0;
+  const prDate = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Puerto_Rico",
+    year: "numeric", month: "2-digit", day: "2-digit",
+  }).format(new Date()); // "MM/DD/YYYY"
+  let hash = 0;
+  for (const ch of prDate) hash = ((hash * 31) + ch.charCodeAt(0)) >>> 0;
+  return hash % count;
+}
+
+function buildLookCandidates(wardrobeItems: WardrobeItem[]): LookCandidate[] {
+  const composed = composeOutfits(wardrobeItems, { maxLooks: 12 });
+
+  const top3 = composed
+    .filter((l) => l.decision !== "rejected")
+    .sort((a, b) => b.totalScore - a.totalScore)
+    .slice(0, 3);
+
+  if (top3.length === 0) return [];
+
+  const itemById = new Map(wardrobeItems.map((i) => [i.id, i]));
+
+  return top3.map((look) => {
+    const pieces = look.pieceIds
+      .map((id) => itemById.get(id))
+      .filter((p): p is WardrobeItem => p != null);
+
+    // Dominant colorFamily within this look
+    const familyCounts: Record<string, number> = {};
+    for (const p of pieces) {
+      if (p.colorFamily) {
+        const k = String(p.colorFamily);
+        familyCounts[k] = (familyCounts[k] ?? 0) + 1;
+      }
+    }
+    const dominantFamily = (
+      Object.entries(familyCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "black"
+    ) as ColorFamily;
+
+    const dominantMeta = SPECTRUM_META[dominantFamily] ?? SPECTRUM_META.black;
+    const dominantHex = dominantMeta.hex;
+
+    // Editorial title: anchor piece name + dominant color label
+    const anchor =
+      pieces.find((p) => p.category === "outerwear") ??
+      pieces.find((p) => p.category === "top") ??
+      pieces.find((p) => p.category === "dress") ??
+      pieces[0];
+
+    const editorialTitle = anchor
+      ? `${anchor.name}, base ${dominantMeta.labelEs.toLowerCase()}.`
+      : look.title;
+
+    // Swatches: up to 4 unique hexes, ordered by piece
+    const seenHex = new Set<string>();
+    const swatchHexes: string[] = [];
+    for (const p of pieces) {
+      if (swatchHexes.length >= 4) break;
+      const meta = SPECTRUM_META[p.colorFamily as ColorFamily];
+      if (meta?.hex && !seenHex.has(meta.hex)) {
+        seenHex.add(meta.hex);
+        swatchHexes.push(meta.hex);
+      }
+    }
+
+    const coverBg = [
+      `radial-gradient(ellipse at 85% 12%, rgba(255,253,245,0.15) 0%, transparent 55%)`,
+      `linear-gradient(150deg, ${dominantHex} 0%, ${darkenHex(dominantHex, 0.12)} 100%)`,
+    ].join(", ");
+
+    const isLight = hexLuminance(dominantHex) > 0.45;
+
+    return {
+      outfitId: look.id,
+      editorialTitle,
+      pieceCount: pieces.length,
+      colorScore: Math.round(look.colorScore),
+      pieceIds: look.pieceIds,
+      swatchHexes,
+      coverBg,
+      textColor: isLight ? "var(--tinta)" : "var(--papel)",
+      btnBg:     isLight ? "var(--tinta)" : "var(--papel)",
+      btnText:   isLight ? "var(--papel)" : "var(--tinta)",
+    };
+  });
+}
+
 // ─── Home ───────────────────────────────────────────────────────────────────
 
 export default async function HomePage() {
-  const entries = await getClosetSpectrumEntries({ includeEmpty: true });
+  // Fetch in parallel — spectrum entries (for spine/ticker) + full items (for looks)
+  const [entries, wardrobeItems] = await Promise.all([
+    getClosetSpectrumEntries({ includeEmpty: true }),
+    getWardrobeItems(),
+  ]);
+
   const summary = buildClosetSummary(entries);
   const tickerItems = buildTickerItems(summary);
   const { day, month, weekday } = getEditionDate();
   const editionNumber = getEditionNumber();
 
-  const isLightBg =
-    summary.dominant ? hexLuminance(summary.dominant.hex) > 0.45 : false;
+  // ── Daily look candidates ────────────────────────────────────────────────
+  let lookCandidates: LookCandidate[] = [];
+  try {
+    lookCandidates = buildLookCandidates(wardrobeItems);
+  } catch (err) {
+    console.error("[HomePage] composeOutfits failed, using fallback cover:", err);
+  }
+
+  // Rotate so today's picked index is first — stable across refreshes, changes at midnight
+  const dailyStart = getDailyIndex(lookCandidates.length);
+  const orderedCandidates =
+    lookCandidates.length > 0
+      ? [...lookCandidates.slice(dailyStart), ...lookCandidates.slice(0, dailyStart)]
+      : [];
+
+  // ── Fallback cover (family-dominant) ────────────────────────────────────
+  const isLightBg = summary.dominant ? hexLuminance(summary.dominant.hex) > 0.45 : false;
   const coverTextColor = isLightBg ? "var(--tinta)" : "var(--papel)";
   const coverBtnBg    = isLightBg ? "var(--tinta)" : "var(--papel)";
   const coverBtnText  = isLightBg ? "var(--papel)" : "var(--tinta)";
-
-  // Gradient: linear 150° hex → darken 12% + soft radial light top-right
   const coverBg = summary.dominant
     ? [
         `radial-gradient(ellipse at 85% 12%, rgba(255,253,245,0.15) 0%, transparent 55%)`,
@@ -151,9 +233,7 @@ export default async function HomePage() {
     : "var(--tinta)";
 
   return (
-    /* overflow-x:clip — clips overflow without creating a scroll container (unlike hidden) */
     <section className="min-h-screen bg-[var(--gal)] px-4 pb-28 pt-6 md:px-6 md:pt-10 [overflow-x:clip]">
-      {/* CSS para marquee — display:block evita que inline-block contribuya al scrollWidth */}
       <style>{`
         @keyframes te-ticker {
           0%   { transform: translateX(0); }
@@ -171,13 +251,10 @@ export default async function HomePage() {
 
       <section className="mx-auto flex max-w-[760px] flex-col gap-7">
 
-        {/* ── 1. Editorial masthead + histogram + caption (ChromaSpineBlock) */}
-        <ChromaSpineBlock
-          entries={entries}
-          editionNumber={editionNumber}
-        />
+        {/* ── 1. Editorial masthead + histogram + caption */}
+        <ChromaSpineBlock entries={entries} editionNumber={editionNumber} />
 
-        {/* ── 3. Bloque de fecha editorial ──────────────────────────────── */}
+        {/* ── 2. Fecha editorial */}
         <div className="flex items-end gap-4">
           <p
             className="text-[4.2rem] leading-[0.8] text-[var(--tinta)]"
@@ -201,89 +278,76 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* ── 4. Cover card — portada del día ────────────────────────────── */}
-        {summary.dominant && (
-          <>
-            <div
-              className="relative overflow-hidden rounded-[var(--r-panel)] p-7 md:p-9"
-              style={{ background: coverBg }}
-            >
-              {/* Swatches apilados en la esquina superior derecha */}
-              {summary.topFamilies.length > 1 && (
-                <div className="absolute right-7 top-7 flex flex-col gap-[0.35rem]">
-                  {summary.topFamilies.map((f) => (
-                    <span
-                      key={f.family}
-                      className="h-[1.15rem] w-[1.15rem] rounded-full ring-1 ring-inset ring-white/25"
-                      style={{ backgroundColor: f.hex }}
-                      title={`${f.labelEs} — ${f.count} piezas`}
-                      aria-hidden="true"
-                    />
-                  ))}
-                </div>
-              )}
-
-              {/* Eyebrow */}
-              <p
-                className="text-[0.58rem] font-bold uppercase tracking-[0.22em] opacity-70 pr-12"
-                style={{ color: coverTextColor, fontFamily: "var(--font-sans)" }}
-              >
-                La portada de hoy · {summary.dominant.labelEs}
-              </p>
-
-              {/* Título editorial: "El {familia} trabaja hoy." con itálico */}
-              <p
-                role="heading"
-                aria-level={1}
-                className="mt-5 max-w-[14rem] text-[2.2rem] leading-[1.05] font-light sm:text-[2.7rem] sm:max-w-[17rem] pr-8"
-                style={{ color: coverTextColor, fontFamily: "var(--font-serif)" }}
-              >
-                El {summary.dominant.labelEs.toLowerCase()} trabaja{" "}
-                <em>hoy.</em>
-              </p>
-
-              {/* Subtext — dato real */}
-              <p
-                className="mt-4 text-[0.82rem] leading-[1.5] opacity-75 pr-12"
-                style={{ color: coverTextColor, fontFamily: "var(--font-sans)" }}
-              >
-                {summary.dominant.count} piezas · tu familia dominante
-              </p>
-
-              {/* CTA único — lógica real */}
-              <div className="mt-7">
-                <Link
-                  href={`/closet/gallery?colorFamily=${summary.dominant.family}`}
-                  className="inline-flex h-10 items-center justify-center rounded-[var(--r-chip)] px-5 text-[0.65rem] font-bold uppercase tracking-[0.14em] no-underline transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                  style={{
-                    backgroundColor: coverBtnBg,
-                    color: coverBtnText,
-                    fontFamily: "var(--font-sans)",
-                  }}
-                >
-                  Ver esta familia
-                </Link>
-              </div>
-            </div>
-
-            {/* ── 5. Ticker de datos reales ─────────────────────────────── */}
-            {tickerItems.length > 0 && (
-              <div className="relative w-full overflow-hidden border-y border-[var(--line)] py-[0.45rem]">
-                <div className="te-ticker-track">
-                  {[...tickerItems, ...tickerItems].map((item, i) => (
-                    <span
-                      key={i}
-                      className="text-[0.58rem] font-bold uppercase tracking-[0.18em] text-[var(--tinta-tenue)]"
-                      style={{ fontFamily: "var(--font-sans)" }}
-                    >
-                      {item}
-                      <span className="mx-5 opacity-30" aria-hidden="true">·</span>
-                    </span>
-                  ))}
-                </div>
+        {/* ── 3. Cover card: daily look (Fase 5B) → family fallback */}
+        {orderedCandidates.length > 0 ? (
+          <DailyLookCover candidates={orderedCandidates} editionNumber={editionNumber} />
+        ) : summary.dominant ? (
+          <div
+            className="relative overflow-hidden rounded-[var(--r-panel)] p-7 md:p-9"
+            style={{ background: coverBg }}
+          >
+            {summary.topFamilies.length > 1 && (
+              <div className="absolute right-7 top-7 flex flex-col gap-[0.35rem]">
+                {summary.topFamilies.map((f) => (
+                  <span
+                    key={f.family}
+                    className="h-[1.15rem] w-[1.15rem] rounded-full ring-1 ring-inset ring-white/25"
+                    style={{ backgroundColor: f.hex }}
+                    title={`${f.labelEs} — ${f.count} piezas`}
+                    aria-hidden="true"
+                  />
+                ))}
               </div>
             )}
-          </>
+            <p
+              className="text-[0.58rem] font-bold uppercase tracking-[0.22em] opacity-70 pr-12"
+              style={{ color: coverTextColor, fontFamily: "var(--font-sans)" }}
+            >
+              La portada de hoy · {summary.dominant.labelEs}
+            </p>
+            <p
+              role="heading"
+              aria-level={1}
+              className="mt-5 max-w-[14rem] text-[2.2rem] leading-[1.05] font-light sm:text-[2.7rem] sm:max-w-[17rem] pr-8"
+              style={{ color: coverTextColor, fontFamily: "var(--font-serif)" }}
+            >
+              El {summary.dominant.labelEs.toLowerCase()} trabaja{" "}
+              <em>hoy.</em>
+            </p>
+            <p
+              className="mt-4 text-[0.82rem] leading-[1.5] opacity-75 pr-12"
+              style={{ color: coverTextColor, fontFamily: "var(--font-sans)" }}
+            >
+              {summary.dominant.count} piezas · tu familia dominante
+            </p>
+            <div className="mt-7">
+              <Link
+                href={`/closet/gallery?colorFamily=${summary.dominant.family}`}
+                className="inline-flex h-10 items-center justify-center rounded-[var(--r-chip)] px-5 text-[0.65rem] font-bold uppercase tracking-[0.14em] no-underline transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                style={{ backgroundColor: coverBtnBg, color: coverBtnText, fontFamily: "var(--font-sans)" }}
+              >
+                Ver esta familia
+              </Link>
+            </div>
+          </div>
+        ) : null}
+
+        {/* ── 4. Ticker de datos reales */}
+        {tickerItems.length > 0 && (
+          <div className="relative w-full overflow-hidden border-y border-[var(--line)] py-[0.45rem]">
+            <div className="te-ticker-track">
+              {[...tickerItems, ...tickerItems].map((item, i) => (
+                <span
+                  key={i}
+                  className="text-[0.58rem] font-bold uppercase tracking-[0.18em] text-[var(--tinta-tenue)]"
+                  style={{ fontFamily: "var(--font-sans)" }}
+                >
+                  {item}
+                  <span className="mx-5 opacity-30" aria-hidden="true">·</span>
+                </span>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* Fase 5C: quick-actions go here */}
