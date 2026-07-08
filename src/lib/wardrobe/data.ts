@@ -52,7 +52,7 @@ export async function getWardrobeItems(): Promise<WardrobeItem[]> {
 
   if (error) {
     console.error("Failed to load wardrobe_items from Supabase:", error.message);
-    return mockOwnedItems;
+    return [];
   }
 
   if (!data?.length) {

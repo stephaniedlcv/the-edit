@@ -1,0 +1,59 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Estado actual:
+- Fase 0 cerrada: branch `cromatica-v1` creado desde `redesign-v1`.
+- Fase 1B cerrada: componentes/libs muertos eliminados.
+- Fase 1C cerrada: CSS legacy de navegación eliminado.
+- Fase 1D cerrada: `<main>` anidados reemplazados por `<section>`.
+- Fase 2A cerrada: script `scripts/audit-color-families.mjs` creado y ejecutado.
+- Resultado Fase 2A: 190 piezas activas, 190 con `colorFamily` válida, 0 missing, 0 non-canonical, 0 problemáticas.
+- Último commit confirmado: `771b0e0 Add a script to audit color family data quality`.
+
+Ahora ejecuta Fase 2B — Data honesty fixes.
+
+Objetivo:
+Eliminar cualquier éxito falso, fallback silencioso o navegación engañosa cuando algo no se guardó realmente.
+
+Tareas:
+
+1. Revisar `src/app/api/wishlist/items/route.ts`.
+   - Si no hay Supabase client/env, POST debe devolver `503` con error claro.
+   - Nunca debe devolver `{ ok: true, id: "mock-..." }` si no guardó realmente en Supabase.
+   - Si Supabase devuelve error, debe responder con status adecuado y mensaje claro.
+
+2. Revisar `src/lib/wardrobe/data.ts`.
+   - Mock data solo se permite cuando `getSupabaseServerClient()` es null por falta de env local.
+   - Si existe Supabase client pero la query falla, no hacer fallback silencioso a mock.
+   - Propagar error o devolver estado de error explícito, según el patrón existente del proyecto.
+
+3. Revisar `src/lib/wishlist/data.ts`.
+   - Igual que wardrobe: mock solo si no hay Supabase client/env.
+   - Error real de Supabase no debe convertirse en mock data silenciosa.
+
+4. Revisar `src/components/ui/add-piece-client.tsx`.
+   - Si falla el upload de imagen, no navegar a otra página.
+   - Mostrar error claro.
+   - Permitir reintentar.
+   - Si el item se crea pero la imagen falla, manejarlo honestamente: explicar el estado real y no fingir que todo salió perfecto.
+
+Reglas:
+- No tocar Supabase schema.
+- No modificar datos.
+- No rediseñar UI.
+- No crear ChromaSpine todavía.
+- No cambiar rutas públicas.
+- No cambiar payloads innecesariamente.
+- Mantener los cambios pequeños y enfocados en honestidad de datos.
+
+Antes de modificar, inspecciona:
+- `src/app/api/wishlist/items/route.ts`
+- `src/lib/wardrobe/data.ts`
+- `src/lib/wishlist/data.ts`
+- `src/components/ui/add-piece-client.tsx`
+- cualquier patrón similar en `/api/outfits/saved` si ayuda.
+
+Al final corre:
+```bash
+npm run lint
+npm run typecheck
+npm run build

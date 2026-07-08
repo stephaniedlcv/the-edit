@@ -122,7 +122,10 @@ export async function POST(request: Request) {
   const closetImpactScore = clampScore(body.closetImpactScore);
 
   if (!supabase) {
-    return NextResponse.json({ ok: true, id: `mock-${Date.now()}` });
+    return NextResponse.json(
+      { ok: false, error: "Wishlist service is not available. Please try again later." },
+      { status: 503 },
+    );
   }
 
   const { data: maxRow } = await supabase

@@ -24,6 +24,7 @@ export function AddPieceClient() {
     "idle" | "uploading" | "done" | "error"
   >("idle");
   const [uploadError, setUploadError] = useState("");
+  const [savedItemId, setSavedItemId] = useState<string | null>(null);
 
   function handleFileChange(file: File) {
     setPendingFile(file);
@@ -44,10 +45,14 @@ export function AddPieceClient() {
       });
 
       if (!res.ok) {
-        const data = (await res.json()) as { error?: string };
-        setUploadError(data.error ?? "Image upload failed.");
+        const body = (await res.json()) as { error?: string };
+        setUploadError(body.error ?? "Image upload failed.");
         setUploadStatus("error");
+        setSavedItemId(newItem.id);
+        return;
       }
+
+      setUploadStatus("done");
     }
 
     router.push(`/closet/item/${newItem.id}`);
@@ -113,9 +118,23 @@ export function AddPieceClient() {
               <p className="mt-2 text-sm text-[var(--ink-soft)]">Uploading…</p>
             ) : null}
             {uploadStatus === "error" ? (
-              <p className="mt-2 text-sm font-semibold text-[var(--rust)]">
-                {uploadError} You can add a photo later via Edit.
-              </p>
+              <div className="mt-2 space-y-1">
+                <p className="text-sm font-semibold text-[var(--rust)]">
+                  {uploadError}
+                </p>
+                <p className="text-sm text-[var(--ink-soft)]">
+                  Your piece was saved — only the photo failed. You can add a
+                  photo later via Edit.
+                </p>
+                {savedItemId ? (
+                  <Link
+                    href={`/closet/item/${savedItemId}`}
+                    className="inline-block mt-1 text-sm underline text-[var(--espresso)]"
+                  >
+                    View saved piece →
+                  </Link>
+                ) : null}
+              </div>
             ) : null}
 
             <div className="add-piece-ai-placeholder">

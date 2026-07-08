@@ -38,7 +38,7 @@ export async function getWishlistItems(): Promise<WishlistItem[]> {
 
   if (error) {
     console.error("Failed to load wishlist_items from Supabase:", error.message);
-    return mockWishlistItems;
+    return [];
   }
 
   if (!data?.length) {
