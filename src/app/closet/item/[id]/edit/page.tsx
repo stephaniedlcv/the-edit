@@ -17,10 +17,10 @@ export default async function ClosetItemEditPage({ params }: Props) {
   }
 
   return (
-    <main className="item-edit">
+    <section className="item-edit">
       <div className="item-d-wrap">
         <ClosetItemEditClient item={item} />
       </div>
-    </main>
+    </section>
   );
 }

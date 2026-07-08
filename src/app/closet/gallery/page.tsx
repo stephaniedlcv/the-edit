@@ -17,7 +17,7 @@ export default async function ClosetGalleryPage() {
   );
 
   return (
-    <main className="gallery-v2 min-h-screen px-4 py-6 md:px-6 md:py-8">
+    <section className="gallery-v2 min-h-screen px-4 py-6 md:px-6 md:py-8">
       <section className="mx-auto max-w-[1120px]">
         <section className="gallery-v2-hero">
           <div>
@@ -49,6 +49,6 @@ export default async function ClosetGalleryPage() {
 
         <ClosetGalleryBoard items={ownedItems} counts={counts} />
       </section>
-    </main>
+    </section>
   );
 }

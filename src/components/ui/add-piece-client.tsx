@@ -59,7 +59,7 @@ export function AddPieceClient() {
   }
 
   return (
-    <main className="add-piece-page">
+    <section className="add-piece-page">
       <div className="add-piece-wrap">
 
         <nav className="item-d-nav">
@@ -133,6 +133,6 @@ export function AddPieceClient() {
         />
 
       </div>
-    </main>
+    </section>
   );
 }

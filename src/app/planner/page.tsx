@@ -74,7 +74,7 @@ const quickEvents = ["Office", "Gym", "Wash Hair", "Nails", "Dinner", "Wishlist"
 
 export default function PlannerPage() {
   return (
-    <main className="min-h-screen px-4 py-6 md:px-6 md:py-8">
+    <section className="min-h-screen px-4 py-6 md:px-6 md:py-8">
       <section className="mx-auto max-w-[1120px]">
         <div className="mb-8 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
@@ -360,6 +360,6 @@ export default function PlannerPage() {
           </section>
         </div>
       </section>
-    </main>
+    </section>
   );
 }

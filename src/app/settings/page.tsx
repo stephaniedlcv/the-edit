@@ -55,7 +55,7 @@ function RuleCard({ title, body }: { title: string; body: string }) {
 export default async function SettingsPage() {
   const styleProfile = await getStyleProfile();
   return (
-    <main className="pb-16 md:pb-20">
+    <section className="pb-16 md:pb-20">
       <PageHeader
         eyebrow="Style Profile"
         title={
@@ -242,6 +242,6 @@ export default async function SettingsPage() {
           </article>
         </section>
       </section>
-    </main>
+    </section>
   );
 }

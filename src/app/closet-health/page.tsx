@@ -169,7 +169,7 @@ export default async function ClosetHealthPage() {
   ];
 
   return (
-    <main className="pb-16 md:pb-20">
+    <section className="pb-16 md:pb-20">
       <PageHeader
         eyebrow="Closet Health"
         title={
@@ -443,6 +443,6 @@ export default async function ClosetHealthPage() {
           )}
         </article>
       </section>
-    </main>
+    </section>
   );
 }

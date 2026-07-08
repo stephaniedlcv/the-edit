@@ -161,7 +161,7 @@ export default async function HomePage() {
   const greeting = getGreeting();
 
   return (
-    <main className="min-h-screen px-4 py-6 md:px-6 md:py-8">
+    <section className="min-h-screen px-4 py-6 md:px-6 md:py-8">
       <section className="mx-auto max-w-[1120px]">
         <div className="mb-6 grid gap-5 lg:grid-cols-[1.08fr_0.92fr]">
           {/* ── Left hero — greeting + actions ────────────────────── */}
@@ -396,6 +396,6 @@ export default async function HomePage() {
           />
         </section>
       </section>
-    </main>
+    </section>
   );
 }

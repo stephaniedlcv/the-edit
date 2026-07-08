@@ -286,7 +286,7 @@ const recentPieces = buildReadyToStylePieces(ownedItems, 8);
 
 
   return (
-    <main className="closet-dashboard-v2 min-h-screen px-4 py-6 md:px-6 md:py-8">
+    <section className="closet-dashboard-v2 min-h-screen px-4 py-6 md:px-6 md:py-8">
       <section className="mx-auto max-w-[1120px]">
         <section className="closet-v2-hero">
           <div>
@@ -428,6 +428,6 @@ const recentPieces = buildReadyToStylePieces(ownedItems, 8);
           </section>
         ) : null}
       </section>
-    </main>
+    </section>
   );
 }

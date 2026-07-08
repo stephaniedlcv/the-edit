@@ -67,7 +67,7 @@ export default async function ClosetItemPage({ params }: Props) {
   );
 
   return (
-    <main className="item-detail">
+    <section className="item-detail">
       <div className="item-d-wrap">
 
         <nav className="item-d-nav">
@@ -195,6 +195,6 @@ export default async function ClosetItemPage({ params }: Props) {
         <ClosetItemLifecycleAction item={item} />
 
       </div>
-    </main>
+    </section>
   );
 }

@@ -301,7 +301,7 @@ export function OutfitBuilder({ items, selectedPiece }: OutfitBuilderProps) {
   ];
 
   return (
-    <main className="pb-16 md:pb-20">
+    <section className="pb-16 md:pb-20">
       <PageHeader
         eyebrow="Outfit Builder"
         title={
@@ -469,6 +469,6 @@ export function OutfitBuilder({ items, selectedPiece }: OutfitBuilderProps) {
           </div>
         </div>
       </section>
-    </main>
+    </section>
   );
 }

@@ -9,7 +9,7 @@ export default async function SavedOutfitsPage() {
   const { outfits, error } = await getSavedOutfits();
 
   return (
-    <main className="pb-16 md:pb-20">
+    <section className="pb-16 md:pb-20">
       <PageHeader
         eyebrow="Saved Outfits"
         title={
@@ -55,6 +55,6 @@ export default async function SavedOutfitsPage() {
           </div>
         )}
       </section>
-    </main>
+    </section>
   );
 }
