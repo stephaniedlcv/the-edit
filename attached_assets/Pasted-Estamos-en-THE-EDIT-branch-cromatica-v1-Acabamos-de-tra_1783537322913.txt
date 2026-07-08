@@ -1,0 +1,145 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Acabamos de trabajar Fase 5A — Portada Cromática base honesta. La funcionalidad está correcta: Home usa `getClosetSpectrumEntries({ includeEmpty: true })`, ChromaSpine live, datos reales, total pieces, active families, dominant family e insight honesto.
+
+Pero visualmente todavía se siente demasiado dashboard/card stack y no suficientemente editorial. NO cerrar Fase 5A todavía. Ejecuta Fase 5A.2 — Editorial Home refinement.
+
+Objetivo:
+Refinar `src/app/page.tsx` para que el Home se parezca más al concepto original de Cromática: una portada editorial diaria, mobile-first, con THE EDIT como masthead, espectro cromático compacto, fecha grande, edición diaria y una portada visual dominante basada en la familia de color dominante.
+
+Reglas:
+- Solo modificar `src/app/page.tsx`, salvo bug menor indispensable.
+- No tocar Supabase.
+- No tocar APIs.
+- No modificar datos.
+- No tocar navegación global.
+- No tocar Closet, Wishlist, Outfits ni Gallery.
+- No tocar `globals.css` salvo que sea absolutamente necesario; preferir Tailwind + tokens.
+- No tocar `ChromaSpine`, `spectrum.ts` ni `spectrum-data.ts` salvo bug real.
+- No borrar `/dev/ui`.
+- No usar datos falsos.
+- No prometer IA que no existe.
+- Mantener Home como server component async.
+- No usar `any`.
+
+Problema visual actual:
+La portada actual tiene hero + ChromaSpine + stats cards + quick actions. Es honesta, pero se ve muy apilada y tipo dashboard. Queremos más editorial, más portada diaria, más “THE EDIT”.
+
+Nueva dirección visual:
+
+1. Masthead más compacto
+Mantener THE EDIT arriba, pero que no robe tanto espacio vertical en mobile.
+Debe sentirse editorial, con letter-spacing elegante.
+Evitar una caja blanca demasiado alta.
+
+2. Header tipo edición diaria
+Agregar una fila superior debajo del masthead con:
+- izquierda: “THE EDIT”
+- derecha: “EDICIÓN DIARIA · Nº {totalPieces}” o “DAILY EDIT · Nº {totalPieces}”
+Usar datos reales para el número. Si totalPieces no existe, ocultar el número.
+
+3. ChromaSpine compacta arriba
+Mover la ChromaSpine más arriba y hacerla más compacta, tipo barra editorial.
+Usar entries reales.
+Debe mostrar el espectro como firma visual, pero no ocupar demasiado alto.
+Puede usar `size="sm"` o `"md"` según se vea mejor.
+Mantener `hrefBase="/closet/gallery"`.
+Puede mostrar counts si se ve limpio; si se ve muy cargado, ocultar counts visuales pero mantener aria-label.
+
+4. Fecha grande editorial
+Agregar bloque de fecha estilo portada:
+- número del día grande, por ejemplo “08”
+- mes/día de semana al lado, por ejemplo “JULIO · MIÉRCOLES”
+- debajo: “San Juan” si ya existe una fuente real de ubicación. Si no hay fuente real, NO inventar clima ni ciudad.
+Como la app no tiene clima conectado todavía, no poner “31° y sol” a menos que exista data real.
+Usar fecha real server-side.
+
+5. Portada visual dominante
+Crear una tarjeta grande editorial debajo, basada en la familia dominante real.
+Debe usar:
+- dominantFamily.meta.hex como fondo/acento.
+- texto: “La portada de hoy · {dominantFamily.meta.labelEs o label}”
+- título grande derivado honestamente, por ejemplo:
+  “{Dominant family} domina tu clóset.”
+  o
+  “Tu clóset empieza en {Dominant family}.”
+- Subtexto con datos reales:
+  “{count} piezas en esta familia.”
+No inventar outfit, clima ni recomendación avanzada todavía.
+
+Esta tarjeta debe sentirse como el mockup:
+- grande
+- editorial
+- rounded
+- color dominante
+- texto serif grande
+- puede tener mini swatches laterales usando top 3 familias reales.
+- no necesita imagen.
+- no debe prometer “look del día” todavía, porque eso va en Fase 5B.
+
+6. Stats menos pesados
+Reducir los stats actuales. En vez de 3 cards grandes verticales, usar una fila compacta o micro-metrics:
+- {totalPieces} piezas
+- {activeFamilies} familias activas
+- {emptyFamilies.length} vacías
+Esto debe ser pequeño y editorial, no cards enormes.
+
+7. Insight honesto
+Mantener un insight breve, pero visualmente más integrado:
+- Si Plum está vacío: “Tu espectro todavía no tiene piezas en Plum.”
+- Si no hay vacías: insight sobre dominante o cobertura.
+No ponerlo como bloque pesado.
+
+8. Quick actions menos dominantes
+Reducir quick actions. No deben parecer el contenido principal.
+Pueden ser una fila de links/chips:
+- Closet
+- Gallery
+- Wishlist
+- Outfits
+- Add piece
+En mobile pueden wrap.
+Evitar 4 cards grandes stacked.
+
+9. Bottom nav overlap
+Asegurar que el Home tenga suficiente padding bottom para que el botón “Add piece” o los quick links no queden tapados por la navegación inferior.
+No tocar la navegación global, solo añadir padding-bottom al contenido del Home si hace falta.
+
+10. Idioma
+Mantener el estilo editorial. Puede ser inglés si la app está usando inglés, pero evitar mezcla rara. Si usas español, que sea consistente.
+Sugerencia:
+- THE EDIT
+- DAILY EDIT · Nº 190
+- Your closet, read by color.
+- Today’s cover · Black
+- Black leads your closet.
+Pero si decides español:
+- EDICIÓN DIARIA
+- Tu clóset, leído por color
+- La portada de hoy · Negro
+Lo importante es consistencia.
+
+11. Datos reales que debe seguir usando
+Todo debe seguir saliendo de:
+`getClosetSpectrumEntries({ includeEmpty: true })`
+
+Calcular:
+- totalPieces
+- activeFamilies
+- emptyFamilies
+- dominantFamily
+- topFamilies para swatches
+
+12. Validación
+Al final correr:
+npm run lint
+npm run typecheck
+npm run build
+
+Reportar:
+- qué cambió visualmente,
+- qué bloques se compactaron,
+- cómo se calcula la portada dominante,
+- qué datos reales se usan,
+- si se mantuvo ChromaSpine live,
+- confirmación de que no se tocó Supabase/APIs/datos/navegación/otras rutas.

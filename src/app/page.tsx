@@ -8,36 +8,37 @@ export const dynamic = "force-dynamic";
 
 // ─── Server-side, honest helpers ───────────────────────────────────────────
 
-/** Hour-based greeting. No name, no fake personalization — just the clock. */
-function getGreeting(): string {
+/** Real server date pieces, Puerto Rico time. No fake location, no weather. */
+function getEditionDate() {
   const now = new Date();
-  const hourStr = new Intl.DateTimeFormat("en-US", {
-    hour: "numeric",
-    hour12: false,
+  const day = new Intl.DateTimeFormat("en-US", {
+    day: "2-digit",
     timeZone: "America/Puerto_Rico",
   }).format(now);
-  const hour = parseInt(hourStr, 10);
-  if (hour >= 5 && hour < 12) return "Good morning";
-  if (hour >= 12 && hour < 18) return "Good afternoon";
-  return "Good evening";
-}
-
-/** Real server date, formatted for a Puerto Rico reader. */
-function getTodayLabel(): string {
-  const now = new Date();
-  return new Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    day: "numeric",
+  const month = new Intl.DateTimeFormat("en-US", {
     month: "long",
     timeZone: "America/Puerto_Rico",
   }).format(now);
+  const weekday = new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    timeZone: "America/Puerto_Rico",
+  }).format(now);
+  return { day, month, weekday };
+}
+
+interface FamilySummary {
+  family: string;
+  label: string;
+  count: number;
+  hex: string;
 }
 
 interface ClosetSummary {
   totalPieces: number;
   activeFamilies: number;
-  dominant: { label: string; count: number } | null;
   emptyFamilies: { family: string; label: string }[];
+  dominant: FamilySummary | null;
+  topFamilies: FamilySummary[];
 }
 
 /** Derives every summary number from the entries themselves — nothing hardcoded. */
@@ -45,23 +46,27 @@ function buildClosetSummary(
   entries: SpectrumEntry<WardrobeItem>[],
 ): ClosetSummary {
   const totalPieces = entries.reduce((sum, e) => sum + e.count, 0);
-  const activeEntries = entries.filter((e) => e.count > 0);
+
+  const activeFamilies = entries
+    .filter((e) => e.count > 0)
+    .map<FamilySummary>((e) => ({
+      family: String(e.family),
+      label: e.meta.label,
+      count: e.count,
+      hex: e.meta.hex,
+    }))
+    .sort((a, b) => b.count - a.count);
+
   const emptyFamilies = entries
     .filter((e) => e.count === 0)
     .map((e) => ({ family: String(e.family), label: e.meta.label }));
 
-  const dominantEntry = activeEntries.reduce<SpectrumEntry<WardrobeItem> | null>(
-    (max, e) => (!max || e.count > max.count ? e : max),
-    null,
-  );
-
   return {
     totalPieces,
-    activeFamilies: activeEntries.length,
-    dominant: dominantEntry
-      ? { label: dominantEntry.meta.label, count: dominantEntry.count }
-      : null,
+    activeFamilies: activeFamilies.length,
     emptyFamilies,
+    dominant: activeFamilies[0] ?? null,
+    topFamilies: activeFamilies.slice(0, 3),
   };
 }
 
@@ -88,50 +93,32 @@ function buildInsight(summary: ClosetSummary): string | null {
   return `Your closet holds ${summary.totalPieces} pieces across ${summary.activeFamilies} color families.`;
 }
 
-// ─── Small presentational helpers ──────────────────────────────────────────
-
-function SummaryStat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-[var(--r-card)] bg-[var(--papel)] px-5 py-4 shadow-[inset_0_0_0_1px_var(--line)]">
-      <p className="text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-[var(--tinta-tenue)]">
-        {label}
-      </p>
-      <p className="mt-2 font-display text-[1.9rem] leading-none text-[var(--tinta)]">
-        {value}
-      </p>
-    </div>
-  );
+/** Perceived luminance [0–1]. > 0.45 = light background → use dark text. */
+function hexLuminance(hex: string): number {
+  const clean = hex.replace("#", "");
+  if (clean.length !== 6) return 0.5;
+  const r = parseInt(clean.slice(0, 2), 16) / 255;
+  const g = parseInt(clean.slice(2, 4), 16) / 255;
+  const b = parseInt(clean.slice(4, 6), 16) / 255;
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-function QuickAction({
-  href,
-  title,
-  description,
-}: {
-  href: string;
-  title: string;
-  description: string;
-}) {
+// ─── Small presentational helpers ──────────────────────────────────────────
+
+function QuickChip({ href, label }: { href: string; label: string }) {
   return (
     <Link
       href={href}
       className={[
-        "group block rounded-[var(--r-card)] bg-[var(--papel)] p-5 no-underline",
-        "shadow-[inset_0_0_0_1px_var(--line)] transition duration-150",
-        "hover:shadow-[inset_0_0_0_1px_var(--line-strong)] hover:-translate-y-0.5",
+        "inline-flex h-8 items-center justify-center rounded-[var(--r-chip)] px-4",
+        "border border-[var(--line-strong)] bg-[var(--papel)] text-[0.64rem] font-semibold",
+        "uppercase tracking-[0.10em] text-[var(--tinta-suave)] no-underline transition-colors",
+        "hover:border-[var(--tinta)] hover:text-[var(--tinta)]",
         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
         "focus-visible:outline-[var(--tinta)]",
       ].join(" ")}
     >
-      <p className="font-display text-[1.5rem] leading-none text-[var(--tinta)]">
-        {title}
-      </p>
-      <p className="mt-2 text-sm leading-6 text-[var(--tinta-suave)]">
-        {description}
-      </p>
-      <span className="mt-4 inline-flex text-[0.58rem] font-bold uppercase tracking-[0.18em] text-[var(--tinta-suave)] transition-colors group-hover:text-[var(--tinta)]">
-        Open →
-      </span>
+      {label}
     </Link>
   );
 }
@@ -142,144 +129,124 @@ export default async function HomePage() {
   const entries = await getClosetSpectrumEntries({ includeEmpty: true });
   const summary = buildClosetSummary(entries);
   const insight = buildInsight(summary);
+  const { day, month, weekday } = getEditionDate();
 
-  const greeting = getGreeting();
-  const today = getTodayLabel();
+  const coverTextColor =
+    summary.dominant && hexLuminance(summary.dominant.hex) > 0.45
+      ? "var(--tinta)"
+      : "var(--papel)";
 
   return (
-    <section className="min-h-screen bg-[var(--gal)] px-4 py-10 md:px-6 md:py-14">
-      <section className="mx-auto flex max-w-[1120px] flex-col gap-12">
-        {/* ── A. Hero editorial ─────────────────────────────────────── */}
-        <header className="max-w-2xl">
-          <p className="text-[0.66rem] font-bold uppercase tracking-[0.32em] text-[var(--tinta-tenue)]">
+    <section className="min-h-screen bg-[var(--gal)] px-4 pb-28 pt-6 md:px-6 md:pt-10">
+      <section className="mx-auto flex max-w-[760px] flex-col gap-7">
+        {/* ── 1+2. Compact masthead / daily edition row ─────────────── */}
+        <header className="flex items-center justify-between">
+          <p className="text-[0.68rem] font-bold uppercase tracking-[0.34em] text-[var(--tinta)]">
             The Edit
           </p>
-          <h1 className="mt-4 font-display text-[2.6rem] leading-[0.95] text-[var(--tinta)] sm:text-[3.6rem]">
-            Your closet, read by color.
-          </h1>
-          <p className="mt-5 text-[1rem] leading-7 text-[var(--tinta-suave)]">
-            Every piece you own, organized by the color it actually is —
-            not by category, not by guesswork. This is the honest starting
-            point for everything else Cromática will build.
-          </p>
-          <p className="mt-6 text-[0.78rem] font-medium text-[var(--tinta-tenue)]">
-            {greeting} · {today}
-          </p>
+          {summary.totalPieces > 0 && (
+            <p className="text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-[var(--tinta-tenue)]">
+              Daily edit · Nº {summary.totalPieces}
+            </p>
+          )}
         </header>
 
-        {/* ── B. ChromaSpine live ───────────────────────────────────── */}
-        <section aria-labelledby="spine-heading">
-          <div className="mb-5 flex items-end justify-between gap-4">
-            <div>
-              <p className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-[var(--tinta-tenue)]">
-                Live spectrum
-              </p>
-              <h2
-                id="spine-heading"
-                className="mt-2 font-display text-[1.8rem] leading-none text-[var(--tinta)]"
-              >
-                Your closet, in color
-              </h2>
-            </div>
-            <Link
-              href="/closet/gallery"
-              className="shrink-0 text-[0.64rem] font-semibold uppercase tracking-[0.18em] text-[var(--tinta-tenue)] underline-offset-4 transition-colors hover:text-[var(--tinta)] hover:underline"
-            >
-              View gallery
-            </Link>
+        {/* ── 3. Compact ChromaSpine — visual signature ──────────────── */}
+        {entries.length > 0 ? (
+          <ChromaSpine
+            entries={entries}
+            hrefBase="/closet/gallery"
+            size="sm"
+            ariaLabel="Your closet, organized by color family"
+            className="rounded-[var(--r-card)]"
+          />
+        ) : (
+          <p className="text-sm text-[var(--tinta-suave)]">
+            No closet data yet — add your first piece to see your spectrum.
+          </p>
+        )}
+
+        {/* ── 4. Editorial date block ─────────────────────────────────── */}
+        <div className="flex items-end gap-4">
+          <p className="font-display text-[4.2rem] leading-[0.8] text-[var(--tinta)]">
+            {day}
+          </p>
+          <div className="pb-1">
+            <p className="text-[0.7rem] font-bold uppercase tracking-[0.16em] text-[var(--tinta)]">
+              {month}
+            </p>
+            <p className="text-[0.7rem] font-bold uppercase tracking-[0.16em] text-[var(--tinta-tenue)]">
+              {weekday}
+            </p>
           </div>
+        </div>
 
-          {entries.length > 0 ? (
-            <div className="rounded-[var(--r-panel)] bg-[var(--papel)] p-5 shadow-[inset_0_0_0_1px_var(--line)] md:p-7">
-              <ChromaSpine
-                entries={entries}
-                hrefBase="/closet/gallery"
-                showCounts
-                size="lg"
-                ariaLabel="Your closet, organized by color family"
-              />
-            </div>
-          ) : (
-            <div className="rounded-[var(--r-panel)] bg-[var(--papel)] p-8 text-center shadow-[inset_0_0_0_1px_var(--line)]">
-              <p className="font-display text-xl text-[var(--tinta)]">
-                No closet data yet.
-              </p>
-              <p className="mt-2 text-sm text-[var(--tinta-suave)]">
-                Add your first piece to start seeing your color spectrum.
-              </p>
-            </div>
-          )}
-        </section>
+        {/* ── 5. Dominant-family cover card ───────────────────────────── */}
+        {summary.dominant && (
+          <div
+            className="relative overflow-hidden rounded-[var(--r-panel)] p-7 md:p-9"
+            style={{ backgroundColor: summary.dominant.hex }}
+          >
+            <p
+              className="text-[0.62rem] font-bold uppercase tracking-[0.2em] opacity-70"
+              style={{ color: coverTextColor }}
+            >
+              Today&apos;s cover · {summary.dominant.label}
+            </p>
+            <p
+              role="heading"
+              aria-level={1}
+              className="mt-4 max-w-md text-[2.1rem] leading-[1] font-medium sm:text-[2.6rem]"
+              style={{ color: coverTextColor, fontFamily: "var(--font-serif)" }}
+            >
+              {summary.dominant.label} leads your closet.
+            </p>
+            <p
+              className="mt-4 text-[0.9rem] opacity-80"
+              style={{ color: coverTextColor }}
+            >
+              {summary.dominant.count} pieces in this family.
+            </p>
 
-        {/* ── C + D. Real summary + honest insight ──────────────────── */}
+            {summary.topFamilies.length > 1 && (
+              <div className="mt-6 flex gap-2">
+                {summary.topFamilies.map((f) => (
+                  <span
+                    key={f.family}
+                    className="h-3 w-3 rounded-full ring-1 ring-inset ring-white/40"
+                    style={{ backgroundColor: f.hex }}
+                    title={`${f.label} — ${f.count} pieces`}
+                    aria-hidden="true"
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── 6+7. Micro stats + honest insight ───────────────────────── */}
         {summary.totalPieces > 0 && (
-          <section>
-            <div className="grid gap-3 sm:grid-cols-3">
-              <SummaryStat
-                label="Total pieces"
-                value={String(summary.totalPieces)}
-              />
-              <SummaryStat
-                label="Active families"
-                value={String(summary.activeFamilies)}
-              />
-              <SummaryStat
-                label="Dominant family"
-                value={summary.dominant?.label ?? "—"}
-              />
-            </div>
-
+          <div>
+            <p className="text-[0.72rem] text-[var(--tinta-suave)]">
+              {summary.totalPieces} pieces · {summary.activeFamilies} active
+              families · {summary.emptyFamilies.length} empty
+            </p>
             {insight && (
-              <p className="mt-5 text-[0.95rem] leading-7 text-[var(--tinta-suave)]">
+              <p className="mt-2 text-[0.85rem] leading-6 text-[var(--tinta-tenue)]">
                 {insight}
               </p>
             )}
-          </section>
+          </div>
         )}
 
-        {/* ── E. Quick actions ───────────────────────────────────────── */}
-        <section>
-          <p className="mb-5 text-[0.62rem] font-bold uppercase tracking-[0.18em] text-[var(--tinta-tenue)]">
-            Quick actions
-          </p>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <QuickAction
-              href="/closet"
-              title="Closet"
-              description="Browse every piece you own."
-            />
-            <QuickAction
-              href="/closet/gallery"
-              title="Gallery"
-              description="See your closet filtered by color."
-            />
-            <QuickAction
-              href="/wishlist"
-              title="Wishlist"
-              description="Review what's under consideration."
-            />
-            <QuickAction
-              href="/outfits"
-              title="Outfits"
-              description="Look back at saved combinations."
-            />
-          </div>
-
-          <div className="mt-6">
-            <Link
-              href="/closet/add"
-              className={[
-                "inline-flex h-10 items-center justify-center rounded-[var(--r-chip)] px-6",
-                "border border-[var(--tinta)] text-[0.76rem] font-semibold uppercase tracking-[0.10em]",
-                "text-[var(--tinta)] no-underline transition-colors hover:bg-[var(--gal)]",
-                "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
-                "focus-visible:outline-[var(--tinta)]",
-              ].join(" ")}
-            >
-              Add a closet piece
-            </Link>
-          </div>
-        </section>
+        {/* ── 8. Quick actions as a chip row ──────────────────────────── */}
+        <div className="flex flex-wrap gap-2">
+          <QuickChip href="/closet" label="Closet" />
+          <QuickChip href="/closet/gallery" label="Gallery" />
+          <QuickChip href="/wishlist" label="Wishlist" />
+          <QuickChip href="/outfits" label="Outfits" />
+          <QuickChip href="/closet/add" label="Add piece" />
+        </div>
       </section>
     </section>
   );
