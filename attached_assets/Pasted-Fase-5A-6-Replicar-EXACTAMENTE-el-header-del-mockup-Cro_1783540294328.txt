@@ -1,0 +1,43 @@
+Fase 5A.6 — Replicar EXACTAMENTE el header del mockup Cromática. Branch cromatica-v1. No interpretes: copia esta implementación de referencia.
+Estructura JSX del bloque (masthead + espina):
+jsx<header className="cs-masthead">
+  <b>THE EDIT</b>
+  <span>EDICIÓN DIARIA · Nº {editionNumber}</span>
+</header>
+<div className="cs-spine" role="navigation" aria-label="Espectro del clóset">
+  {entries.map(e => (
+    <Link key={e.family} href={`/closet/gallery?colorFamily=${e.family}`}
+      className="cs-bar"
+      aria-label={`${e.meta.labelEs}, ${e.count} piezas`}
+      style={{
+        height: `${Math.max(18, (e.count / maxCount) * 100)}%`,
+        background: e.meta.hex,
+        border: e.meta.borderHex ? `1px solid ${e.meta.borderHex}` : "none",
+        borderBottom: "none",
+      }}>
+      <i className="cs-count">{e.count}</i>
+    </Link>
+  ))}
+</div>
+<div className="cs-baseline" />
+<div className="cs-caption"><span>TU ESPECTRO</span><span>{total} PIEZAS</span></div>
+CSS (clases vírgenes — verificar con grep que cs- no existe en globals.css):
+css.cs-masthead{display:flex;justify-content:space-between;align-items:baseline;padding:0 4px;}
+.cs-masthead b{font-family:var(--font-serif);font-weight:600;font-size:14px;letter-spacing:0.24em;}
+.cs-masthead span{font-size:9.5px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--tinta-tenue);}
+.cs-spine{display:flex;align-items:flex-end;gap:3px;height:56px;margin-top:22px;padding:0 4px;}
+.cs-bar{flex:1;min-width:8px;border-radius:4px 4px 0 0;position:relative;display:block;}
+.cs-count{position:absolute;top:-15px;left:50%;transform:translateX(-50%);font-style:normal;font-size:8px;font-weight:600;color:var(--tinta-tenue);font-variant-numeric:tabular-nums;}
+.cs-baseline{height:1px;background:var(--tinta);opacity:0.85;margin:0 4px;}
+.cs-caption{display:flex;justify-content:space-between;padding:8px 8px 0;font-size:8.5px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--tinta-tenue);}
+Detalles obligatorios:
+
+Los counts (34, 28, 41…) van ARRIBA de cada barra — en mobile, si 18 counts no caben legibles, mostrar count solo en barras con count ≥ 6.
+Todo este bloque vive dentro del mismo contenedor con padding lateral que el resto de la página (px-5) — el masthead JAMÁS toca los bordes. Este bloque reemplaza al masthead actual: eliminar el <header>/card blanco actual del masthead para que no haya dos.
+El overflow horizontal sigue vivo (el screenshot muestra "Nº 10" cortado): antes de nada, diagnostica en DevTools qué elemento tiene scrollWidth mayor al viewport (sospechoso: la pista del ticker) y arréglalo de raíz; añade overflow-x:clip al wrapper de página como seguro.
+La espina debe crecer con animación de entrada una sola vez (transform scaleY, respetando prefers-reduced-motion) — opcional si complica; las alturas correctas son lo obligatorio.
+
+Criterio de aceptación (sin esto la fase NO se cierra): screenshot en 375px donde se vea: (a) crema/41 como barra más alta y orange/1 como la más baja, con counts visibles arriba, (b) "THE EDIT" y "Nº" completos sin corte, (c) confirmación document.body.scrollWidth === window.innerWidth. Luego lint, typecheck, build, commit, push.
+
+Nota el detalle del punto 2: en tu mockup el masthead ya no es una tarjeta blanca separada — es una línea limpia sobre el fondo galería, integrada con la espina en un solo bloque editorial. Eso también elimina la caja blanca ancha que ahora mismo está contribuyendo al look "cortado".
+Si con el código literal en la mano el resultado sigue sin coincidir, entonces el problema es 100% una regla legacy interceptando — y en ese caso el siguiente paso sería pedirle al Agent el computed style de .cs-bar en DevTools para cazar al fantasma por nombre. Pero dudo que haga falta: con clases cs-* vírgenes no hay selector viejo que las alcance. 🎯

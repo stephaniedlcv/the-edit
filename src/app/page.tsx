@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getClosetSpectrumEntries } from "@/lib/wardrobe/spectrum-data";
-import { ChromaSpine } from "@/components/chroma-spine";
+import { ChromaSpineBlock } from "@/components/chroma-spine";
 import type { SpectrumEntry } from "@/lib/wardrobe/spectrum";
 import type { WardrobeItem } from "@/types/wardrobe";
 
@@ -172,8 +172,8 @@ export default async function HomePage() {
     : "var(--tinta)";
 
   return (
-    /* overflow-x-hidden: cinturón de seguridad — ningún hijo puede causar scroll horizontal */
-    <section className="min-h-screen overflow-x-hidden bg-[var(--gal)] px-4 pb-28 pt-6 md:px-6 md:pt-10">
+    /* overflow-x:clip — clips overflow without creating a scroll container (unlike hidden) */
+    <section className="min-h-screen bg-[var(--gal)] px-4 pb-28 pt-6 md:px-6 md:pt-10 [overflow-x:clip]">
       {/* CSS para marquee — display:block evita que inline-block contribuya al scrollWidth */}
       <style>{`
         @keyframes te-ticker {
@@ -192,52 +192,11 @@ export default async function HomePage() {
 
       <section className="mx-auto flex max-w-[760px] flex-col gap-7">
 
-        {/* ── 1. Masthead row ────────────────────────────────────────────── */}
-        <header className="flex items-center justify-between">
-          <p
-            className="text-[0.68rem] font-bold uppercase tracking-[0.34em] text-[var(--tinta)]"
-            style={{ fontFamily: "var(--font-sans)" }}
-          >
-            The Edit
-          </p>
-          <p
-            className="text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-[var(--tinta-tenue)]"
-            style={{ fontFamily: "var(--font-sans)" }}
-          >
-            Edición diaria · Nº {editionNumber}
-          </p>
-        </header>
-
-        {/* ── 2. ChromaSpine con labels ──────────────────────────────────── */}
-        {entries.length > 0 ? (
-          <div>
-            <div className="mb-2 flex items-center justify-between">
-              <p
-                className="text-[0.56rem] font-bold uppercase tracking-[0.22em] text-[var(--tinta-tenue)]"
-                style={{ fontFamily: "var(--font-sans)" }}
-              >
-                Tu espectro
-              </p>
-              <p
-                className="text-[0.56rem] font-bold uppercase tracking-[0.22em] text-[var(--tinta-tenue)]"
-                style={{ fontFamily: "var(--font-sans)" }}
-              >
-                {summary.totalPieces} piezas
-              </p>
-            </div>
-            <ChromaSpine
-              entries={entries}
-              hrefBase="/closet/gallery"
-              size="sm"
-              ariaLabel="Tu clóset organizado por familia de color"
-              className="rounded-[var(--r-card)] overflow-hidden"
-            />
-          </div>
-        ) : (
-          <p className="text-sm text-[var(--tinta-suave)]">
-            Aún no hay piezas — añade tu primera pieza para ver tu espectro.
-          </p>
-        )}
+        {/* ── 1. Editorial masthead + histogram + caption (ChromaSpineBlock) */}
+        <ChromaSpineBlock
+          entries={entries}
+          editionNumber={editionNumber}
+        />
 
         {/* ── 3. Bloque de fecha editorial ──────────────────────────────── */}
         <div className="flex items-end gap-4">
