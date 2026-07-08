@@ -1,0 +1,172 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Estado actual:
+- Fase 0 cerrada: branch seguro `cromatica-v1`.
+- Fase 1B cerrada: componentes/libs muertos eliminados.
+- Fase 1C cerrada: CSS legacy de navegación eliminado.
+- Fase 1D cerrada: `<main>` anidados reemplazados por `<section>`.
+- Fase 2A cerrada: ColorFamily audit con 190/190 piezas válidas, 100% coverage.
+- Fase 2B cerrada: data honesty fixes.
+- Fase 2C cerrada: auth strategy documentada.
+- Fase 3A cerrada: tokens Cromática instalados.
+- Fase 3B cerrada: `src/lib/wardrobe/spectrum.ts` creado.
+- Fase 3C cerrada: UI primitives creadas: Button, Chip, SectionHead, PieceCard.
+- Fase 4A cerrada: `src/components/chroma-spine.tsx` creado.
+- Fase 4B cerrada: `src/lib/wardrobe/spectrum-data.ts` creado y `/dev/ui` tiene ChromaSpine live con 190 piezas reales.
+- Último commit confirmado: `fd8a359 Add live data for color spectrum to the developer UI`.
+
+Ahora ejecuta Fase 5A — Portada Cromática base honesta.
+
+Objetivo:
+Rediseñar la portada `/` como una portada editorial Cromática base, usando datos reales del clóset y la ChromaSpine live. Esta fase debe eliminar o reemplazar elementos falsos/hardcodeados del Home, sin construir todavía Daily Look cover avanzado ni live ticker/calendar completo.
+
+Reglas:
+- Sí se puede modificar `src/app/page.tsx`.
+- Sí se puede usar `ChromaSpine`.
+- Sí se puede usar `getClosetSpectrumEntries()`.
+- Sí se pueden usar los UI primitives creados en Fase 3C.
+- No tocar Supabase schema.
+- No modificar datos.
+- No tocar rutas API.
+- No migrar Closet todavía.
+- No migrar Wishlist todavía.
+- No migrar Outfits todavía.
+- No cambiar navegación global.
+- No borrar `/dev/ui` todavía.
+- No añadir dependencias nuevas.
+- No usar `any`.
+- No mostrar datos falsos como reales.
+- Si un dato no existe o falla, ocultar el bloque o mostrar estado vacío honesto.
+
+Antes de programar, inspecciona:
+- `src/app/page.tsx`
+- `src/components/chroma-spine.tsx`
+- `src/lib/wardrobe/spectrum-data.ts`
+- `src/lib/wardrobe/data.ts`
+- `src/lib/wishlist/data.ts`
+- `src/components/ui/button.tsx`
+- `src/components/ui/chip.tsx`
+- `src/components/ui/section-head.tsx`
+- `src/components/ui/piece-card.tsx`
+- `src/app/globals.css`
+
+Tareas:
+
+1. Rediseñar `src/app/page.tsx` como portada editorial Cromática.
+
+La portada debe tener estas secciones base:
+
+A. Hero editorial
+- Eyebrow: “THE EDIT”
+- Título: algo como “Tu clóset, leído por color”
+- Subtítulo breve y honesto, basado en la idea de Cromática.
+- Saludo por hora si ya existe una utilidad limpia; si no existe, usar texto neutral sin hardcodear nombres falsos.
+- Fecha real del día usando JS server-side.
+- No usar agenda falsa.
+- No usar score falso.
+- No usar datos mock como si fueran reales.
+
+B. ChromaSpine live
+- Usar `await getClosetSpectrumEntries({ includeEmpty: true })`.
+- Renderizar `ChromaSpine`.
+- `hrefBase="/closet/gallery"`.
+- `showCounts` puede estar true si se ve limpio.
+- Debe verse como pieza central del Home.
+- Si no hay entries, mostrar estado vacío honesto.
+
+C. Resumen real del clóset
+Con datos reales derivados de las entries:
+- total de piezas
+- familias activas
+- familia dominante
+- familias vacías, si includeEmpty=true permite detectarlo
+
+No hardcodear números.
+No usar los números del audit directamente.
+Calcular desde las entries.
+
+D. Insight honesto
+Mostrar 1 insight breve derivado de la data, por ejemplo:
+- si hay familias vacías: “Tu espectro todavía no tiene piezas en Plum.”
+- si una familia domina: “Black domina tu clóset ahora mismo.”
+- si hay muchas familias activas: “Tu clóset ya cubre 17 familias activas.”
+Debe calcularse desde data real.
+No inventar recomendaciones complejas todavía.
+
+E. Quick actions
+Usar Button o links estilizados a:
+- `/closet`
+- `/closet/gallery`
+- `/wishlist`
+- `/outfits`
+
+2. Eliminar o reemplazar elementos fake/hardcoded existentes en Home.
+Buscar y remover si existen:
+- score falso
+- agenda falsa
+- eventos falsos
+- calendario falso
+- daily look falso
+- métricas hardcodeadas
+- textos que prometen AI/inteligencia que todavía no existe
+
+Si algo no está conectado a data real, no debe presentarse como real.
+
+3. Mantener Home server component si es posible.
+Preferir `async function HomePage()` y data fetching server-side.
+No convertir a client component salvo necesidad fuerte.
+No usar hooks si no hace falta.
+
+4. Styling:
+Usar tokens Cromática y UI primitives.
+Preferir Tailwind + CSS variables.
+No inflar `globals.css`.
+No crear CSS global nuevo salvo mínimo indispensable.
+La estética debe ser:
+- editorial
+- limpia
+- premium
+- mucho espacio negativo
+- neutra con color proveniente de la ChromaSpine
+- responsive mobile-first
+
+5. Responsive:
+Debe funcionar en:
+- 360px
+- 390px
+- 768px
+- desktop
+Evitar layouts demasiado cargados.
+La ChromaSpine puede usar horizontal scroll si hace falta.
+
+6. Accesibilidad:
+- headings correctos.
+- enlaces claros.
+- no depender solo del color.
+- focus states ya provistos por primitivas/ChromaSpine.
+
+7. No tocar:
+- `src/components/chroma-spine.tsx` salvo bug real menor.
+- `src/lib/wardrobe/spectrum.ts` salvo bug real menor.
+- `src/lib/wardrobe/spectrum-data.ts` salvo bug real menor.
+- Supabase schema.
+- APIs.
+- datos.
+- navegación.
+- rutas de Closet/Wishlist/Outfits.
+- `/dev/ui`.
+
+8. Validación:
+Al final correr:
+npm run lint
+npm run typecheck
+npm run build
+
+Reportar:
+- archivos modificados,
+- qué bloques fake/hardcoded se removieron,
+- qué datos reales usa el Home,
+- cómo se calcula total/familias activas/familia dominante/familias vacías,
+- cómo se integra ChromaSpine,
+- cambios visuales esperados,
+- confirmación de que no se tocó Supabase, APIs, datos, navegación, Closet, Wishlist ni Outfits.

@@ -1,52 +1,14 @@
 import Link from "next/link";
-import { getWardrobeItems } from "@/lib/wardrobe/data";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
-import type { WardrobeCategory } from "@/types/wardrobe";
+import { getClosetSpectrumEntries } from "@/lib/wardrobe/spectrum-data";
+import { ChromaSpine } from "@/components/chroma-spine";
+import type { SpectrumEntry } from "@/lib/wardrobe/spectrum";
+import type { WardrobeItem } from "@/types/wardrobe";
 
 export const dynamic = "force-dynamic";
 
-const CATEGORY_LABELS: Record<WardrobeCategory, string> = {
-  outerwear: "Outerwear",
-  top: "Tops",
-  bottom: "Bottoms",
-  dress: "Dresses",
-  shoes: "Shoes",
-  bag: "Bags",
-  accessory: "Accessories",
-  jewelry: "Jewelry",
-};
+// ─── Server-side, honest helpers ───────────────────────────────────────────
 
-const CATEGORY_ORDER: WardrobeCategory[] = [
-  "outerwear",
-  "top",
-  "bottom",
-  "dress",
-  "shoes",
-  "bag",
-  "accessory",
-  "jewelry",
-];
-
-const GAP_THRESHOLDS: Partial<Record<WardrobeCategory, number>> = {
-  shoes: 3,
-  bag: 2,
-  outerwear: 2,
-  top: 4,
-  bottom: 3,
-  dress: 1,
-};
-
-const GAP_NOTES: Partial<Record<WardrobeCategory, string>> = {
-  shoes: "Add polished flats, loafers, or elevated sandals to unlock more outfit formulas.",
-  bag: "A structured bag instantly makes simple outfits feel styled.",
-  outerwear: "Light layers create polish without fighting the Puerto Rico heat.",
-  top: "More strong tops create more daily combinations without needing new bottoms.",
-  bottom: "Tailored trousers and one fashion skirt would expand your office options.",
-  dress: "Dresses are your high-heat, low-effort, high-impact shortcut.",
-  accessory: "Accessories are the difference between dressed and styled.",
-  jewelry: "A few repeatable jewelry staples would make every outfit feel finished.",
-};
-
+/** Hour-based greeting. No name, no fake personalization — just the clock. */
 function getGreeting(): string {
   const now = new Date();
   const hourStr = new Intl.DateTimeFormat("en-US", {
@@ -60,340 +22,263 @@ function getGreeting(): string {
   return "Good evening";
 }
 
-function StatCard({
-  label,
-  value,
-  note,
+/** Real server date, formatted for a Puerto Rico reader. */
+function getTodayLabel(): string {
+  const now = new Date();
+  return new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    timeZone: "America/Puerto_Rico",
+  }).format(now);
+}
+
+interface ClosetSummary {
+  totalPieces: number;
+  activeFamilies: number;
+  dominant: { label: string; count: number } | null;
+  emptyFamilies: { family: string; label: string }[];
+}
+
+/** Derives every summary number from the entries themselves — nothing hardcoded. */
+function buildClosetSummary(
+  entries: SpectrumEntry<WardrobeItem>[],
+): ClosetSummary {
+  const totalPieces = entries.reduce((sum, e) => sum + e.count, 0);
+  const activeEntries = entries.filter((e) => e.count > 0);
+  const emptyFamilies = entries
+    .filter((e) => e.count === 0)
+    .map((e) => ({ family: String(e.family), label: e.meta.label }));
+
+  const dominantEntry = activeEntries.reduce<SpectrumEntry<WardrobeItem> | null>(
+    (max, e) => (!max || e.count > max.count ? e : max),
+    null,
+  );
+
+  return {
+    totalPieces,
+    activeFamilies: activeEntries.length,
+    dominant: dominantEntry
+      ? { label: dominantEntry.meta.label, count: dominantEntry.count }
+      : null,
+    emptyFamilies,
+  };
+}
+
+/** One honest, data-derived insight. Returns null when there is nothing true to say yet. */
+function buildInsight(summary: ClosetSummary): string | null {
+  if (summary.totalPieces === 0) return null;
+
+  if (summary.emptyFamilies.length > 0) {
+    const [first] = summary.emptyFamilies;
+    return `Your spectrum has no pieces in ${first.label} yet.`;
+  }
+
+  if (summary.dominant) {
+    const share = summary.dominant.count / summary.totalPieces;
+    if (share >= 0.15) {
+      return `${summary.dominant.label} dominates your closet right now, with ${summary.dominant.count} pieces.`;
+    }
+  }
+
+  if (summary.activeFamilies >= 12) {
+    return `Your closet already spans ${summary.activeFamilies} active color families.`;
+  }
+
+  return `Your closet holds ${summary.totalPieces} pieces across ${summary.activeFamilies} color families.`;
+}
+
+// ─── Small presentational helpers ──────────────────────────────────────────
+
+function SummaryStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[var(--r-card)] bg-[var(--papel)] px-5 py-4 shadow-[inset_0_0_0_1px_var(--line)]">
+      <p className="text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-[var(--tinta-tenue)]">
+        {label}
+      </p>
+      <p className="mt-2 font-display text-[1.9rem] leading-none text-[var(--tinta)]">
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function QuickAction({
   href,
+  title,
+  description,
 }: {
-  label: string;
-  value: number;
-  note: string;
   href: string;
+  title: string;
+  description: string;
 }) {
   return (
-    <Link href={href} className="edit-card block p-5 no-underline md:p-6">
-      <p className="eyebrow mb-4">{label}</p>
-      <p className="font-display text-[3rem] leading-none text-[var(--espresso)] sm:text-[4.2rem]">
-        {String(value).padStart(2, "0")}
+    <Link
+      href={href}
+      className={[
+        "group block rounded-[var(--r-card)] bg-[var(--papel)] p-5 no-underline",
+        "shadow-[inset_0_0_0_1px_var(--line)] transition duration-150",
+        "hover:shadow-[inset_0_0_0_1px_var(--line-strong)] hover:-translate-y-0.5",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
+        "focus-visible:outline-[var(--tinta)]",
+      ].join(" ")}
+    >
+      <p className="font-display text-[1.5rem] leading-none text-[var(--tinta)]">
+        {title}
       </p>
-      <p className="mt-4 text-sm leading-6 text-[var(--ink-soft)]">{note}</p>
-      <span className="mt-5 inline-flex text-[0.58rem] font-bold uppercase tracking-[0.18em] text-[var(--burgundy)]">
-        Open section →
+      <p className="mt-2 text-sm leading-6 text-[var(--tinta-suave)]">
+        {description}
+      </p>
+      <span className="mt-4 inline-flex text-[0.58rem] font-bold uppercase tracking-[0.18em] text-[var(--tinta-suave)] transition-colors group-hover:text-[var(--tinta)]">
+        Open →
       </span>
     </Link>
   );
 }
 
-function RealStatRow({
-  label,
-  value,
-  href,
-}: {
-  label: string;
-  value: number;
-  href: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="flex items-center justify-between rounded-[1.35rem] bg-white/50 px-4 py-3 no-underline shadow-[inset_0_0_0_1px_rgba(48,35,31,0.04)]"
-    >
-      <p className="text-sm text-[var(--ink-soft)]">{label}</p>
-      <p className="font-display text-2xl leading-none text-[var(--espresso)]">
-        {value}
-      </p>
-    </Link>
-  );
-}
+// ─── Home ───────────────────────────────────────────────────────────────────
 
 export default async function HomePage() {
-  const items = await getWardrobeItems();
-
-  const counts = items.reduce<Partial<Record<WardrobeCategory, number>>>(
-    (acc, item) => {
-      acc[item.category] = (acc[item.category] ?? 0) + 1;
-      return acc;
-    },
-    {},
-  );
-
-  const gaps = CATEGORY_ORDER
-    .filter((cat) => (counts[cat] ?? 0) < (GAP_THRESHOLDS[cat] ?? 99))
-    .slice(0, 3)
-    .map((cat) => ({
-      cat,
-      label: CATEGORY_LABELS[cat],
-      count: counts[cat] ?? 0,
-      threshold: GAP_THRESHOLDS[cat] ?? 2,
-      note: GAP_NOTES[cat] ?? "",
-    }));
-
-  const covered = CATEGORY_ORDER
-    .filter((cat) => (counts[cat] ?? 0) > 0)
-    .map((cat) => ({
-      cat,
-      label: CATEGORY_LABELS[cat],
-      count: counts[cat] ?? 0,
-    }));
-
-  const supabase = getSupabaseServerClient();
-  const ownedCount = items.length;
-  let wishlistCount = 0;
-  let savedLooksCount = 0;
-
-  if (supabase) {
-    const [wishlistRes, savedRes] = await Promise.all([
-      supabase
-        .from("wishlist_items")
-        .select("id", { count: "exact", head: true })
-        .eq("is_archived", false),
-      supabase
-        .from("saved_outfits")
-        .select("id", { count: "exact", head: true })
-        .neq("status", "deleted"),
-    ]);
-
-    if (wishlistRes.count !== null) wishlistCount = wishlistRes.count;
-    if (savedRes.count !== null) savedLooksCount = savedRes.count;
-  }
+  const entries = await getClosetSpectrumEntries({ includeEmpty: true });
+  const summary = buildClosetSummary(entries);
+  const insight = buildInsight(summary);
 
   const greeting = getGreeting();
+  const today = getTodayLabel();
 
   return (
-    <section className="min-h-screen px-4 py-6 md:px-6 md:py-8">
-      <section className="mx-auto max-w-[1120px]">
-        <div className="mb-6 grid gap-5 lg:grid-cols-[1.08fr_0.92fr]">
-          {/* ── Left hero — greeting + actions ────────────────────── */}
-          <section className="edit-card-glass relative overflow-hidden p-6 md:p-8">
-            <div className="absolute right-[-5rem] top-[-5rem] h-56 w-56 rounded-full bg-[rgba(216,175,163,0.36)] blur-3xl" />
-            <div className="absolute bottom-[-6rem] left-[-5rem] h-64 w-64 rounded-full bg-[rgba(122,46,53,0.08)] blur-3xl" />
+    <section className="min-h-screen bg-[var(--gal)] px-4 py-10 md:px-6 md:py-14">
+      <section className="mx-auto flex max-w-[1120px] flex-col gap-12">
+        {/* ── A. Hero editorial ─────────────────────────────────────── */}
+        <header className="max-w-2xl">
+          <p className="text-[0.66rem] font-bold uppercase tracking-[0.32em] text-[var(--tinta-tenue)]">
+            The Edit
+          </p>
+          <h1 className="mt-4 font-display text-[2.6rem] leading-[0.95] text-[var(--tinta)] sm:text-[3.6rem]">
+            Your closet, read by color.
+          </h1>
+          <p className="mt-5 text-[1rem] leading-7 text-[var(--tinta-suave)]">
+            Every piece you own, organized by the color it actually is —
+            not by category, not by guesswork. This is the honest starting
+            point for everything else Cromática will build.
+          </p>
+          <p className="mt-6 text-[0.78rem] font-medium text-[var(--tinta-tenue)]">
+            {greeting} · {today}
+          </p>
+        </header>
 
-            <div className="relative">
-              <p className="eyebrow mb-5">Daily Edit</p>
-
-              <h1 className="font-display text-[2.55rem] leading-[0.88] text-[var(--espresso)] sm:text-[4.1rem] sm:leading-[0.82] md:text-[6.3rem]">
-                {greeting},
-                <br />
-                Stephanie.
-              </h1>
-
-              <p className="mt-6 max-w-xl text-[1rem] leading-7 text-[var(--ink-soft)]">
-                Your wardrobe, wishlist, and saved looks are connected.
-                Today&apos;s edit is based on your real closet.
+        {/* ── B. ChromaSpine live ───────────────────────────────────── */}
+        <section aria-labelledby="spine-heading">
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-[var(--tinta-tenue)]">
+                Live spectrum
               </p>
-
-              {covered.length > 0 && (
-                <div className="mt-7 flex flex-wrap gap-2">
-                  {covered.slice(0, 4).map(({ cat, label, count }) => (
-                    <span key={cat} className="edit-chip">
-                      {count} {label}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link
-                  href="/outfits"
-                  className="edit-button-primary px-6 py-3 text-[0.62rem] font-bold uppercase tracking-[0.18em] no-underline"
-                >
-                  Build today&apos;s edit
-                </Link>
-                <Link
-                  href="/planner"
-                  className="rounded-full border border-white/70 bg-white/50 px-6 py-3 text-[0.62rem] font-bold uppercase tracking-[0.18em] text-[var(--espresso)] no-underline shadow-sm"
-                >
-                  View calendar
-                </Link>
-              </div>
-            </div>
-          </section>
-
-          {/* ── Right hero — real closet stats + calendar state ─── */}
-          <section className="edit-card p-5 md:p-6">
-            <div className="mb-5 flex items-center justify-between">
-              <div>
-                <p className="eyebrow mb-2">Wardrobe</p>
-                <h2 className="font-display text-4xl leading-none text-[var(--espresso)]">
-                  Live data
-                </h2>
-              </div>
-              <span className="rounded-full bg-[rgba(29,24,20,0.07)] px-3 py-1 text-[0.52rem] font-bold uppercase tracking-[0.16em] text-[var(--espresso)]">
-                Live
-              </span>
-            </div>
-
-            <div className="grid gap-2">
-              <RealStatRow
-                label="Owned pieces"
-                value={ownedCount}
-                href="/closet"
-              />
-              <RealStatRow
-                label="Wishlist items"
-                value={wishlistCount}
-                href="/wishlist"
-              />
-              <RealStatRow
-                label="Saved looks"
-                value={savedLooksCount}
-                href="/outfits"
-              />
-            </div>
-
-            <Link
-              href="/planner"
-              className="mt-4 block rounded-[1.35rem] border border-dashed border-[rgba(48,35,31,0.14)] p-4 no-underline"
-            >
-              <p className="text-[0.55rem] font-bold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
-                Calendar
-              </p>
-              <p className="mt-1 font-display text-xl leading-snug text-[var(--espresso)]">
-                Not connected yet
-              </p>
-              <p className="mt-1 text-sm text-[var(--ink-soft)]">
-                Open planner to connect your schedule →
-              </p>
-            </Link>
-          </section>
-        </div>
-
-        <div className="mb-6 grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
-          {/* ── Closet intelligence — real gap data ─────────────── */}
-          <section className="edit-card p-5 md:p-6">
-            <div className="mb-5 flex items-start justify-between gap-4">
-              <div>
-                <p className="eyebrow mb-2">Closet Intelligence</p>
-                <h2 className="font-display text-4xl leading-none text-[var(--espresso)]">
-                  {gaps.length > 0 ? "What needs attention" : "Your closet is solid"}
-                </h2>
-              </div>
-              <Link
-                href="/closet"
-                className="rounded-full bg-white/60 px-4 py-2 text-[0.55rem] font-bold uppercase tracking-[0.16em] text-[var(--burgundy)] no-underline"
+              <h2
+                id="spine-heading"
+                className="mt-2 font-display text-[1.8rem] leading-none text-[var(--tinta)]"
               >
-                Closet
-              </Link>
+                Your closet, in color
+              </h2>
+            </div>
+            <Link
+              href="/closet/gallery"
+              className="shrink-0 text-[0.64rem] font-semibold uppercase tracking-[0.18em] text-[var(--tinta-tenue)] underline-offset-4 transition-colors hover:text-[var(--tinta)] hover:underline"
+            >
+              View gallery
+            </Link>
+          </div>
+
+          {entries.length > 0 ? (
+            <div className="rounded-[var(--r-panel)] bg-[var(--papel)] p-5 shadow-[inset_0_0_0_1px_var(--line)] md:p-7">
+              <ChromaSpine
+                entries={entries}
+                hrefBase="/closet/gallery"
+                showCounts
+                size="lg"
+                ariaLabel="Your closet, organized by color family"
+              />
+            </div>
+          ) : (
+            <div className="rounded-[var(--r-panel)] bg-[var(--papel)] p-8 text-center shadow-[inset_0_0_0_1px_var(--line)]">
+              <p className="font-display text-xl text-[var(--tinta)]">
+                No closet data yet.
+              </p>
+              <p className="mt-2 text-sm text-[var(--tinta-suave)]">
+                Add your first piece to start seeing your color spectrum.
+              </p>
+            </div>
+          )}
+        </section>
+
+        {/* ── C + D. Real summary + honest insight ──────────────────── */}
+        {summary.totalPieces > 0 && (
+          <section>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <SummaryStat
+                label="Total pieces"
+                value={String(summary.totalPieces)}
+              />
+              <SummaryStat
+                label="Active families"
+                value={String(summary.activeFamilies)}
+              />
+              <SummaryStat
+                label="Dominant family"
+                value={summary.dominant?.label ?? "—"}
+              />
             </div>
 
-            {covered.length > 0 ? (
-              <div className="mb-5 flex flex-wrap gap-2">
-                {covered.slice(0, 8).map(({ cat, label, count }) => (
-                  <span key={cat} className="edit-chip">
-                    {count} {label}
-                  </span>
-                ))}
-              </div>
-            ) : null}
-
-            {gaps.length > 0 ? (
-              <div className="grid gap-3">
-                {gaps.map(({ cat, label, count, threshold, note }) => (
-                  <div key={cat} className="rounded-[1.35rem] bg-white/46 p-4">
-                    <div className="mb-2 flex items-center justify-between gap-3">
-                      <p className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-[var(--burgundy)]">
-                        {label}
-                      </p>
-                      <span className="rounded-full bg-[rgba(122,46,53,0.10)] px-3 py-1 text-[0.52rem] font-bold uppercase tracking-[0.14em] text-[var(--burgundy)]">
-                        {count}/{threshold}
-                      </span>
-                    </div>
-                    <p className="text-sm leading-6 text-[var(--ink-soft)]">{note}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm leading-7 text-[var(--ink-soft)]">
-                All key categories are covered. Keep logging looks so the AI can
-                keep learning what actually works.
+            {insight && (
+              <p className="mt-5 text-[0.95rem] leading-7 text-[var(--tinta-suave)]">
+                {insight}
               </p>
             )}
           </section>
+        )}
 
-          {/* ── Quick actions — correct routes ───────────────────── */}
-          <section className="edit-card-glass p-5 md:p-6">
-            <div className="mb-5 flex items-center justify-between">
-              <div>
-                <p className="eyebrow mb-2">Quick actions</p>
-                <h2 className="font-display text-4xl leading-none text-[var(--espresso)]">
-                  Choose your next move
-                </h2>
-              </div>
-            </div>
+        {/* ── E. Quick actions ───────────────────────────────────────── */}
+        <section>
+          <p className="mb-5 text-[0.62rem] font-bold uppercase tracking-[0.18em] text-[var(--tinta-tenue)]">
+            Quick actions
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <QuickAction
+              href="/closet"
+              title="Closet"
+              description="Browse every piece you own."
+            />
+            <QuickAction
+              href="/closet/gallery"
+              title="Gallery"
+              description="See your closet filtered by color."
+            />
+            <QuickAction
+              href="/wishlist"
+              title="Wishlist"
+              description="Review what's under consideration."
+            />
+            <QuickAction
+              href="/outfits"
+              title="Outfits"
+              description="Look back at saved combinations."
+            />
+          </div>
 
-            <div className="grid gap-3 md:grid-cols-2">
-              <Link
-                href="/closet/add"
-                className="rounded-[1.5rem] bg-white/52 p-5 no-underline"
-              >
-                <p className="font-display text-3xl leading-none text-[var(--espresso)]">
-                  Add closet piece
-                </p>
-                <p className="mt-3 text-sm leading-6 text-[var(--ink-soft)]">
-                  Log an item, color, fit, and styling notes.
-                </p>
-              </Link>
-
-              <Link
-                href="/wishlist"
-                className="rounded-[1.5rem] bg-white/52 p-5 no-underline"
-              >
-                <p className="font-display text-3xl leading-none text-[var(--espresso)]">
-                  Review wishlist
-                </p>
-                <p className="mt-3 text-sm leading-6 text-[var(--ink-soft)]">
-                  Decide what deserves space in the capsule.
-                </p>
-              </Link>
-
-              <Link
-                href="/outfits"
-                className="rounded-[1.5rem] bg-white/52 p-5 no-underline"
-              >
-                <p className="font-display text-3xl leading-none text-[var(--espresso)]">
-                  Build outfit
-                </p>
-                <p className="mt-3 text-sm leading-6 text-[var(--ink-soft)]">
-                  Generate a look that is bold but wearable.
-                </p>
-              </Link>
-
-              <Link
-                href="/planner"
-                className="rounded-[1.5rem] bg-white/52 p-5 no-underline"
-              >
-                <p className="font-display text-3xl leading-none text-[var(--espresso)]">
-                  Plan the week
-                </p>
-                <p className="mt-3 text-sm leading-6 text-[var(--ink-soft)]">
-                  Align events, outfits, gym, and beauty.
-                </p>
-              </Link>
-            </div>
-          </section>
-        </div>
-
-        {/* ── Bottom stats — real counts from Supabase ─────────── */}
-        <section className="grid gap-4 md:grid-cols-3">
-          <StatCard
-            label="Owned pieces"
-            value={ownedCount}
-            href="/closet"
-            note="Active pieces in your closet — the AI's raw material."
-          />
-          <StatCard
-            label="Wishlist edits"
-            value={wishlistCount}
-            href="/wishlist"
-            note="Items under review before they enter the capsule."
-          />
-          <StatCard
-            label="Saved looks"
-            value={savedLooksCount}
-            href="/outfits"
-            note="Curated outfits ready to repeat, improve, or adapt."
-          />
+          <div className="mt-6">
+            <Link
+              href="/closet/add"
+              className={[
+                "inline-flex h-10 items-center justify-center rounded-[var(--r-chip)] px-6",
+                "border border-[var(--tinta)] text-[0.76rem] font-semibold uppercase tracking-[0.10em]",
+                "text-[var(--tinta)] no-underline transition-colors hover:bg-[var(--gal)]",
+                "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
+                "focus-visible:outline-[var(--tinta)]",
+              ].join(" ")}
+            >
+              Add a closet piece
+            </Link>
+          </div>
         </section>
       </section>
     </section>
