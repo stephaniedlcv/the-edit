@@ -521,7 +521,35 @@ export default async function HomePage() {
           </div>
         )}
 
-        {/* Fase 5C: quick-actions go here */}
+        {/* ── 6. Quick actions */}
+        <div>
+          <p
+            className="mb-[0.6rem] text-[0.52rem] font-bold uppercase tracking-[0.2em] text-[var(--tinta-tenue)]"
+            style={{ fontFamily: "var(--font-sans)" }}
+          >
+            Accesos
+          </p>
+          <div className="flex flex-wrap gap-[0.4rem]">
+            {(
+              [
+                { label: "Clóset",        href: "/closet" },
+                { label: "Galería",       href: "/closet/gallery" },
+                { label: "Outfits",       href: "/outfits" },
+                { label: "Wishlist",      href: "/wishlist" },
+                { label: "+ Añadir pieza", href: "/closet/add" },
+              ] as const
+            ).map(({ label, href }) => (
+              <Link
+                key={href}
+                href={href}
+                className="inline-flex h-[1.85rem] items-center rounded-full border border-[var(--line)] px-[0.7rem] text-[0.58rem] font-bold uppercase tracking-[0.1em] text-[var(--tinta-tenue)] no-underline transition-colors duration-150 hover:border-[var(--tinta-tenue)] hover:text-[var(--tinta)]"
+                style={{ fontFamily: "var(--font-sans)" }}
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+        </div>
 
       </section>
     </section>

@@ -1,0 +1,101 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Estado actual:
+- Fase 5A/5B/5C fueron adelantadas en el Home.
+- El Home ya tiene masthead editorial, ChromaSpine live, fecha grande PR, saludo contextual, Daily Look Cover básico, agenda condicional y ticker.
+- El diseño ya está mucho más cerca del concepto Cromática.
+- Antes de pasar al Clóset cromático, necesitamos cerrar Home con una mini fase de polish.
+
+Ejecuta Fase 5D — Home polish final.
+
+Objetivo:
+Pulir el Home actual sin rediseñarlo de nuevo. Solo cerrar detalles de navegación, spacing y accesos rápidos para que la portada quede lista y podamos pasar a Fase 6.
+
+Reglas:
+- Modificar solo `src/app/page.tsx` salvo bug real indispensable.
+- No tocar Supabase.
+- No tocar APIs.
+- No modificar datos.
+- No tocar navegación global.
+- No tocar Closet, Gallery, Wishlist, Outfits ni Planner.
+- No tocar `globals.css`.
+- No tocar `ChromaSpine`, `spectrum.ts`, `spectrum-data.ts`, `composeOutfits` ni calendar helpers salvo bug real.
+- No borrar `/dev/ui` todavía.
+- No añadir dependencias.
+- No usar `any`.
+- No meter el mock de Closet todavía. Ese va en Fase 6.
+
+Tareas:
+
+1. Quick actions compactas
+Agregar una fila o bloque compacto de accesos rápidos al final del Home, sin convertirlo en cards grandes.
+
+Debe incluir:
+- Clóset → `/closet`
+- Galería → `/closet/gallery`
+- Outfits → `/outfits`
+- Wishlist → `/wishlist`
+- Add piece → `/closet/add`
+
+Estilo:
+- chips/links editoriales pequeños
+- uppercase o small caps
+- pueden hacer wrap en mobile
+- no deben competir con Daily Look Cover
+- no deben parecer dashboard cards
+
+2. Bottom nav spacing
+Asegurar que el último bloque del Home no quede tapado por la navegación inferior.
+
+Agregar padding-bottom suficiente al contenedor del Home si hace falta.
+No tocar la navegación global.
+
+3. Ticker polish
+Revisar que el ticker:
+- no quede cortado por el nav
+- no se vea demasiado pesado
+- tenga espacio antes/después
+- desaparezca honestamente si no tiene datos
+
+No cambiar la lógica del ticker salvo bug visual real.
+
+4. Agenda “Hoy” QA visual
+Revisar que:
+- si no hay eventos, el bloque se omite completo
+- si hay eventos, no rompe mobile
+- máximo 4 eventos se ven bien
+- “y N eventos más” no se tapa
+
+No cambiar la fuente de datos.
+
+5. Daily Look Cover QA visual
+Revisar:
+- texto legible sobre el fondo
+- CTAs no se pisan
+- swipe/arrow si existe no rompe mobile
+- card no queda tapada por nav
+
+No cambiar la lógica de composición de looks salvo bug real.
+
+6. Mantener datos honestos
+No añadir:
+- clima falso
+- ciudad falsa
+- AI copy
+- recomendaciones inventadas
+- scores no explicados
+- agenda placeholder
+
+7. Validación final
+Correr:
+npm run lint
+npm run typecheck
+npm run build
+
+Reportar:
+- archivos modificados,
+- qué quick actions se agregaron,
+- qué se ajustó para bottom nav spacing,
+- si se tocó ticker o agenda,
+- si se tocó Daily Look Cover,
+- confirmación de que no se tocó Supabase/APIs/datos/navegación/otras rutas.
