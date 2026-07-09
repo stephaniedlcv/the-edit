@@ -1,0 +1,146 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Fase 7A ya está cerrada y subida:
+- /wishlist tiene header editorial Cromática
+- Eyebrow: WISHLIST · CROMÁTICA
+- Title: La Lista.
+- ChromaSpine usa solo wishlist items
+- stats reales por decision/priceWatch
+- link a /closet?mode=wishlist
+- copy traducido a español
+- validaciones limpias
+- últimos commits:
+  f6942d7 Translate wishlist features and descriptions into Spanish
+  214cfbc Update wishlist page to align with the Chromatica visual system
+
+Ahora ejecuta Fase 7A.2 — Wishlist cards polish.
+
+Objetivo:
+Refinar visualmente las cards y filtros de Wishlist para que se sientan parte del sistema Cromática, sin cambiar la lógica ni romper funcionalidad.
+
+Estado actual:
+- /wishlist ya está alineada en header y estructura.
+- WishlistPriorityBoard funciona.
+- BuyOrderFilter funciona.
+- WishlistCard todavía se siente más pre-Cromática / dashboard.
+- Queremos que las piezas de wishlist se vean como deseos editoriales conectados con El Archivo.
+
+Reglas:
+- Modificar preferiblemente:
+  - `src/components/wishlist-card.tsx`
+  - `src/components/wishlist-priority-board.tsx`
+  - `src/components/buy-order-filter.tsx`
+  - `src/app/wishlist/page.tsx` solo si es necesario para spacing
+- No tocar Home.
+- No tocar Closet.
+- No tocar Gallery.
+- No tocar Outfits.
+- No tocar APIs.
+- No tocar Supabase.
+- No modificar datos.
+- No tocar navegación global.
+- No añadir dependencias.
+- No usar any.
+- No inventar métricas.
+- No añadir compra inmediata ni checkout.
+- No cambiar rutas.
+- No romper acciones existentes de wishlist.
+
+Tareas:
+
+1. WishlistCard visual polish
+Refinar `WishlistCard` para que se vea más editorial:
+- borde cálido y suave
+- fondo ivory/paper
+- imagen más protagonista
+- spacing más limpio
+- tipografía más alineada a Cromática
+- badges más sutiles
+- menos look dashboard
+- mantener legibilidad
+
+Debe seguir mostrando la información existente:
+- nombre/título
+- categoría/subcategoría si existe
+- color/colorFamily si existe
+- decision/priority
+- priceWatch si existe
+- acciones existentes si las tiene
+
+No eliminar botones ni links existentes.
+
+2. Color family chip
+Si WishlistItem tiene `colorFamily`, mostrar un chip o etiqueta visual sobria:
+- usar metadata de `getColorFamilyMeta` si está disponible
+- color plano, no gradiente
+- label en español si existe
+- para special/statement usar outline en vez de relleno agresivo
+
+No inventar colorFamily si no existe.
+
+3. Decision / priority badges en español
+Asegurar labels en español:
+- buy-priority → Prioridad
+- wishlist → En lista
+- consider → Considerar
+- skip/pass si existiera → Descartar o Pausado, según el caso
+
+Mantener compatibilidad con valores existentes.
+
+4. BuyOrderFilter polish
+Refinar visualmente el filtro para que se sienta como un selector editorial:
+- menos dashboard
+- más “tabs/chips”
+- active state sutil
+- spacing consistente
+- labels en español ya existentes deben mantenerse
+
+No cambiar la lógica de filtrado.
+
+5. WishlistPriorityBoard polish
+Revisar encabezados/secciones:
+- que “Orden de compra” se vea editorial
+- que el count de deseos sea claro
+- que el empty state se vea más cuidado
+- que el layout no choque con el header nuevo
+
+6. Responsive / nav
+Asegurar padding inferior suficiente.
+Las últimas cards no deben quedar tapadas por bottom nav.
+No tocar nav global.
+
+7. Data honesty
+No añadir:
+- “combina con N piezas”
+- “ahorras X”
+- urgencia falsa
+- “must buy”
+- métricas no calculadas
+
+8. Verificación visual
+Revisar:
+- /wishlist
+- /wishlist con cada filtro si existe
+- /closet?mode=wishlist
+- /
+- /closet
+
+Confirmar:
+- Wishlist se siente más Cromática
+- las cards no se ven dashboard viejo
+- filtros siguen funcionando
+- acciones existentes siguen presentes
+- Home/Closet no regresionaron
+
+Validación:
+npm run lint
+npm run typecheck
+npm run build
+
+Reportar:
+- archivos modificados
+- qué cambió en WishlistCard
+- qué cambió en filtros
+- qué cambió en board
+- qué quedó intacto
+- qué queda pendiente antes de Fase 7B

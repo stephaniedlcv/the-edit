@@ -110,7 +110,7 @@ export function BuyOrderFilter({
   const totalCount = items.length;
 
   return (
-    <div className="mb-10 rounded-[3px] bg-[var(--paper-2)] px-5 py-7 shadow-[0_0_0_1px_rgba(95,63,50,0.07),0_2px_12px_rgba(36,26,18,0.04)] md:px-7">
+    <div className="mb-10 bg-[var(--paper-2)] px-5 py-7 md:px-7" style={{ border: "1px solid rgba(95,63,50,0.09)", borderRadius: "3px" }}>
       <div className="mb-8 flex items-end justify-between gap-8">
         <div>
           <p className="eyebrow mb-3">Orden de compra</p>
