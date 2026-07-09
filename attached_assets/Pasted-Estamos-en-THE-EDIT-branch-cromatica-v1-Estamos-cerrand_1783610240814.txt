@@ -1,0 +1,144 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Estamos cerrando El Archivo. Ya hay cambios buenos aplicados:
+- Shared Editorial Masthead
+- capítulos refinados
+- labels finales: Negro, Café, Camel, Borgoña, Statement
+- numeración canónica fija por familia
+- ghosts inline funcionando
+- Statement con outline
+- Ciruela sin porcentaje cuando no tiene piezas propias
+
+Ahora ejecuta Fase 6D.2D — El Archivo final polish.
+
+Decisiones finales:
+1. El masthead global se queda igual que Home:
+   THE EDIT + “EDICIÓN DIARIA · Nº {editionNumber}”
+   Ese masthead funciona como folio de revista global.
+   No cambiarlo a “EL ARCHIVO · 204”.
+   “El Archivo” vive en el cuerpo de la página como:
+   CLÓSET · EL ARCHIVO
+   El Archivo.
+
+2. Multicolor debe usar franjas duras / bloques planos, no blend difuminado.
+   Permitido: linear-gradient con cortes duros.
+   No permitido: gradiente suave mezclado.
+
+Objetivo:
+Corregir los últimos detalles visuales de /closet sin añadir features nuevas.
+
+Reglas:
+- Modificar solo lo necesario.
+- Preferencia: `src/app/closet/page.tsx` y, si hace falta, `src/components/editorial-masthead.tsx` o `src/lib/wardrobe/spectrum.ts`.
+- No tocar Home salvo que sea para preservar el masthead compartido sin regresión visual.
+- No tocar Gallery.
+- No tocar APIs.
+- No tocar Supabase.
+- No modificar datos.
+- No tocar globals.css.
+- No tocar navegación global.
+- No añadir scrubber.
+- No añadir química de color.
+- No añadir “combina con N piezas tuyas”.
+- No añadir capítulo expandido.
+- No añadir dependencias.
+- No usar any.
+- Mantener colores de familia planos.
+
+Problemas a corregir:
+
+1. Bottom nav overlap
+La navegación inferior sigue tapando cards en /closet.
+Aumentar el padding-bottom local del contenedor de /closet de forma suficiente.
+No tocar navegación global.
+Confirmar que al final de la página el botón “+ Añadir pieza” y las últimas cards no quedan debajo del nav.
+
+2. Balance label por modo
+Ahora en modo Deseos sigue diciendo:
+“BALANCE DE PALETA · COLECCIÓN”
+
+Debe cambiar según el modo:
+- mode=all → “BALANCE DE PALETA · TODO”
+- mode=owned → “BALANCE DE PALETA · COLECCIÓN”
+- mode=wishlist → “BALANCE DE PALETA · DESEOS”
+
+3. Balance data por modo
+El balance debe calcularse según lo visible:
+- all = owned + wishlist
+- owned = owned only
+- wishlist = wishlist only
+
+Si wishlist balance complica demasiado, ocultar balance en mode=wishlist. Pero NO dejar “COLECCIÓN” cuando el modo activo es Deseos.
+
+4. ChromaSpine en modo Deseos
+Ahora en modo Deseos la caption dice “TUS DESEOS · 15 DESEOS”, pero la espina sigue mostrando histograma de colección con 36, 26, 23, etc.
+
+Corregir:
+- mode=all → ChromaSpine de archivo combinado owned + wishlist
+- mode=owned → ChromaSpine de colección
+- mode=wishlist → ChromaSpine de wishlist
+
+Los counts visuales y caption deben hablar del mismo dataset.
+
+5. Caption inferior del masthead
+Mantener masthead global igual que Home, pero captions por modo:
+
+mode=all:
+captionLeft = “TU ARCHIVO”
+captionRight = `${ownedCount} COLECCIÓN · ${wishlistCount} DESEOS`
+
+mode=owned:
+captionLeft = “TU ESPECTRO”
+captionRight = `${ownedCount} PIEZAS`
+
+mode=wishlist:
+captionLeft = “TUS DESEOS”
+captionRight = `${wishlistCount} DESEOS`
+
+6. Porcentajes 0%
+Cuando una familia tiene porcentaje real mayor que 0 pero redondea a 0, mostrar:
+“<1% de tu archivo”
+
+No mostrar:
+“0% de tu archivo”
+
+Si una familia no tiene piezas propias y solo deseos, puede omitirse el porcentaje como ya se hizo en Ciruela.
+
+7. Multicolor
+Cambiar el header de Multicolor de blend difuminado a franjas duras.
+Puede ser linear-gradient con cortes duros, por ejemplo:
+color 0% 12%, siguiente 12% 24%, etc.
+No usar transición suave entre colores.
+
+8. Verificación visual
+Revisar:
+/
+ /closet
+ /closet?mode=owned
+ /closet?mode=wishlist
+
+Confirmar:
+- Home no regresionó
+- masthead global sigue igual en Home y Closet
+- /closet usa captions correctos por modo
+- ChromaSpine corresponde al modo
+- balance corresponde al modo
+- bottom nav no tapa contenido
+- Naranja muestra <1% si aplica
+- Multicolor usa franjas duras
+- no se añadieron features de 6D.3
+
+Validación:
+npm run lint
+npm run typecheck
+npm run build
+
+Reportar:
+- archivos modificados
+- cómo se resolvió nav overlap
+- cómo se resolvió balance por modo
+- cómo se resolvió ChromaSpine por modo
+- cómo se resolvió 0%
+- cómo se resolvió Multicolor
+- confirmación de que Home no regresionó
+- confirmación de que no se tocó Supabase/APIs/datos/Gallery/globals.css/nav global

@@ -41,11 +41,12 @@ const DECISION_LABELS: Record<string, string> = {
 //   2. metallic    → flat meta.hex (#CD7F32, antique gold). Shimmer is ChromaSpine-only.
 //   3. statement   → paper bg (#FAF7F0) + 1.5px bordeaux border + tinta text.
 
+// Hard-cut stops (no smooth blend between colors — each color occupies a fixed band)
 const MULTICOLOR_STRIPE =
   "linear-gradient(90deg," +
-  "#211C18 0%,#77303A 14%,#C3902F 28%," +
-  "#C6532F 42%,#6B6D4C 56%,#3A4B5F 70%," +
-  "#C98E8A 85%,#EBDFC9 100%)";
+  "#211C18 0% 12.5%,#77303A 12.5% 25%,#C3902F 25% 37.5%," +
+  "#C6532F 37.5% 50%,#6B6D4C 50% 62.5%,#3A4B5F 62.5% 75%," +
+  "#C98E8A 75% 87.5%,#EBDFC9 87.5% 100%)";
 
 function getChapterHeadStyle(family: ColorFamily, meta: SpectrumMeta): CSSProperties {
   if (family === "multicolor") {
@@ -187,7 +188,7 @@ const CL_STYLES = `
    Exception for chapter headers: borderHex hairline for cream/white only.
 */
 
-.cl-wrap{min-height:100vh;background:var(--gal);padding:1.5rem 1rem 7rem;overflow-x:clip;}
+.cl-wrap{min-height:100vh;background:var(--gal);padding:1.5rem 1rem calc(9rem + env(safe-area-inset-bottom, 0px));overflow-x:clip;}
 .cl-inner{margin:0 auto;max-width:760px;display:flex;flex-direction:column;gap:1.75rem;}
 
 /* eyebrow + editorial title */
@@ -299,10 +300,13 @@ export default async function ClosetPage(props: {
     : mode === "owned" ? `${ownedCount} PIEZAS`
     : `${wishlistCount} DESEOS`;
 
-  // Spine histogram: owned items, all 18 families for full spectrum view
-  const spineEntries = buildSpectrumEntriesFromItems(ownedItems, {
-    includeEmpty: true,
-  });
+  // Spine histogram: follows the active mode — same dataset the eye sees
+  const spineEntries =
+    mode === "wishlist"
+      ? buildSpectrumEntriesFromItems(wishlistItems, { includeEmpty: true })
+      : mode === "owned"
+      ? buildSpectrumEntriesFromItems(ownedItems, { includeEmpty: true })
+      : buildSpectrumEntriesFromItems([...ownedItems, ...wishlistItems], { includeEmpty: true });
 
   // ── Group by colorFamily ───────────────────────────────────────────────────
   const ownedByFamily: Partial<Record<ColorFamily, WardrobeItem[]>> = {};
@@ -349,14 +353,21 @@ export default async function ClosetPage(props: {
     null,
   );
 
-  // ── Balance bar (owned pieces by DA role) ──────────────────────────────────
-  const neutralCount = ownedItems.filter(
+  // ── Balance bar — computed from mode-appropriate items ─────────────────────
+  // mode=all: owned + wishlist. mode=owned: owned only. mode=wishlist: hidden.
+  const balanceItems = mode === "owned" ? ownedItems : [...ownedItems, ...wishlistItems];
+  const balanceTotal = balanceItems.length;
+  const neutralCount = balanceItems.filter(
     (i) => SPECTRUM_META[i.colorFamily as ColorFamily]?.role === "base_neutral",
   ).length;
-  const colorCount = ownedCount - neutralCount;
-  const neutralPct = ownedCount >= 5 ? Math.round((neutralCount / ownedCount) * 100) : 0;
-  const colorPct = ownedCount >= 5 ? 100 - neutralPct : 0;
-  const showBalance = ownedCount >= 5;
+  const colorCount = balanceTotal - neutralCount;
+  const neutralPct = balanceTotal >= 5 ? Math.round((neutralCount / balanceTotal) * 100) : 0;
+  const colorPct = balanceTotal >= 5 ? 100 - neutralPct : 0;
+  const showBalance = balanceTotal >= 5 && mode !== "wishlist";
+  const balanceLabel =
+    mode === "all"     ? "Balance de paleta · todo"
+    : mode === "owned" ? "Balance de paleta · colección"
+    :                    "Balance de paleta · deseos";
 
   return (
     <section className="cl-wrap">
@@ -406,7 +417,7 @@ export default async function ClosetPage(props: {
         {/* ── 4. Balance bar (owned, role-based, only if ≥5 piezas) ──── */}
         {showBalance && (
           <div className="cl-balance">
-            <p className="cl-balance-label">Balance de paleta · colección</p>
+            <p className="cl-balance-label">{balanceLabel}</p>
             <div
               className="cl-balance-bar"
               role="img"
@@ -455,9 +466,10 @@ export default async function ClosetPage(props: {
             })
             .map((ch) => {
               const familyTotal  = ch.owned.length + ch.ghosts.length;
-              const pct = archiveTotal > 0
-                ? Math.round((familyTotal / archiveTotal) * 100)
-                : 0;
+              const rawPct = archiveTotal > 0 ? (familyTotal / archiveTotal) * 100 : 0;
+              const pct = Math.round(rawPct);
+              // Show "<1%" when real percentage is non-zero but rounds to 0
+              const pctDisplay = rawPct > 0 && pct === 0 ? "<1%" : `${pct}%`;
 
               // Count display
               const countDisplay =
@@ -498,7 +510,7 @@ export default async function ClosetPage(props: {
 
               // Eyebrow: omit pct when family has no owned items (0% is misleading)
               const eyebrow = ch.owned.length > 0
-                ? `Capítulo ${ch.canonicalNum} · ${pct}% de tu archivo`
+                ? `Capítulo ${ch.canonicalNum} · ${pctDisplay} de tu archivo`
                 : `Capítulo ${ch.canonicalNum}`;
 
               return (
