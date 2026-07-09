@@ -1,0 +1,88 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Fase 6D.0 ya está cerrada:
+- número de edición corregido con fecha PR
+- copy monocromo corregido
+- commit: bad4c99 Fix daily edition number and monochrome copy on homepage
+
+Ahora ejecuta Fase 6D.1 — Wishlist color audit.
+
+Objetivo:
+Antes de construir El Archivo con wishlist ghosts, auditar si los deseos tienen `colorFamily` limpio y usable igual que el clóset.
+
+Contexto:
+El clóset ya fue auditado:
+- 190 piezas activas
+- 100% colorFamily válido
+- 0 missing
+- 0 non-canonical
+
+Ahora necesitamos hacer lo mismo para wishlist.
+
+Reglas:
+- No construir UI.
+- No tocar Closet.
+- No tocar Gallery.
+- No tocar Home.
+- No tocar Supabase schema.
+- No modificar datos.
+- No inventar familias.
+- No usar any.
+- Mantener cambios pequeños.
+- Solo lectura, excepto crear script/helper si hace falta.
+
+Tareas:
+
+1. Inspeccionar:
+- src/lib/wishlist/data.ts
+- src/app/api/wishlist/items/route.ts
+- tipos relacionados a wishlist
+- mapper de wishlist si existe
+- schema esperado de wishlist_items
+- scripts/audit-color-families.mjs
+- src/lib/taxonomy.ts
+- src/lib/wardrobe/spectrum.ts
+
+2. Crear script:
+scripts/audit-wishlist-color-families.mjs
+
+Debe reportar:
+- total wishlist items
+- con colorFamily válida
+- null / empty colorFamily
+- non-canonical values
+- lista de problemas con:
+  - id
+  - name/title
+  - colorFamily actual
+  - category/subcategory si existe
+  - status si existe
+- histograma por familia
+- familias wishlist presentes
+- familias con 0
+- si hay deseos que no podrán aparecer como ghosts por falta de colorFamily
+
+3. Usar la misma taxonomía canónica del proyecto.
+No inventar familias.
+
+4. Verificar si el mapper/type de wishlist expone `colorFamily` a la UI.
+Si la columna existe pero el mapper no la expone, añadirla como lectura.
+No cambiar schema.
+No modificar datos.
+
+5. Agregar npm script si corresponde:
+audit:wishlist-colors
+
+6. Ejecutar:
+npm run lint
+npm run typecheck
+npm run build
+npm run audit:wishlist-colors
+
+7. Reportar:
+- archivos creados/modificados
+- resultado completo del audit
+- problemas encontrados
+- si wishlist expone colorFamily a UI
+- si hay deseos que requieren corrección manual antes de El Archivo
+- recomendación antes de Fase 6D.2
