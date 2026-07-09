@@ -1,0 +1,57 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Fase 7B.3 ya está cerrada y subida:
+- outfit-editor.tsx copy polish
+- último commit: 4b86b00 Update outfit editor with Spanish translations for visible text elements
+
+Ahora inicia Fase 7C — Style Profile / Perfil de estilo, pero primero haz discovery.
+
+Objetivo:
+Identificar dónde debe vivir el Perfil de estilo en la app y qué rutas/componentes existentes ya hay relacionados con perfil, settings, style profile, user preferences o style rules.
+
+NO construyas todavía.
+NO rediseñes todavía.
+Solo inspección y propuesta.
+
+Buscar:
+- rutas existentes en `src/app`
+- `src/app/settings`
+- cualquier ruta relacionada a profile/style/preferences
+- componentes relacionados a style profile
+- data/config donde se guarden preferencias de estilo
+- referencias a Dark Autumn, Bottom Hourglass, PR, palette, style rules, recommendations
+- nav actual y si hay slot disponible o no
+
+Preguntas que debes responder:
+1. ¿Existe ya una ruta para Profile o Style Profile?
+2. ¿La mejor ubicación sería `/settings`, una nueva ruta `/profile`, o una sección dentro de Home?
+3. ¿Qué archivos habría que tocar para implementar un Style Profile simple?
+4. ¿Hay datos reales del perfil ya codificados en algún lugar?
+5. ¿Hay riesgo de duplicar información hardcodeada?
+6. ¿Qué debería incluir la primera versión sin inventar datos?
+
+Perfil base conocido de Stephanie para usar solo si no hay data existente:
+- Colorimetría: Dark Autumn / Deep Autumn
+- Silueta: Bottom Hourglass
+- Lifestyle: Puerto Rico, clima tropical
+- Estética: clásico, minimalista, elevado, con color intencional
+- Evitar: logos, neón, pasteles, estampados llamativos
+- Prioridades: color, versatilidad real, zapatos y accesorios, looks tropicales elevados
+
+Importante:
+No implementes todavía el perfil.
+Solo entrega propuesta técnica y visual para Fase 7C.
+
+Validar:
+npm run lint
+npm run typecheck
+npm run build
+
+Reportar:
+- archivos inspeccionados
+- rutas existentes relevantes
+- recomendación de ubicación
+- estructura propuesta para Perfil de estilo
+- archivos que tocarías en la implementación
+- riesgos
+- prompt recomendado para ejecutar Fase 7C implementación
