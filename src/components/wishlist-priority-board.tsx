@@ -28,14 +28,14 @@ function sortWishlistItems(items: WishlistItem[]) {
 }
 
 function filteredTitle(activeFilter: BuyOrderFilterId) {
-  if (activeFilter === "foundation-buys") return "Foundation buys";
-  if (activeFilter === "color-builders") return "Color builders";
-  if (activeFilter === "statement-review") return "Statement review";
-  if (activeFilter === "price-watch") return "Price watch";
-  if (activeFilter === "buy-priority") return "Priority picks";
-  if (activeFilter === "consider") return "Consider list";
+  if (activeFilter === "foundation-buys") return "Bases del clóset";
+  if (activeFilter === "color-builders")  return "Constructores de color";
+  if (activeFilter === "statement-review") return "Revisión de statement";
+  if (activeFilter === "price-watch")     return "Price watch";
+  if (activeFilter === "buy-priority")    return "Prioridad de compra";
+  if (activeFilter === "consider")        return "A considerar";
 
-  return "Selected pieces";
+  return "Selección filtrada";
 }
 
 type WishlistPriorityBoardProps = {
@@ -52,12 +52,12 @@ export function WishlistPriorityBoard({ items }: WishlistPriorityBoardProps) {
   if (items.length === 0) {
     return (
       <section className="mx-auto max-w-6xl px-6 pb-16 pt-10 md:px-10 md:pb-20 md:pt-12">
-        <div className="rounded-[3px] border border-dashed border-[var(--line)] bg-[var(--paper-2)] p-14 text-center">
+        <div className="rounded-[2px] border border-dashed border-[var(--line)] bg-[var(--paper-2)] p-14 text-center">
           <p className="font-display text-3xl text-[var(--espresso)]">
-            Your wishlist is empty.
+            La lista está vacía.
           </p>
           <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-[var(--ink-soft)]">
-            Add a wishlist piece when you identify a new closet priority — pieces you&apos;d buy based on closet impact, not impulse.
+            Añade un deseo cuando identifiques una prioridad real para el clóset — piezas que comprarías por impacto, no por impulso.
           </p>
         </div>
       </section>
@@ -65,7 +65,7 @@ export function WishlistPriorityBoard({ items }: WishlistPriorityBoardProps) {
   }
 
   return (
-    <section className="mx-auto max-w-6xl px-6 pb-16 pt-10 md:px-10 md:pb-20 md:pt-12">
+    <section className="mx-auto max-w-6xl px-6 pb-16 pt-8 md:px-10 md:pb-20 md:pt-10">
       <BuyOrderFilter
         items={items}
         active={activeFilter}
@@ -75,17 +75,16 @@ export function WishlistPriorityBoard({ items }: WishlistPriorityBoardProps) {
       {activeFilter === "all" ? (
         <section>
           <div className="mb-6 border-t border-[var(--line)] pt-7">
-            <p className="text-[0.68rem] font-medium uppercase tracking-[0.28em] text-[var(--caramel)]">
-              Full wishlist
+            <p className="text-[0.62rem] font-semibold uppercase tracking-[0.28em] text-[var(--caramel)]">
+              Lista completa
             </p>
 
             <h3 className="font-display mt-3 text-4xl text-[var(--espresso)]">
-              All wishlist pieces
+              Todos los deseos
             </h3>
 
             <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--ink-soft)]">
-              Every piece together, ordered by purchase priority and closet
-              impact. Use the filters above when you want to narrow the edit.
+              Cada pieza ordenada por prioridad de compra e impacto en el clóset. Usa los filtros para editar la vista.
             </p>
           </div>
 
@@ -96,12 +95,12 @@ export function WishlistPriorityBoard({ items }: WishlistPriorityBoardProps) {
               ))}
             </div>
           ) : (
-            <div className="rounded-[3px] border border-dashed border-[var(--line)] bg-[var(--paper-2)] p-10 text-center">
+            <div className="rounded-[2px] border border-dashed border-[var(--line)] bg-[var(--paper-2)] p-10 text-center">
               <p className="font-display text-3xl text-[var(--espresso)]">
-                No wishlist pieces yet.
+                La lista está vacía.
               </p>
               <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-[var(--ink-soft)]">
-                Add a wishlist piece when you identify a new closet priority.
+                Añade un deseo cuando identifiques una prioridad real para el clóset.
               </p>
             </div>
           )}
@@ -109,8 +108,8 @@ export function WishlistPriorityBoard({ items }: WishlistPriorityBoardProps) {
       ) : (
         <section>
           <div className="mb-6 border-t border-[var(--line)] pt-7">
-            <p className="text-[0.68rem] font-medium uppercase tracking-[0.28em] text-[var(--caramel)]">
-              Filtered edit
+            <p className="text-[0.62rem] font-semibold uppercase tracking-[0.28em] text-[var(--caramel)]">
+              Vista filtrada
             </p>
 
             <h3 className="font-display mt-3 text-4xl text-[var(--espresso)]">
@@ -118,8 +117,7 @@ export function WishlistPriorityBoard({ items }: WishlistPriorityBoardProps) {
             </h3>
 
             <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--ink-soft)]">
-              Showing only the pieces that match this filter, ordered by purchase
-              priority and closet impact.
+              Solo las piezas que coinciden con este filtro, ordenadas por prioridad de compra e impacto.
             </p>
           </div>
 
@@ -130,12 +128,12 @@ export function WishlistPriorityBoard({ items }: WishlistPriorityBoardProps) {
               ))}
             </div>
           ) : (
-            <div className="rounded-[3px] border border-dashed border-[var(--line)] bg-[var(--paper-2)] p-10 text-center">
+            <div className="rounded-[2px] border border-dashed border-[var(--line)] bg-[var(--paper-2)] p-10 text-center">
               <p className="font-display text-3xl text-[var(--espresso)]">
-                No pieces match this filter.
+                Ninguna pieza coincide.
               </p>
               <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-[var(--ink-soft)]">
-                Try another wishlist filter or add a new item to this category.
+                Prueba otro filtro o añade una nueva pieza en esta categoría.
               </p>
             </div>
           )}

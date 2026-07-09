@@ -22,38 +22,38 @@ type FilterDef = {
 const FILTERS: FilterDef[] = [
   {
     id: "all",
-    label: "Full wishlist",
-    desc: "Every piece, sorted by purchase tier.",
+    label: "Todo",
+    desc: "Cada pieza, ordenada por nivel de prioridad.",
   },
   {
     id: "foundation-buys",
-    label: "Foundation",
-    desc: "Buy first — these build the most outfits.",
+    label: "Bases",
+    desc: "Comprar primero — construyen el mayor número de looks.",
   },
   {
     id: "color-builders",
     label: "Color",
-    desc: "Adds intentional, useful color.",
+    desc: "Añade color intencional y útil al clóset.",
   },
   {
     id: "statement-review",
     label: "Statement",
-    desc: "Review carefully before buying.",
+    desc: "Revisar con cuidado antes de comprar.",
   },
   {
     id: "price-watch",
     label: "Price watch",
-    desc: "Tracking, waiting for the right moment.",
+    desc: "En seguimiento, esperando el momento justo.",
   },
   {
     id: "buy-priority",
-    label: "Priority",
-    desc: "Highest buy signal right now.",
+    label: "Prioridad",
+    desc: "Mayor señal de compra ahora mismo.",
   },
   {
     id: "consider",
-    label: "Consider",
-    desc: "Needs more review before it earns a spot.",
+    label: "Considerar",
+    desc: "Necesita más revisión antes de ganarse un lugar.",
   },
 ];
 
@@ -86,12 +86,12 @@ function metaFor({
   totalCount: number;
 }) {
   if (activeFilter.id === "all") {
-    return `Full wishlist · ${totalCount} pieces`;
+    return `Lista completa · ${totalCount} deseos`;
   }
 
-  return `${String(activeCount).padStart(2, "0")} of ${String(
+  return `${String(activeCount).padStart(2, "0")} de ${String(
     totalCount,
-  ).padStart(2, "0")} pieces`;
+  ).padStart(2, "0")} deseos`;
 }
 
 export function BuyOrderFilter({
@@ -110,12 +110,12 @@ export function BuyOrderFilter({
   const totalCount = items.length;
 
   return (
-    <div className="mb-10 rounded-2xl bg-[var(--paper-2)] px-5 py-7 shadow-[0_0_0_1px_rgba(95,63,50,0.07),0_4px_20px_rgba(36,26,18,0.05)] md:px-7">
+    <div className="mb-10 rounded-[3px] bg-[var(--paper-2)] px-5 py-7 shadow-[0_0_0_1px_rgba(95,63,50,0.07),0_2px_12px_rgba(36,26,18,0.04)] md:px-7">
       <div className="mb-8 flex items-end justify-between gap-8">
         <div>
-          <p className="eyebrow mb-3">Shopping Discipline</p>
+          <p className="eyebrow mb-3">Orden de compra</p>
           <h2 className="font-display text-[2.8rem] leading-none text-[var(--espresso)] md:text-5xl">
-            Buy order
+            El filtro
           </h2>
         </div>
 
@@ -123,7 +123,7 @@ export function BuyOrderFilter({
           href="/wishlist/add"
           className="pb-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.28em] text-[var(--gold)] hover:text-[var(--caramel)] transition-colors"
         >
-          + Add item
+          + Añadir
         </Link>
       </div>
 

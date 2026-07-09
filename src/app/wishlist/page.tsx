@@ -10,13 +10,10 @@ import { WishlistPriorityBoard } from "@/components/wishlist-priority-board";
 // ─── Styles ────────────────────────────────────────────────────────────────────
 
 const WL_STYLES = `
-  /* ── WISHLIST · CROMÁTICA — wl-* namespace ──────────────────────────────── */
-
   .wl-wrap {
     padding-bottom: calc(9rem + env(safe-area-inset-bottom, 0px));
   }
 
-  /* ── Header ──────────────────────────────────────────────────────────────── */
   .wl-header {
     padding: 2.5rem 1.5rem 0;
   }
@@ -51,7 +48,6 @@ const WL_STYLES = `
     margin-bottom: 0;
   }
 
-  /* ── Stats strip ─────────────────────────────────────────────────────────── */
   .wl-stats {
     display: flex;
     flex-wrap: wrap;
@@ -86,7 +82,6 @@ const WL_STYLES = `
     color: var(--caramel);
   }
 
-  /* ── El Archivo card ─────────────────────────────────────────────────────── */
   .wl-archivo-card {
     margin: 1.5rem 1.5rem 0;
     padding: 1rem 1.25rem;
@@ -136,10 +131,12 @@ const WL_STYLES = `
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function WishlistPage() {
-  const items         = await getWishlistItems();
-  const editionNumber = getEditionNumber();
-  const entries       = buildSpectrumEntriesFromItems(items);
+  const [items, editionNumber] = await Promise.all([
+    getWishlistItems(),
+    Promise.resolve(getEditionNumber()),
+  ]);
 
+  const entries      = buildSpectrumEntriesFromItems(items);
   const highPriority = items.filter((i) => i.decision === "buy-priority").length;
   const watching     = items.filter((i) => i.decision === "wishlist").length;
   const considering  = items.filter((i) => i.decision === "consider").length;
@@ -159,7 +156,6 @@ export default async function WishlistPage() {
             Tus deseos organizados por prioridad, color y propósito.
           </p>
 
-          {/* Stats strip */}
           <div className="wl-stats">
             <div className="wl-stat">
               <span className="wl-stat-n">{String(items.length).padStart(2, "0")}</span>
@@ -186,7 +182,7 @@ export default async function WishlistPage() {
           </div>
         </div>
 
-        {/* ── ChromaSpine ───────────────────────────────────────────────────── */}
+        {/* ── ChromaSpine de wishlist ───────────────────────────────────────── */}
         <EditorialMasthead
           editionNumber={editionNumber}
           entries={entries}
@@ -205,7 +201,7 @@ export default async function WishlistPage() {
           </Link>
         </div>
 
-        {/* ── WishlistPriorityBoard ─────────────────────────────────────────── */}
+        {/* ── Priority board ────────────────────────────────────────────────── */}
         <WishlistPriorityBoard items={items} />
 
       </div>
