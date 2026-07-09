@@ -1,0 +1,292 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Estado actual:
+- Fase 5 completa: Home editorial Cromática cerrado.
+- Fase 6D.0 cerrada: número de edición corregido por fecha PR + copy monocromo corregido.
+- Fase 6D.1 completada: wishlist color audit.
+- Resultado wishlist audit:
+  - 15 wishlist items activos
+  - 15/15 con colorFamily válida
+  - 0 null / empty
+  - 0 non-canonical
+  - 100% ghost-ready
+  - familias wishlist presentes:
+    olive 3, brown 3, mustard 2, camel 2, burgundy 2, plum 1, blue 1, statement 1
+- /closet y /closet/gallery ya tienen cambios adelantados de Fase 6A/6B.
+- Necesitamos transformar /closet hacia “El Archivo” usando el mockup como referencia, pero con reglas estrictas de datos reales y colores planos.
+
+Ejecuta Fase 6D.2 — El Archivo: capítulos + modos + wishlist ghosts.
+
+Objetivo:
+Rediseñar `/closet` como “El Archivo”: una vista unificada por capítulos de color, con piezas propias + deseos fantasma de wishlist, usando datos reales del clóset y wishlist. Debe sentirse como una extensión del Home, pero NO debe inventar datos.
+
+REGLA VISUAL DURA:
+El header de `/closet` debe replicar el header del Home.
+
+Debe usar la misma lógica/estructura visual:
+- masthead editorial tipo Home
+- THE EDIT alineado con “EL ARCHIVO” o “ARCHIVO · Nº {total}”
+- ChromaSpine compacta como firma cromática
+- caption tipo “TU ESPECTRO · X PIEZAS”
+- colores de familia SIEMPRE planos, usando `meta.hex`
+
+Prohibido:
+- No usar linear-gradient para representar familias de color.
+- No usar radial-gradient sobre headers de familia.
+- No usar overlays decorativos sobre colores de familia.
+- No usar degradados en ChromaSpine, capítulos, scrubber, dots o headers de familia.
+- La única excepción global de la app es la cover del look en Home. El Archivo debe usar colores planos.
+
+Reglas generales:
+- Sí se puede modificar `src/app/closet/page.tsx`.
+- Sí se puede usar `getWardrobeItems()`.
+- Sí se puede usar `getWishlistItems()`.
+- Sí se puede usar `ChromaSpineBlock`.
+- Sí se puede usar `spectrum.ts` y `spectrum-data.ts`.
+- No tocar Supabase schema.
+- No modificar datos.
+- No tocar APIs salvo bug real indispensable.
+- No tocar Home.
+- No tocar Gallery todavía salvo bug real menor.
+- No tocar Outfits.
+- No tocar Planner.
+- No tocar navegación global.
+- No tocar `globals.css`.
+- No borrar `/dev/ui` todavía.
+- No añadir dependencias.
+- No usar `any`.
+- No mostrar datos falsos.
+- Si un dato real no existe, omitir ese insight.
+
+Antes de escribir código, inspecciona:
+- `src/app/closet/page.tsx`
+- `src/app/page.tsx` para replicar el patrón de header del Home
+- `src/components/chroma-spine.tsx`
+- `src/lib/wardrobe/spectrum.ts`
+- `src/lib/wardrobe/spectrum-data.ts`
+- `src/lib/wardrobe/data.ts`
+- `src/lib/wishlist/data.ts`
+- `src/types/wardrobe.ts`
+- `src/components/ui/piece-card.tsx`
+- `src/components/ui/chip.tsx`
+
+Tareas:
+
+1. Header “El Archivo” replicando Home
+Rediseñar el top de `/closet` para que se sienta hermano del Home.
+
+Debe incluir:
+- masthead compacto:
+  izquierda: “THE EDIT”
+  derecha: “EL ARCHIVO · Nº {totalItems}” o “ARCHIVO · {ownedCount} + {wishlistCount}”
+- ChromaSpine compacta arriba, usando datos combinados o separados según se defina abajo.
+- Caption: “TU ESPECTRO · {ownedCount} PIEZAS” o “TU ARCHIVO · {ownedCount} + {wishlistCount}”
+- Título editorial:
+  “El Archivo.”
+  o
+  “Tu clóset, por color.”
+- Subcopy breve y honesto:
+  “Tus piezas y deseos organizados por familia cromática.”
+No usar copy de IA.
+
+2. Datos combinados: owned + wishlist
+Leer:
+- piezas propias reales con `getWardrobeItems()`
+- wishlist real con `getWishlistItems()`
+
+Calcular:
+- ownedCount
+- wishlistCount
+- totalArchiveCount = ownedCount + wishlistCount
+- familias activas en owned
+- familias activas en wishlist
+- familias con wishlist pero 0 owned
+- histogram owned por colorFamily
+- histogram wishlist por colorFamily
+- entries combinados por familia para capítulos
+
+No inventar.
+No hardcodear los números del audit.
+Usar el audit solo como expectativa visual.
+
+3. Modos
+Agregar toggle modo:
+
+- Todo
+- Colección
+- Deseos
+
+Debe funcionar con URL param:
+
+`/closet?mode=all`
+`/closet?mode=owned`
+`/closet?mode=wishlist`
+
+Default:
+`mode=all`
+
+Labels visuales:
+- “TODO”
+- “COLECCIÓN”
+- “DESEOS”
+
+Cada modo debe mostrar counts reales:
+- Todo = owned + wishlist
+- Colección = owned
+- Deseos = wishlist
+
+Si el modo es inválido, caer a all.
+
+No necesita ser client component si se puede resolver server-side con searchParams.
+
+4. Capítulos por familia
+Crear capítulos agrupados por familia de color.
+
+Para cada familia que tenga:
+- owned count > 0
+- o wishlist count > 0
+
+Renderizar capítulo.
+
+Cada capítulo debe tener:
+- id/anchor estable, por ejemplo `chapter-burgundy`
+- header de capítulo con background plano `meta.hex`
+- si `meta.borderHex`, usar borde para cream/white
+- texto claro/oscuro por luminancia del `meta.hex`
+- eyebrow:
+  “Capítulo NN · X% de tu archivo”
+- título serif:
+  “El negro.”
+  “El burdeos.”
+  “El olivo.”
+  usar `labelEs` si existe en metadata; si no, mapa local honesto
+- count:
+  - si modo all: “{ownedCount} + {wishlistCount}”
+  - si modo owned: “{ownedCount}”
+  - si modo wishlist: “{wishlistCount}”
+- línea de insight SOLO si hay dato real
+  Ejemplos permitidos:
+  - “Tu familia más presente.”
+  - “Esta familia tiene deseos pendientes.”
+  - “Capítulo sin piezas propias todavía.”
+No inventar “aparece en X looks” salvo que se lea de saved outfits reales en esta fase.
+
+5. Piezas propias dentro del capítulo
+Mostrar fila horizontal de piezas propias reales.
+
+Usar foto real si existe.
+Si no hay imagen:
+- usar fallback neutral/simple.
+- no usar gradiente de familia para representar la familia.
+- puede usar placeholder plano con inicial o swatch, pero evitar degradado.
+
+Cada card owned debe mostrar:
+- nombre
+- categoría
+- colorFamily/colorName si existe
+- score si ya existe y es real
+- link a `/closet/item/{id}` si hay id
+
+Mostrar máximo 3 o 4 piezas por capítulo en `/closet`.
+Agregar card final:
+“Abrir capítulo →”
+link a:
+`/closet/gallery?colorFamily={family}`
+
+6. Wishlist ghosts dentro del capítulo
+Mostrar deseos fantasma junto a la familia correspondiente.
+
+Reglas:
+- Solo wishlist items con colorFamily válida.
+- Usar la familia real del wishlist item.
+- No inventar ghosts.
+- En modo all: mostrar owned + ghosts.
+- En modo owned: ocultar ghosts.
+- En modo wishlist: mostrar solo ghosts de wishlist.
+
+Tratamiento visual ghost:
+- card con borde dashed
+- opacity sutil
+- etiqueta “Deseo”
+- si tiene imageUrl/photoUrl real, mostrarla desaturada o con opacity; si no, placeholder punteado.
+- mostrar nombre/título
+- mostrar precio si existe
+- mostrar decision si existe: wishlist, consider, buy-priority
+- mostrar price target/watch solo si existe real
+- NO calcular “combina con N piezas tuyas” todavía. Eso es Fase 6D.3.
+- NO inventar match counts.
+
+7. Banner de familia vacía con deseos
+Si existe una familia con:
+- owned count === 0
+- wishlist count > 0
+
+Mostrar un banner editorial tipo:
+“✦ {Familia}: el capítulo sin escribir.”
+Subcopy:
+“Tienes {wishlistCount} deseo(s) en esta familia, pero todavía ninguna pieza propia.”
+
+Ejemplo real posible:
+Plum / Ciruela si wishlist tiene 1 y owned tiene 0.
+
+Solo mostrar si el dato existe.
+No hardcodear plum.
+
+8. Balance neutrales / acentos
+Agregar una barra compacta de balance si se puede calcular con metadata real.
+
+Debe:
+- calcular owned o archive según modo
+- usar roles reales de spectrum metadata
+- agrupar base_neutral vs accent/statement/pattern
+- mostrar porcentajes reales
+
+Visual:
+- puede ser barra segmentada simple
+- si usa colores, que sean planos o tokens neutros
+- evitar gradiente decorativo
+- marcador 60/40 si ya está en el plan, pero etiquetarlo como fórmula objetivo editorial, no como dato real
+
+Si complica demasiado, dejar para Fase 6D.3 y reportar.
+
+9. Estilos
+Usar namespace `cl-*` existente.
+No tocar globals.css.
+No usar estilos globales nuevos fuera del componente/page.
+Si se usa `<style href="closet-cromatica" precedence="component">`, mantenerlo scoped y documentado.
+Mobile-first.
+Debe funcionar en 360px, 390px, 768px y desktop.
+
+10. Accesibilidad
+- Headings correctos.
+- Links claros.
+- No depender solo del color.
+- aria-label en ChromaSpine/chapters si aplica.
+- Focus visible en links.
+- Ghosts deben tener texto, no solo borde.
+
+11. No tocar Gallery salvo bug indispensable
+`/closet/gallery?colorFamily=X` ya existe. No lo rediseñes en esta fase.
+Solo asegúrate de que los links de capítulos apuntan correctamente.
+
+12. Limpieza
+No eliminar attached_assets todavía en esta fase.
+No borrar /dev/ui todavía.
+
+13. Validación
+Al final correr:
+npm run lint
+npm run typecheck
+npm run build
+
+Reportar:
+- archivos modificados
+- cómo se calculan owned/wishlist/combined counts
+- cómo funciona mode=all/owned/wishlist
+- cómo se renderizan capítulos
+- cómo se renderizan wishlist ghosts
+- si se mostró banner de familia vacía
+- si se agregó balance bar o se dejó pendiente
+- confirmación de colores planos
+- confirmación de header replicando Home
+- confirmación de que no se tocó Supabase schema/APIs/datos/Home/Gallery/Outfits/globals.css
