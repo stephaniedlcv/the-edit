@@ -1,0 +1,109 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Fase 6 ya quedó visualmente cerrada:
+- Home editorial / Portada
+- El Archivo / Clóset · Cromática
+- Gallery alineado
+- ChromaSpine live
+- shared masthead
+- bottom nav Cromática polish sin ícono sobresaliente
+
+Antes de entrar a Fase 7, ejecuta Fase 6F — QA visual rápido.
+
+Objetivo:
+Revisar visualmente las pantallas principales para detectar regresiones, spacing roto, nav overlap, inconsistencias de header, rutas activas o pantallas viejas muy desalineadas con Cromática.
+
+NO hacer rediseño grande todavía.
+NO cambiar funcionalidad.
+NO añadir features.
+
+Rutas a revisar:
+/
+ /closet
+ /closet?mode=owned
+ /closet?mode=wishlist
+ /closet/gallery
+ /wishlist
+ /outfits
+ /closet/add
+ /settings
+
+Checklist visual:
+
+1. Bottom nav
+Confirmar:
+- ningún ícono activo sobresale
+- Add está contenido dentro de la barra
+- active state se ve sutil y claro
+- no tapa contenido importante
+- ruta activa correcta en Home, Closet, Gallery, Outfits, Wishlist
+
+2. Home
+Confirmar:
+- masthead se ve igual
+- ChromaSpine no se rompió
+- Daily Look Cover sigue bien
+- quick actions no quedan tapados por nav
+- spacing inferior correcto
+
+3. Closet / El Archivo
+Confirmar:
+- eyebrow dice “CLÓSET · CROMÁTICA”
+- título dice “El Archivo.”
+- capítulos se ven bien
+- ChromaSpine cambia por modo
+- Balance cambia por modo
+- wishlist ghosts inline siguen funcionando
+- bottom nav no tapa últimos capítulos ni botón
+
+4. Gallery
+Confirmar:
+- filtros siguen funcionando vía URL params
+- visualmente no choca con nav nuevo
+- cards no quedan tapadas
+- header/título se siente alineado con Cromática aunque no esté completamente rediseñado
+
+5. Wishlist
+Confirmar:
+- carga sin errores
+- se ve funcional
+- identificar qué tan lejos está visualmente de Cromática
+- NO rediseñar todavía
+- reportar oportunidades para Fase 7A
+
+6. Outfits
+Confirmar:
+- carga sin errores
+- identificar qué tan lejos está visualmente de Cromática
+- NO rediseñar todavía
+- reportar oportunidades para Fase 7B
+
+7. Add item
+Confirmar:
+- botón Add del nav abre el action sheet como antes
+- ruta /closet/add carga
+- no hay regresión visual grave
+
+8. Settings
+Confirmar:
+- carga sin errores
+- ruta activa/nav no se rompe
+
+Validación técnica:
+npm run lint
+npm run typecheck
+npm run build
+
+Importante:
+Si encuentras bugs pequeños de spacing/nav que sean seguros, puedes corregirlos.
+Pero NO rediseñar Wishlist, Outfits, Add, Settings todavía.
+Si encuentras algo grande, repórtalo y espera confirmación.
+
+Reportar:
+- rutas revisadas
+- bugs encontrados
+- bugs corregidos, si alguno
+- archivos modificados, si alguno
+- si todo quedó sin cambios
+- validaciones lint/typecheck/build
+- recomendación exacta para Fase 7A Wishlist Cromática
