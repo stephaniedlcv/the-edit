@@ -15,7 +15,7 @@ type OutfitBuilderProps = {
 const CATEGORY_LABELS: Record<string, string> = {
   outerwear: "Outerwear",
   top: "Top",
-  bottom: "Bottom",
+  bottom: "Parte de abajo",
   dress: "Vestido",
   shoes: "Zapatos",
   bag: "Bolso",

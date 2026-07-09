@@ -1,0 +1,85 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Fase 7A, 7A.2, 7B y 7B.2 ya están cerradas y subidas:
+- Wishlist Cromática base
+- Wishlist cards polish
+- Outfits Cromática shell
+- OutfitBuilder copy polish
+- último commit: d73a44f Translate outfit builder interface elements to Spanish
+
+Ahora ejecuta Fase 7QA — QA visual rápido de Wishlist + Outfits.
+
+Objetivo:
+Revisar visualmente y técnicamente las rutas modificadas en Fase 7 antes de seguir con polish adicional.
+
+No hacer rediseño grande.
+No añadir features.
+No tocar lógica.
+Solo corregir bugs pequeños de spacing/copy si son seguros.
+
+Rutas a revisar:
+/
+ /closet
+ /closet?mode=wishlist
+ /wishlist
+ /outfits
+ /outfits/saved
+
+Checklist:
+
+1. Wishlist
+Confirmar:
+- Header: WISHLIST · CROMÁTICA
+- Título: La Lista.
+- ChromaSpine usa solo wishlist items
+- Stats reales se ven bien
+- Link “Ver en El Archivo →” funciona
+- Cards se ven editoriales
+- Filtros funcionan
+- Bottom nav no tapa últimas cards
+- No queda copy en inglés visible importante
+
+2. Outfits
+Confirmar:
+- Header: ESTILO · CROMÁTICA
+- Título provisional: El Styling.
+- Card “Mesa de styling” se ve bien
+- Link “Ver looks guardados →” funciona
+- Builder interno ya está en español
+- No hay duplicación visual demasiado pesada entre “El Styling.” y “Mesa de edición”
+- Bottom nav no tapa contenido
+- No queda copy en inglés visible importante
+
+3. Saved outfits
+Confirmar:
+- Header editorial correcto
+- Copy en español
+- Tabs Constructor / Guardados funcionan visualmente
+- Empty state en español
+- Bottom nav no tapa contenido
+
+4. Home / Closet no regresionaron
+Confirmar:
+- Home carga bien
+- Closet carga bien
+- /closet?mode=wishlist sigue mostrando deseos correctamente
+- ChromaSpine y nav siguen bien
+
+5. Technical
+Revisar consola/logs:
+- sin errores runtime
+- sin warnings importantes
+- rutas devuelven 200
+
+Validación:
+npm run lint
+npm run typecheck
+npm run build
+
+Reportar:
+- rutas revisadas
+- issues encontrados
+- si se corrigió algo, archivos modificados
+- si no se corrigió nada, decir “0 cambios de código”
+- validaciones
+- recomendación exacta para Fase 7B.3
