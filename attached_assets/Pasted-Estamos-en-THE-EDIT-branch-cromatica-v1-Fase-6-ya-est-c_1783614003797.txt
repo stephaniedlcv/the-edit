@@ -1,0 +1,176 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Fase 6 ya está cerrada:
+- Home editorial / Portada
+- El Archivo / Clóset · Cromática
+- Gallery funcional
+- Bottom nav Cromática polish
+- QA post-nav limpio
+- lint/typecheck/build limpios
+
+Ahora ejecuta Fase 7A — Wishlist Cromática.
+
+Objetivo:
+Rediseñar `/wishlist` para alinearla con el sistema Cromática sin romper funcionalidad existente.
+
+Estado actual:
+- `/wishlist` funciona.
+- Usa PageHeader pre-Cromática.
+- Usa WishlistPriorityBoard.
+- Copy está parcialmente en inglés:
+  “Curated wishlist, by priority.”
+  “Shopping Discipline”
+- Visualmente está lejos de Home / El Archivo.
+- Wishlist audit ya confirmó 15/15 wishlist items con colorFamily válido.
+- En El Archivo ya existen wishlist ghosts en `/closet?mode=wishlist`.
+
+Objetivo visual:
+Convertir Wishlist en una página editorial llamada:
+
+Eyebrow:
+WISHLIST · CROMÁTICA
+
+Título:
+La Lista.
+
+Subcopy:
+Tus deseos organizados por prioridad, color y propósito.
+
+Debe sentirse como parte del mismo sistema que:
+- Home / Portada
+- Closet / El Archivo
+- ChromaSpine
+- capítulos cromáticos
+
+Reglas:
+- Modificar preferiblemente:
+  - `src/app/wishlist/page.tsx`
+  - componentes de wishlist solo si es necesario
+- No tocar Home.
+- No tocar Closet.
+- No tocar Gallery.
+- No tocar Outfits.
+- No tocar APIs.
+- No tocar Supabase.
+- No modificar datos.
+- No tocar navegación global.
+- No añadir dependencias.
+- No usar any.
+- No inventar métricas.
+- No hardcodear cantidades si pueden salir de data real.
+- No añadir compra inmediata ni checkout.
+- Recordatorio: estamos en fase wishlist, no compra.
+
+Tareas:
+
+1. Header editorial
+Reemplazar PageHeader pre-Cromática en `/wishlist` por un header visual alineado a Cromática:
+
+Eyebrow:
+WISHLIST · CROMÁTICA
+
+Title:
+La Lista.
+
+Subcopy:
+Tus deseos organizados por prioridad, color y propósito.
+
+Mantener español.
+
+2. ChromaSpine de wishlist
+Añadir ChromaSpine usando únicamente wishlistItems reales.
+
+Usar helper existente:
+`buildSpectrumEntriesFromItems`
+
+La caption debe hablar del dataset correcto:
+- left: “TUS DESEOS”
+- right: `${wishlistItems.length} DESEOS`
+
+No usar data del closet.
+No mezclar con owned items.
+
+3. Conexión con El Archivo
+Añadir link editorial visible:
+
+Ver en El Archivo →
+
+Debe apuntar a:
+`/closet?mode=wishlist`
+
+Puede estar cerca del ChromaSpine o en una pequeña card editorial.
+
+4. Priority summary honesto
+Crear una sección/resumen superior basado en datos reales de wishlist:
+
+Ejemplos permitidos:
+- total de deseos
+- cantidad por decision/priority si ya existe en data
+- buy-priority / wishlist / consider, usando labels en español
+
+No inventar savings, prices, urgency o compatibilidad si no está calculado.
+
+Texto sugerido:
+- Prioridad alta
+- En observación
+- Para considerar
+
+Si el shape exacto de la data usa otros keys, adaptarse sin romper.
+
+5. WishlistPriorityBoard
+Mantener la funcionalidad existente.
+No eliminar acciones existentes.
+Refinar visualmente para que no choque con Cromática:
+- spacing más editorial
+- cards más suaves
+- bordes cálidos
+- menos look dashboard viejo
+- mantener legibilidad
+
+Si el componente es complejo, hacer el rediseño visual mínimo seguro y reportar qué queda para Fase 7A.2.
+
+6. Copy en español
+Cambiar copy visible en inglés a español:
+- “Curated wishlist, by priority.” → español
+- “Shopping Discipline” → español
+- cualquier label obvio en inglés que aparezca en `/wishlist`
+
+No traducir nombres de variables internas si no hace falta.
+
+7. Namespace CSS
+Usar clases con prefijo `wl-*` para estilos específicos de Wishlist.
+Preferir `<style precedence="component">` local si el patrón ya existe en Closet.
+No contaminar globals.css.
+
+8. Responsive / nav
+Asegurar padding inferior suficiente para bottom nav.
+Wishlist no debe quedar tapado por la nav.
+
+9. Verificación
+Revisar:
+- `/wishlist`
+- `/closet?mode=wishlist`
+- `/`
+- `/closet`
+
+Confirmar:
+- Wishlist se ve alineada con Cromática.
+- El Archivo no regresionó.
+- Home no regresionó.
+- ChromaSpine de Wishlist usa solo deseos.
+- El link a `/closet?mode=wishlist` funciona.
+- No se rompió WishlistPriorityBoard.
+
+Validación:
+npm run lint
+npm run typecheck
+npm run build
+
+Reportar:
+- archivos modificados
+- cómo quedó el header
+- cómo se calculó ChromaSpine
+- qué métricas reales se muestran
+- qué copy se tradujo
+- qué se mantuvo intacto
+- qué queda pendiente para Fase 7A.2, si aplica
