@@ -283,7 +283,7 @@ export function OutfitEditor({ items, closetItems, lookMetadata }: OutfitEditorP
         .filter((item) => ["outerwear", "dress", "top", "bottom"].includes(item.category))
         .map((item) => item.name)
         .slice(0, 3)
-        .join(" + ") || "Saved outfit";
+        .join(" + ") || "Look guardado";
 
     try {
       localStorage.setItem(storageKey, JSON.stringify(selection));
@@ -308,20 +308,20 @@ export function OutfitEditor({ items, closetItems, lookMetadata }: OutfitEditorP
           scores: lookMetadata?.scores ?? {},
           stylingInstruction: lookMetadata?.stylingInstruction,
           whyItWorks: lookMetadata?.whyItWorks ?? [],
-          notes: "Saved from generated outfit editor.",
+          notes: "Guardado desde el editor de looks generados.",
         }),
       });
 
       const result = await response.json().catch(() => ({}));
 
       if (!response.ok || !result.ok) {
-        throw new Error(result.error ?? "Could not save outfit.");
+        throw new Error(result.error ?? "No se pudo guardar el look.");
       }
 
       setSaveStatus("saved");
     } catch (error) {
       setSaveStatus("error");
-      setSaveError(error instanceof Error ? error.message : "Could not save outfit.");
+      setSaveError(error instanceof Error ? error.message : "No se pudo guardar el look.");
     }
   }
 
@@ -394,7 +394,7 @@ export function OutfitEditor({ items, closetItems, lookMetadata }: OutfitEditorP
                     onChange={(event) => setSingleSlot(slot.id, event.target.value)}
                     className="mt-2 block w-full rounded-[4px] border border-[var(--line)] bg-[var(--paper)] px-3 py-3 text-sm normal-case tracking-normal text-[var(--espresso)]"
                   >
-                    {slot.optional ? <option value="">None</option> : null}
+                    {slot.optional ? <option value="">Ninguna</option> : null}
                     {options.map((item) => (
                       <option key={item.id} value={item.id}>
                         {item.name} · {item.colorName}
@@ -426,12 +426,12 @@ export function OutfitEditor({ items, closetItems, lookMetadata }: OutfitEditorP
             {saveStatus !== "idle" ? (
               <span className="rounded-full border border-[rgba(88,119,74,0.28)] bg-[rgba(88,119,74,0.10)] px-4 py-2 text-[0.55rem] font-semibold uppercase tracking-[0.18em] text-[var(--espresso)]">
                 {saveStatus === "saving"
-                  ? "Saving"
+                  ? "Guardando…"
                   : saveStatus === "saved"
-                    ? "Saved to Supabase"
+                    ? "Guardado"
                     : saveStatus === "error"
-                      ? "Save failed"
-                      : "Reset"}
+                      ? "Error al guardar"
+                      : "Restablecer"}
               </span>
             ) : null}
           </div>
