@@ -196,7 +196,7 @@ export const SPECTRUM_META: Record<ColorFamily, SpectrumMeta> = {
   camel: {
     id: "camel",
     label: "Camel",
-    labelEs: "Camello",
+    labelEs: "Camel",
     hex: "#B98A55",         // [Cromática] --c-camel
     kind: "hue",
     spectralOrder: 4,
@@ -289,7 +289,7 @@ export const SPECTRUM_META: Record<ColorFamily, SpectrumMeta> = {
   olive: {
     id: "olive",
     label: "Olive",
-    labelEs: "Olivo",
+    labelEs: "Oliva",
     hex: "#6B6D4C",         // [Cromática] --c-oliva
     kind: "hue",
     spectralOrder: 13,
@@ -337,7 +337,7 @@ export const SPECTRUM_META: Record<ColorFamily, SpectrumMeta> = {
   statement: {
     id: "statement",
     label: "Statement",
-    labelEs: "Estampado",
+    labelEs: "Statement",
     hex: "#8B1A1A",         // [DA palette] brick_red; ChromaSpine renders outline/emphasis
     kind: "special",
     spectralOrder: 18,

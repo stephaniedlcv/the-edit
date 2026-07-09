@@ -5,7 +5,7 @@ import type { CSSProperties } from "react";
 import { getWardrobeItems } from "@/lib/wardrobe/data";
 import { getWishlistItems } from "@/lib/wishlist/data";
 import { buildSpectrumEntriesFromItems } from "@/lib/wardrobe/spectrum-data";
-import { SPECTRUM_META, CANONICAL_FAMILIES } from "@/lib/wardrobe/spectrum";
+import { SPECTRUM_META, CANONICAL_FAMILIES, type SpectrumMeta } from "@/lib/wardrobe/spectrum";
 import { EditorialMasthead } from "@/components/editorial-masthead";
 import { getEditionNumber } from "@/lib/edition";
 import type { ColorFamily, WardrobeCategory, WardrobeItem, WishlistItem } from "@/types/wardrobe";
@@ -33,13 +33,37 @@ const DECISION_LABELS: Record<string, string> = {
   "buy-priority": "Prioridad",
 };
 
-// Feminine article in Spanish editorial context
-const LA_FAMILIES = new Set<ColorFamily>(["cream", "mustard"]);
+// ── Chapter header styles ─────────────────────────────────────────────────────
+//
+// Rule: all hue families use flat meta.hex — NO gradients, NO overlays.
+// Three intentional design exceptions for kind:"special" families:
+//   1. multicolor  → horizontal spectrum stripes (mirrors ChromaSpine bar technique)
+//   2. metallic    → flat meta.hex (#CD7F32, antique gold). Shimmer is ChromaSpine-only.
+//   3. statement   → paper bg (#FAF7F0) + 1.5px bordeaux border + tinta text.
 
-function chapterTitle(family: ColorFamily): string {
-  const meta = SPECTRUM_META[family];
-  const article = LA_FAMILIES.has(family) ? "La" : "El";
-  return `${article} ${meta.labelEs.toLowerCase()}.`;
+const MULTICOLOR_STRIPE =
+  "linear-gradient(90deg," +
+  "#211C18 0%,#77303A 14%,#C3902F 28%," +
+  "#C6532F 42%,#6B6D4C 56%,#3A4B5F 70%," +
+  "#C98E8A 85%,#EBDFC9 100%)";
+
+function getChapterHeadStyle(family: ColorFamily, meta: SpectrumMeta): CSSProperties {
+  if (family === "multicolor") {
+    return { background: MULTICOLOR_STRIPE, color: "var(--papel)" };
+  }
+  if (family === "statement") {
+    return {
+      backgroundColor: "var(--papel)",
+      border: `1.5px solid ${SPECTRUM_META.burgundy.hex}`,
+      color: "var(--tinta)",
+    };
+  }
+  // hue + metallic: flat backgroundColor only
+  return {
+    backgroundColor: meta.hex,
+    color: onHex(meta.hex),
+    ...(meta.borderHex ? { border: `1px solid ${meta.borderHex}` } : {}),
+  };
 }
 
 // ─── Color helpers ────────────────────────────────────────────────────────────
@@ -199,8 +223,8 @@ const CL_STYLES = `
 .cl-ghost-banner-title{font-family:var(--font-sans);font-size:0.68rem;font-weight:700;color:var(--tinta);margin-bottom:0.18rem;}
 .cl-ghost-banner-note{font-family:var(--font-sans);font-size:0.6rem;color:var(--tinta-tenue);line-height:1.45;}
 
-/* owned pieces scroll row */
-.cl-scroll{display:flex;gap:0.55rem;overflow-x:auto;padding-bottom:0.5rem;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+/* owned pieces scroll row (align-items:flex-start prevents ghost cards from stretching) */
+.cl-scroll{display:flex;align-items:flex-start;gap:0.55rem;overflow-x:auto;padding-bottom:0.5rem;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .cl-scroll::-webkit-scrollbar{display:none;}
 
 /* owned PieceCard */
@@ -306,11 +330,14 @@ export default async function ClosetPage(props: {
   const chaptersRaw = activeFamilies
     .slice()
     .sort((a, b) => SPECTRUM_META[a].spectralOrder - SPECTRUM_META[b].spectralOrder)
-    .map((family) => ({
+    .map((family, idx) => ({
       family,
       meta: SPECTRUM_META[family],
       owned: ownedByFamily[family] ?? [],
       ghosts: wishlistByFamily[family] ?? [],
+      // Canonical number: fixed by archive order, does NOT change between modes.
+      // A book does not renumber its chapters when some are hidden.
+      canonicalNum: String(idx + 1).padStart(2, "0"),
     }));
 
   // Dominant owned family (for insight)
@@ -426,9 +453,7 @@ export default async function ClosetPage(props: {
               if (mode === "wishlist") return ch.ghosts.length > 0;
               return true;
             })
-            .map((ch, renderIdx) => {
-              const textCol = onHex(ch.meta.hex);
-              const chapterNum = String(renderIdx + 1).padStart(2, "0");
+            .map((ch) => {
               const familyTotal  = ch.owned.length + ch.ghosts.length;
               const pct = archiveTotal > 0
                 ? Math.round((familyTotal / archiveTotal) * 100)
@@ -457,21 +482,24 @@ export default async function ClosetPage(props: {
               }
 
               // Rendering flags
-              const isEmptyOwned = ch.owned.length === 0 && ch.ghosts.length > 0;
-              const showOwned    = mode !== "wishlist" && ch.owned.length > 0;
-              const showGhosts   = mode !== "owned"    && ch.ghosts.length > 0;
-              const showBanner   = isEmptyOwned && mode !== "owned";
+              const isEmptyOwned  = ch.owned.length === 0 && ch.ghosts.length > 0;
+              const showOwned     = mode !== "wishlist" && ch.owned.length > 0;
+              const showGhosts    = mode !== "owned"    && ch.ghosts.length > 0;
+              const showBanner    = isEmptyOwned && mode !== "owned";
+              const showRow       = showOwned || showGhosts;
+              // "Abrir capítulo" only when there are owned items to show in gallery
+              const showOpenChapter = ch.owned.length > 0 && mode !== "wishlist";
 
-              const visibleOwned  = ch.owned.slice(0, MAX_VISIBLE_OWNED);
+              const visibleOwned   = ch.owned.slice(0, MAX_VISIBLE_OWNED);
               const remainingOwned = ch.owned.length - visibleOwned.length;
 
-              const chapHeadStyle: CSSProperties = {
-                backgroundColor: ch.meta.hex,
-                color: textCol,
-                ...(ch.meta.borderHex
-                  ? { border: `1px solid ${ch.meta.borderHex}` }
-                  : {}),
-              };
+              // Chapter header style — see getChapterHeadStyle comment for exceptions
+              const chapHeadStyle = getChapterHeadStyle(ch.family, ch.meta);
+
+              // Eyebrow: omit pct when family has no owned items (0% is misleading)
+              const eyebrow = ch.owned.length > 0
+                ? `Capítulo ${ch.canonicalNum} · ${pct}% de tu archivo`
+                : `Capítulo ${ch.canonicalNum}`;
 
               return (
                 <section
@@ -480,12 +508,10 @@ export default async function ClosetPage(props: {
                   id={`chapter-${ch.family}`}
                   aria-label={`Capítulo ${ch.meta.labelEs}`}
                 >
-                  {/* Chapter header — flat color, no gradient */}
+                  {/* Chapter header — special families handled by getChapterHeadStyle */}
                   <div className="cl-chap-head" style={chapHeadStyle}>
-                    <p className="cl-chap-eyebrow">
-                      Capítulo {chapterNum} · {pct}% de tu archivo
-                    </p>
-                    <p className="cl-chap-title">{chapterTitle(ch.family)}</p>
+                    <p className="cl-chap-eyebrow">{eyebrow}</p>
+                    <p className="cl-chap-title">{ch.meta.labelEs}.</p>
                     <p className="cl-chap-count">{countDisplay}</p>
                     {insight && (
                       <p className="cl-chap-insight">{insight}</p>
@@ -507,29 +533,25 @@ export default async function ClosetPage(props: {
                     </div>
                   )}
 
-                  {/* Owned pieces — horizontal scroll */}
-                  {showOwned && (
+                  {/* Unified scroll: owned cards + ghost cards inline, then "Abrir capítulo" */}
+                  {showRow && (
                     <div className="cl-scroll">
-                      {visibleOwned.map((item) => (
+                      {showOwned && visibleOwned.map((item) => (
                         <OwnedCard
                           key={item.id}
                           item={item}
                           familyHex={ch.meta.hex}
                         />
                       ))}
-                      <OpenChapterCard
-                        href={`/closet/gallery?colorFamily=${ch.family}`}
-                        remaining={remainingOwned}
-                      />
-                    </div>
-                  )}
-
-                  {/* Wishlist ghosts — dashed cards */}
-                  {showGhosts && (
-                    <div className="cl-ghost-scroll" aria-label="Deseos en esta familia">
-                      {ch.ghosts.map((item) => (
+                      {showGhosts && ch.ghosts.map((item) => (
                         <GhostCard key={item.id} item={item} />
                       ))}
+                      {showOpenChapter && (
+                        <OpenChapterCard
+                          href={`/closet/gallery?colorFamily=${ch.family}`}
+                          remaining={remainingOwned}
+                        />
+                      )}
                     </div>
                   )}
                 </section>
