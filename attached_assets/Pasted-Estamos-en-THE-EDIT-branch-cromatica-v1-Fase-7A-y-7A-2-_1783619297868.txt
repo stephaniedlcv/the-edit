@@ -1,0 +1,140 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Fase 7A y 7A.2 ya están cerradas:
+- /wishlist tiene header editorial Cromática
+- La Lista.
+- ChromaSpine de wishlist
+- stats reales
+- WishlistCard polish editorial
+- BuyOrderFilter polish
+- validaciones limpias
+- último commit: 9daafd9 Refine wishlist card and filter for editorial style
+
+Ahora ejecuta Fase 7B — Outfits Cromática shell.
+
+Objetivo:
+Alinear `/outfits` visualmente con Cromática sin romper el OutfitBuilder ni cambiar su lógica interna.
+
+Estado actual:
+- `/outfits` funciona.
+- Usa componentes pre-Cromática.
+- Contiene OutfitBuilder, probablemente complejo.
+- Visualmente está lejos de Home / El Archivo / Wishlist.
+- No queremos rediseñar el builder completo todavía.
+
+Objetivo visual:
+Convertir `/outfits` en una página editorial base llamada:
+
+Eyebrow:
+ESTILO · CROMÁTICA
+
+Título:
+El Styling.
+
+Subcopy:
+Construye combinaciones reales desde tu clóset, con intención de color, silueta y ocasión.
+
+Reglas:
+- Modificar preferiblemente:
+  - `src/app/outfits/page.tsx`
+  - `src/components/outfit-builder.tsx` solo si es estrictamente necesario para spacing/copy superficial
+- No tocar Home.
+- No tocar Closet.
+- No tocar Gallery.
+- No tocar Wishlist.
+- No tocar APIs.
+- No tocar Supabase.
+- No modificar datos.
+- No tocar navegación global.
+- No tocar .replit.
+- No añadir dependencias.
+- No usar any.
+- No cambiar lógica del OutfitBuilder.
+- No cambiar guardado de outfits.
+- No inventar métricas.
+- No añadir IA nueva.
+- No añadir “combina con N piezas” todavía.
+
+Tareas:
+
+1. Inspeccionar primero
+Leer:
+- `src/app/outfits/page.tsx`
+- `src/components/outfit-builder.tsx`
+- cualquier componente directo que use /outfits
+
+2. Header editorial
+Reemplazar header pre-Cromática de `/outfits` por un header alineado:
+
+Eyebrow:
+ESTILO · CROMÁTICA
+
+Title:
+El Styling.
+
+Subcopy:
+Construye combinaciones reales desde tu clóset, con intención de color, silueta y ocasión.
+
+3. Mantener OutfitBuilder intacto
+El OutfitBuilder debe seguir funcionando igual.
+No tocar lógica interna de selección, scoring, guardado o items.
+Solo ajustar wrapper/spacing si es necesario.
+
+4. Card editorial introductoria
+Antes del OutfitBuilder, añadir una card editorial pequeña y honesta:
+
+Título:
+Mesa de styling
+
+Copy:
+Usa tus piezas reales para probar combinaciones. Guarda solo los looks que sí te pondrías.
+
+5. Link a looks guardados
+Si existe ruta `/outfits/saved`, añadir link visible:
+
+Ver looks guardados →
+
+Debe apuntar a:
+`/outfits/saved`
+
+6. Copy en español
+Traducir copy visible obvio en `/outfits/page.tsx` si existe.
+No tocar textos internos complejos del builder si puede romper o es mucho scope.
+Reportar lo que quede pendiente para 7B.2.
+
+7. Namespace CSS
+Usar clases `of-*` para estilos locales.
+Preferir `<style href="of-cromatica" precedence="component">` local si se usa CSS inline.
+No contaminar globals.css.
+
+8. Responsive / nav
+Asegurar padding inferior suficiente para bottom nav.
+Las últimas secciones no deben quedar tapadas.
+
+9. Verificación
+Revisar:
+- `/outfits`
+- `/outfits/saved`
+- `/`
+- `/wishlist`
+- `/closet`
+
+Confirmar:
+- Outfits se siente alineado con Cromática
+- OutfitBuilder sigue funcionando
+- link a saved outfits funciona
+- no regresionaron Home/Wishlist/Closet
+- .replit no fue modificado
+
+Validación:
+npm run lint
+npm run typecheck
+npm run build
+
+Reportar:
+- archivos modificados
+- cómo quedó el header
+- si OutfitBuilder se tocó o no
+- qué copy se tradujo
+- qué quedó intacto
+- qué queda pendiente para Fase 7B.2
