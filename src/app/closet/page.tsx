@@ -385,7 +385,7 @@ export default async function ClosetPage(props: {
 
         {/* ── 2. Título editorial ───────────────────────────────────────── */}
         <div>
-          <p className="cl-eyebrow">Clóset · El Archivo</p>
+          <p className="cl-eyebrow">Clóset · Cromática</p>
           <p className="cl-h1">
             El{" "}
             <em style={{ fontStyle: "italic", color: SPECTRUM_META.burgundy.hex }}>
