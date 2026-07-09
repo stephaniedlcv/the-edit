@@ -6,7 +6,8 @@ import { SPECTRUM_META } from "@/lib/wardrobe/spectrum";
 import { getCalendarEvents } from "@/lib/calendar";
 import { getWishlistCount } from "@/lib/wishlist/data";
 import { getSavedOutfitsCount } from "@/lib/outfits/data";
-import { ChromaSpineBlock } from "@/components/chroma-spine";
+import { EditorialMasthead } from "@/components/editorial-masthead";
+import { getEditionNumber, getPRDateString } from "@/lib/edition";
 import { DailyLookCover } from "@/components/daily-look-cover";
 import type { LookCandidate } from "@/components/daily-look-cover";
 import type { SpectrumEntry } from "@/lib/wardrobe/spectrum";
@@ -15,29 +16,8 @@ import type { ColorFamily, WardrobeCategory, WardrobeItem } from "@/types/wardro
 
 export const dynamic = "force-dynamic";
 
-// ─── Edition number ─────────────────────────────────────────────────────────
-
-function getEditionNumber(): number {
-  // Anchor both sides to PR date strings so the number flips at PR midnight,
-  // not at the UTC equivalent (which was causing the same Nº on consecutive PR days).
-  // Epoch PR date: 2026-06-29T14:28:06Z = 10:28 PR → PR date "2026-06-29".
-  const EPOCH_PR_DATE = "2026-06-29";
-  const todayPR = getPRDateString(); // "YYYY-MM-DD" in America/Puerto_Rico
-  const msPerDay = 24 * 60 * 60 * 1000;
-  const epochMs = new Date(EPOCH_PR_DATE + "T00:00:00.000Z").getTime();
-  const todayMs = new Date(todayPR    + "T00:00:00.000Z").getTime();
-  return Math.max(1, Math.floor((todayMs - epochMs) / msPerDay) + 1);
-}
-
 // ─── PR time helpers ────────────────────────────────────────────────────────
-
-/** Current PR date as "YYYY-MM-DD" (en-CA gives ISO date format). */
-function getPRDateString(): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Puerto_Rico",
-    year: "numeric", month: "2-digit", day: "2-digit",
-  }).format(new Date());
-}
+// getPRDateString and getEditionNumber imported from @/lib/edition above.
 
 /** Current hour in PR time (0–23). PR is UTC-4, no DST. */
 function getPRHour(): number {
@@ -375,7 +355,12 @@ export default async function HomePage() {
       <section className="mx-auto flex max-w-[760px] flex-col gap-7">
 
         {/* ── 1. Masthead + histogram + caption */}
-        <ChromaSpineBlock entries={entries} editionNumber={editionNumber} />
+        <EditorialMasthead
+          entries={entries}
+          editionNumber={editionNumber}
+          captionLeft="TU ESPECTRO"
+          captionRight={`${summary.totalPieces} PIEZAS`}
+        />
 
         {/* ── 2. Fecha + saludo */}
         <div>

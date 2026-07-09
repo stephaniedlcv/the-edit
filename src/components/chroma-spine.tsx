@@ -30,6 +30,10 @@ export interface ChromaSpineBlockProps {
   entries: SpectrumEntry[];
   editionNumber?: number;
   showMasthead?: boolean;
+  /** Override the left caption below the histogram. Default: "TU ESPECTRO". */
+  captionLeft?: string;
+  /** Override the right caption below the histogram. Default: "{N} PIEZAS". */
+  captionRight?: string;
   className?: string;
 }
 
@@ -132,6 +136,8 @@ export function ChromaSpineBlock({
   entries,
   editionNumber,
   showMasthead = true,
+  captionLeft,
+  captionRight,
   className = "",
 }: ChromaSpineBlockProps) {
   const sorted = [...entries].sort(
@@ -139,6 +145,8 @@ export function ChromaSpineBlock({
   );
   const maxCount = sorted.reduce((m, e) => Math.max(m, e.count), 0);
   const totalPieces = entries.reduce((s, e) => s + e.count, 0);
+  const cLeft  = captionLeft  ?? "TU ESPECTRO";
+  const cRight = captionRight ?? `${totalPieces} PIEZAS`;
 
   return (
     <div className={className}>
@@ -185,8 +193,8 @@ export function ChromaSpineBlock({
 
       <div className="cs-baseline" aria-hidden="true" />
       <div className="cs-caption">
-        <span>TU ESPECTRO</span>
-        <span>{totalPieces} PIEZAS</span>
+        <span>{cLeft}</span>
+        <span>{cRight}</span>
       </div>
     </div>
   );

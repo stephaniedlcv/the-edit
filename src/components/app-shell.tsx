@@ -132,13 +132,18 @@ export function AppShell({ children }: AppShellProps) {
 
   const isHome     = pathname === "/";
   const isCloset   = pathname.startsWith("/closet");
+
+  // Cromática-migrated routes own their full-bleed editorial masthead;
+  // the shell header is suppressed so it doesn't duplicate the brand mark.
+  const CROMATICA_ROUTES = ["/", "/closet"] as const;
+  const isCromatica = CROMATICA_ROUTES.some((r) => pathname === r);
   const isStyle    = pathname.startsWith("/outfits");
   const isWishlist = pathname.startsWith("/wishlist");
 
   return (
     <div className="min-h-screen bg-[var(--page)]">
-      {/* Compact sticky header — hidden on "/" (editorial masthead owns that page) */}
-      {!isHome && (
+      {/* Compact sticky header — hidden on Cromática routes (editorial masthead owns those pages) */}
+      {!isCromatica && (
         <header className="nav-header sticky top-0 z-40 flex items-center justify-center border-b border-white/40 bg-[rgba(255,253,252,0.72)] backdrop-blur-2xl">
           <Link
             href="/"

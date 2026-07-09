@@ -6,7 +6,8 @@ import { getWardrobeItems } from "@/lib/wardrobe/data";
 import { getWishlistItems } from "@/lib/wishlist/data";
 import { buildSpectrumEntriesFromItems } from "@/lib/wardrobe/spectrum-data";
 import { SPECTRUM_META, CANONICAL_FAMILIES } from "@/lib/wardrobe/spectrum";
-import { ChromaSpineBlock } from "@/components/chroma-spine";
+import { EditorialMasthead } from "@/components/editorial-masthead";
+import { getEditionNumber } from "@/lib/edition";
 import type { ColorFamily, WardrobeCategory, WardrobeItem, WishlistItem } from "@/types/wardrobe";
 
 // ─── Mode ─────────────────────────────────────────────────────────────────────
@@ -165,14 +166,6 @@ const CL_STYLES = `
 .cl-wrap{min-height:100vh;background:var(--gal);padding:1.5rem 1rem 7rem;overflow-x:clip;}
 .cl-inner{margin:0 auto;max-width:760px;display:flex;flex-direction:column;gap:1.75rem;}
 
-/* masthead — mirrors cs-masthead exactly */
-.cl-masthead{display:flex;justify-content:space-between;align-items:baseline;padding:0 4px;}
-.cl-masthead b{font-family:var(--font-serif);font-weight:600;font-size:14px;letter-spacing:0.24em;color:var(--tinta);}
-.cl-masthead span{font-size:9.5px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--tinta-tenue);}
-
-/* subcopy under spine */
-.cl-subcopy{font-family:var(--font-sans);font-size:0.64rem;color:var(--tinta-tenue);margin-top:0.5rem;padding:0 4px;line-height:1.5;}
-
 /* eyebrow + editorial title */
 .cl-eyebrow{font-family:var(--font-sans);font-size:0.58rem;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--tinta-tenue);margin-bottom:0.5rem;}
 .cl-h1{font-family:var(--font-serif);font-size:clamp(2rem,8vw,2.8rem);font-weight:300;line-height:1.0;color:var(--tinta);}
@@ -269,6 +262,19 @@ export default async function ClosetPage(props: {
   const wishlistCount = wishlistItems.length;
   const archiveTotal = ownedCount + wishlistCount;
 
+  // Edition number — shared with Home, anchored to PR date
+  const editionNumber = getEditionNumber();
+
+  // Mode-based captions for EditorialMasthead
+  const captionLeft =
+    mode === "all"     ? "TU ARCHIVO"
+    : mode === "owned" ? "TU ESPECTRO"
+    : "TUS DESEOS";
+  const captionRight =
+    mode === "all"     ? `${ownedCount} COLECCIÓN · ${wishlistCount} DESEOS`
+    : mode === "owned" ? `${ownedCount} PIEZAS`
+    : `${wishlistCount} DESEOS`;
+
   // Spine histogram: owned items, all 18 families for full spectrum view
   const spineEntries = buildSpectrumEntriesFromItems(ownedItems, {
     includeEmpty: true,
@@ -331,19 +337,13 @@ export default async function ClosetPage(props: {
 
       <div className="cl-inner">
 
-        {/* ── 1. Masthead — hermano del Home ────────────────────────────── */}
-        <div>
-          {/* Masthead row: THE EDIT | EL ARCHIVO · Nº N — mirrors cs-masthead */}
-          <div className="cl-masthead" role="banner">
-            <b>THE EDIT</b>
-            <span>EL ARCHIVO · Nº {archiveTotal}</span>
-          </div>
-          {/* ChromaSpine — histogram of owned items, no masthead */}
-          <ChromaSpineBlock entries={spineEntries} showMasthead={false} />
-          <p className="cl-subcopy">
-            Tus piezas y deseos organizados por familia cromática.
-          </p>
-        </div>
+        {/* ── 1. Masthead — compartido con Home ────────────────────────── */}
+        <EditorialMasthead
+          entries={spineEntries}
+          editionNumber={editionNumber}
+          captionLeft={captionLeft}
+          captionRight={captionRight}
+        />
 
         {/* ── 2. Título editorial ───────────────────────────────────────── */}
         <div>
