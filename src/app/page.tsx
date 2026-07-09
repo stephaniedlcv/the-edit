@@ -16,11 +16,17 @@ import type { ColorFamily, WardrobeCategory, WardrobeItem } from "@/types/wardro
 export const dynamic = "force-dynamic";
 
 // ─── Edition number ─────────────────────────────────────────────────────────
-const EDITION_EPOCH = new Date("2026-06-29T14:28:06Z");
 
 function getEditionNumber(): number {
+  // Anchor both sides to PR date strings so the number flips at PR midnight,
+  // not at the UTC equivalent (which was causing the same Nº on consecutive PR days).
+  // Epoch PR date: 2026-06-29T14:28:06Z = 10:28 PR → PR date "2026-06-29".
+  const EPOCH_PR_DATE = "2026-06-29";
+  const todayPR = getPRDateString(); // "YYYY-MM-DD" in America/Puerto_Rico
   const msPerDay = 24 * 60 * 60 * 1000;
-  return Math.max(1, Math.floor((Date.now() - EDITION_EPOCH.getTime()) / msPerDay) + 1);
+  const epochMs = new Date(EPOCH_PR_DATE + "T00:00:00.000Z").getTime();
+  const todayMs = new Date(todayPR    + "T00:00:00.000Z").getTime();
+  return Math.max(1, Math.floor((todayMs - epochMs) / msPerDay) + 1);
 }
 
 // ─── PR time helpers ────────────────────────────────────────────────────────
@@ -206,6 +212,10 @@ function buildEditorialTitle(anchor: WardrobeItem, bottom: WardrobeItem | undefi
   if (bottom) {
     const bottomMeta = SPECTRUM_META[bottom.colorFamily as ColorFamily];
     const baseColor = bottomMeta?.labelEs?.toLowerCase() ?? "";
+    if (anchorColor && anchorColor === baseColor) {
+      const mono = `Look monocromo en ${anchorColor}.`;
+      if (mono.length <= 45) return mono;
+    }
     const full = `${categoryEs} ${anchorColor}, base ${baseColor}.`;
     if (full.length <= 45) return full;
   }
