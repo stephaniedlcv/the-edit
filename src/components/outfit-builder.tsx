@@ -16,11 +16,11 @@ const CATEGORY_LABELS: Record<string, string> = {
   outerwear: "Outerwear",
   top: "Top",
   bottom: "Bottom",
-  dress: "Dress",
-  shoes: "Shoes",
-  bag: "Bag",
-  accessory: "Accessory",
-  jewelry: "Jewelry",
+  dress: "Vestido",
+  shoes: "Zapatos",
+  bag: "Bolso",
+  accessory: "Accesorio",
+  jewelry: "Joyería",
 };
 
 function SelectedPieceCard({ piece }: { piece: WardrobeItem }) {
@@ -44,7 +44,7 @@ function SelectedPieceCard({ piece }: { piece: WardrobeItem }) {
 
         <div className="min-w-0 flex-1">
           <p className="mb-0.5 text-[0.44rem] font-800 uppercase tracking-[0.18em] text-[var(--caramel)]">
-            Styling from
+            Estilismo desde
           </p>
           <p className="font-display truncate text-[1.35rem] leading-none text-[var(--espresso)]">
             {piece.name}
@@ -62,13 +62,13 @@ function SelectedPieceCard({ piece }: { piece: WardrobeItem }) {
             href="/closet/gallery"
             className="inline-flex items-center rounded-full border border-[rgba(122,46,53,0.18)] bg-[var(--paper)] px-3.5 py-2 text-[0.48rem] font-800 uppercase tracking-[0.14em] text-[var(--burgundy)] no-underline transition hover:bg-[rgba(122,46,53,0.06)]"
           >
-            Change piece
+            Cambiar pieza
           </Link>
           <Link
             href="/closet"
             className="inline-flex items-center rounded-full border border-[var(--line)] bg-transparent px-3.5 py-2 text-[0.48rem] font-semibold uppercase tracking-[0.14em] text-[var(--coffee)] no-underline transition hover:border-[var(--caramel)]"
           >
-            Back to closet
+            Volver al clóset
           </Link>
         </div>
 
@@ -99,9 +99,9 @@ function formatMachineLabel(value: string) {
 }
 
 function decisionLabel(decision: ComposedOutfit["decision"]) {
-  if (decision === "approved") return "Approved";
-  if (decision === "needs_review") return "Needs review";
-  return "Rejected";
+  if (decision === "approved") return "Aprobado";
+  if (decision === "needs_review") return "Revisar";
+  return "Descartado";
 }
 
 function decisionClassName(decision: ComposedOutfit["decision"]) {
@@ -157,7 +157,7 @@ function GeneratedLookCard({
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-[0.55rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-            Style Intelligence · Look {String(index + 1).padStart(2, "0")}
+            Estilo inteligente · Look {String(index + 1).padStart(2, "0")}
           </p>
           <h3 className="font-display mt-3 text-[2.35rem] leading-none text-[var(--espresso)]">
             {look.title}
@@ -204,7 +204,7 @@ function GeneratedLookCard({
 
       <div className="mt-5 rounded-[4px] border border-[var(--line)] bg-[var(--paper-2)] p-4">
         <p className="text-[0.55rem] font-semibold uppercase tracking-[0.2em] text-[var(--caramel)]">
-          Pieces
+          Piezas
         </p>
         <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">
           {getPieceText(look)}
@@ -213,26 +213,26 @@ function GeneratedLookCard({
 
       <div className="mt-5 space-y-3 text-sm leading-6 text-[var(--ink-soft)]">
         <p>
-          <span className="font-semibold text-[var(--espresso)]">Styling: </span>
+          <span className="font-semibold text-[var(--espresso)]">Estilismo: </span>
           {look.stylingInstruction}
         </p>
         <p>
-          <span className="font-semibold text-[var(--espresso)]">Formula: </span>
+          <span className="font-semibold text-[var(--espresso)]">Fórmula: </span>
           {formatMachineLabel(look.formula)}
         </p>
         <p>
-          <span className="font-semibold text-[var(--espresso)]">Color status: </span>
+          <span className="font-semibold text-[var(--espresso)]">Color: </span>
           {formatMachineLabel(look.colorValidation.status)}
         </p>
         <p>
-          <span className="font-semibold text-[var(--espresso)]">Styling status: </span>
+          <span className="font-semibold text-[var(--espresso)]">Estado de estilo: </span>
           {formatMachineLabel(look.stylingValidation.stylingStatus)}
         </p>
       </div>
 
       <details className="mt-5 rounded-[4px] border border-[var(--line)] bg-[var(--paper-2)] p-4">
         <summary className="cursor-pointer text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-[var(--coffee)]">
-          Why it works
+          Por qué funciona
         </summary>
         <div className="mt-4 space-y-3 text-sm leading-6 text-[var(--ink-soft)]">
           {look.whyItWorks.map((reason) => (
@@ -265,67 +265,67 @@ export function OutfitBuilder({ items, selectedPiece }: OutfitBuilderProps) {
     {
       id: "top",
       label: "Top",
-      helper: "Choose a top that sets the color story.",
+      helper: "Elige un top que defina el color del look.",
     },
     {
       id: "bottom",
-      label: "Bottom",
-      helper: "Ground the outfit with the right silhouette.",
+      label: "Parte de abajo",
+      helper: "Ancla el outfit con la silueta correcta.",
     },
     {
       id: "shoes",
-      label: "Shoes",
-      helper: "Match the outfit mood, not just the category.",
+      label: "Zapatos",
+      helper: "Complementa el mood, no solo la categoría.",
     },
     {
       id: "layer",
-      label: "Layer",
-      helper: "Optional blazer, vest, cardigan, or jacket.",
+      label: "Capa",
+      helper: "Blazer, cardigan o chaleco opcional.",
     },
     {
       id: "finishing",
-      label: "Finishing piece",
-      helper: "Bag, belt, jewelry, or styling detail.",
+      label: "Pieza final",
+      helper: "Bolso, cinturón, joyería o detalle de estilo.",
     },
   ];
 
   const categorySummary = [
     ["Tops", categoryCounts.top ?? 0],
-    ["Bottoms", categoryCounts.bottom ?? 0],
-    ["Shoes", categoryCounts.shoes ?? 0],
+    ["Pantalones", categoryCounts.bottom ?? 0],
+    ["Zapatos", categoryCounts.shoes ?? 0],
     ["Outerwear", categoryCounts.outerwear ?? 0],
-    ["Bags", categoryCounts.bag ?? 0],
-    ["Accessories", categoryCounts.accessory ?? 0],
-    ["Jewelry", categoryCounts.jewelry ?? 0],
-    ["Dresses", categoryCounts.dress ?? 0],
+    ["Bolsos", categoryCounts.bag ?? 0],
+    ["Accesorios", categoryCounts.accessory ?? 0],
+    ["Joyería", categoryCounts.jewelry ?? 0],
+    ["Vestidos", categoryCounts.dress ?? 0],
   ];
 
   return (
     <section className="pb-16 md:pb-20">
       <PageHeader
-        eyebrow="Outfit Builder"
+        eyebrow="Mesa de edición"
         title={
           <>
-            Build from{" "}
-            <em className="text-[var(--coffee)]">what you own.</em>
+            Crea looks desde{" "}
+            <em className="text-[var(--coffee)]">tu clóset real.</em>
           </>
         }
-        description="Style Intelligence is now reading your active closet and generating office-ready outfit ideas using your color, silhouette, and elevation rules."
-        asideEyebrow="Style Intelligence"
-        asideText="Generated from real closet pieces. Denim is off for this office preview."
+        description="El sistema lee tu clóset activo y genera combinaciones para la oficina usando tus reglas de color, silueta y elevación."
+        asideEyebrow="Inteligencia de estilo"
+        asideText="Generado desde piezas reales del clóset. Denim desactivado para esta vista de oficina."
       >
         <div className="flex flex-wrap gap-5">
           <Link
             href="/closet"
             className="border-b-[1.5px] border-transparent pb-[3px] text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-[var(--coffee)] no-underline transition hover:border-[var(--coffee)]"
           >
-            Wardrobe Gallery
+            El Archivo
           </Link>
           <Link
             href="/outfits"
             className="border-b-[1.5px] border-[var(--espresso)] pb-[3px] text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-[var(--espresso)] no-underline"
           >
-            Outfit Builder
+            Mesa de edición
           </Link>
         </div>
       </PageHeader>
@@ -336,25 +336,25 @@ export function OutfitBuilder({ items, selectedPiece }: OutfitBuilderProps) {
         <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
           <article className="relative overflow-hidden rounded-[8px] border border-[var(--line)] bg-[var(--espresso)] p-8 text-[var(--paper)]">
             <p className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-              Active closet available
+              Clóset activo disponible
             </p>
             <p className="mt-6 font-display text-8xl leading-none">
               {activeItems.length}
             </p>
             <p className="mt-6 max-w-md text-sm leading-7 text-[rgba(255,248,237,0.76)]">
-              These are the pieces eligible for generated outfit formulas. Archived,
-              donated, sold, and damaged pieces are excluded.
+              Las piezas elegibles para las fórmulas de outfits. Se excluyen archivadas,
+              donadas, vendidas y dañadas.
             </p>
           </article>
 
           <article className="rounded-[8px] border border-[var(--line)] bg-[var(--paper-2)] p-8">
-            <p className="eyebrow mb-3">Recommendation engine</p>
+            <p className="eyebrow mb-3">Motor de recomendación</p>
             <h2 className="font-display text-4xl text-[var(--espresso)]">
-              Active
+              Activo
             </h2>
             <p className="mt-4 text-sm leading-7 text-[var(--ink-soft)]">
-              The system is now checking color harmony, outfit formula, office polish,
-              silhouette balance, and the elevation rule before showing looks.
+              El sistema verifica armonía de color, fórmula de outfit, pulido de oficina,
+              balance de silueta y la regla de elevación antes de mostrar looks.
             </p>
 
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
@@ -363,7 +363,7 @@ export function OutfitBuilder({ items, selectedPiece }: OutfitBuilderProps) {
                   {generatedLooks.length}
                 </p>
                 <p className="mt-2 text-[0.55rem] font-semibold uppercase tracking-[0.18em] text-[var(--caramel)]">
-                  Generated
+                  Generados
                 </p>
               </div>
 
@@ -372,7 +372,7 @@ export function OutfitBuilder({ items, selectedPiece }: OutfitBuilderProps) {
                   {approvedLooks.length}
                 </p>
                 <p className="mt-2 text-[0.55rem] font-semibold uppercase tracking-[0.18em] text-[var(--caramel)]">
-                  Approved
+                  Aprobados
                 </p>
               </div>
 
@@ -381,7 +381,7 @@ export function OutfitBuilder({ items, selectedPiece }: OutfitBuilderProps) {
                   {reviewLooks.length}
                 </p>
                 <p className="mt-2 text-[0.55rem] font-semibold uppercase tracking-[0.18em] text-[var(--caramel)]">
-                  Review
+                  A revisar
                 </p>
               </div>
             </div>
@@ -391,14 +391,14 @@ export function OutfitBuilder({ items, selectedPiece }: OutfitBuilderProps) {
         <div className="mt-8 rounded-[10px] border border-[var(--line)] bg-[var(--paper-2)] p-5 md:p-7">
           <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="eyebrow mb-2">Generated by Style Intelligence</p>
+              <p className="eyebrow mb-2">Generado por inteligencia de estilo</p>
               <h2 className="font-display text-4xl text-[var(--espresso)]">
-                Office outfit ideas
+                Ideas para oficina
               </h2>
             </div>
             <p className="max-w-md text-sm leading-6 text-[var(--ink-soft)]">
-              These are not random combinations. Each look is scored for color,
-              elevation, proportion, and office wearability.
+              No son combinaciones aleatorias. Cada look tiene puntuación de color,
+              elevación, proporción y uso en oficina.
             </p>
           </div>
 
@@ -410,8 +410,8 @@ export function OutfitBuilder({ items, selectedPiece }: OutfitBuilderProps) {
             </div>
           ) : (
             <div className="rounded-[4px] border border-dashed border-[var(--line)] bg-[var(--paper)] p-8 text-sm leading-7 text-[var(--ink-soft)]">
-              No generated looks yet. Add more active closet items with tops, bottoms,
-              shoes, bags, or accessories.
+              Aún no hay looks generados. Añade más piezas activas al clóset: tops, pantalones,
+              zapatos, bolsos o accesorios.
             </div>
           )}
         </div>
@@ -419,13 +419,13 @@ export function OutfitBuilder({ items, selectedPiece }: OutfitBuilderProps) {
         <div className="mt-8 rounded-[10px] border border-[var(--line)] bg-[var(--paper-2)] p-5 md:p-7">
           <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="eyebrow mb-2">Outfit formula structure</p>
+              <p className="eyebrow mb-2">Estructura de fórmula</p>
               <h2 className="font-display text-4xl text-[var(--espresso)]">
-                Slots the engine fills
+                Slots que el motor completa
               </h2>
             </div>
             <p className="max-w-md text-sm leading-6 text-[var(--ink-soft)]">
-              The composer builds from a core outfit, then adds shoes and styling anchors.
+              El compositor parte de un outfit base y añade zapatos y anclajes de estilo.
             </p>
           </div>
 
@@ -447,9 +447,9 @@ export function OutfitBuilder({ items, selectedPiece }: OutfitBuilderProps) {
         </div>
 
         <div className="mt-8 rounded-[8px] border border-[var(--line)] bg-[var(--paper-2)] p-7">
-          <p className="eyebrow mb-3">Closet pieces by slot</p>
+          <p className="eyebrow mb-3">Piezas por slot</p>
           <h2 className="font-display text-4xl text-[var(--espresso)]">
-            What the builder can use
+            Con qué puede trabajar el constructor
           </h2>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
