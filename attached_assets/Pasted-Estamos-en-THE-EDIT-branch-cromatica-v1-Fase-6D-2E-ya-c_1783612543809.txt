@@ -1,0 +1,100 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Fase 6D.2E ya cerró El Archivo visualmente:
+- Home editorial listo
+- El Archivo listo
+- Gallery funcional
+- ChromaSpine y sistema Cromática activos
+
+Antes de pasar a Fase 7, ejecuta Fase 6E — Bottom nav Cromática polish.
+
+Problema:
+Con la nueva dirección editorial, el nav inferior todavía se siente de una versión anterior. El ícono/estado seleccionado sobresale demasiado y rompe la estética limpia. Ya no debe haber ícono seleccionado elevado ni burbuja sobresaliendo del nav.
+
+Objetivo:
+Refinar el bottom nav para que sea más sobrio, editorial y consistente con Cromática.
+
+Reglas:
+- Modificar preferiblemente solo `src/components/app-shell.tsx` y/o CSS relacionado existente.
+- No tocar Home.
+- No tocar Closet.
+- No tocar Gallery.
+- No tocar APIs.
+- No tocar Supabase.
+- No modificar datos.
+- No tocar globals.css salvo que el nav viva ahí y sea estrictamente necesario.
+- No añadir dependencias.
+- No usar any.
+- No cambiar rutas.
+- No rediseñar toda la navegación.
+- No romper mobile.
+
+Tareas:
+
+1. Inspeccionar primero:
+- `src/components/app-shell.tsx`
+- estilos actuales del nav en `src/app/globals.css` o donde vivan
+- clases `.nav-bar`, `.nav-track`, `.nav-slot`, `.nav-slot-add`, `.nav-sheet` si existen
+
+2. Eliminar el efecto de ícono seleccionado sobresaliente
+El active item no debe elevarse ni sobresalir fuera del nav.
+Debe mantenerse dentro de la barra.
+
+3. Active state nuevo
+Usar un active state sutil:
+- color más claro / tinta activa
+- pequeño fondo interno
+- underline/pill muy sutil
+- o label más visible
+
+No usar:
+- scale exagerado
+- translateY negativo grande
+- burbuja flotante
+- sombra pesada
+- círculo que rompa la barra
+
+4. Add central
+El botón Add puede seguir siendo especial, pero debe quedar contenido dentro del nav.
+Opciones válidas:
+- círculo pequeño dentro de la barra
+- icono plus en una cápsula
+- borde/halo sutil
+- conic gradient muy controlado si ya existe, pero sin sobresalir
+
+No debe tapar contenido ni parecer floating action button externo.
+
+5. Spacing
+Asegurar que el nav no tape contenido más de lo necesario.
+No aumentar demasiado la altura.
+Mantener safe-area support.
+
+6. Visual esperado
+El nav debe sentirse:
+- editorial
+- limpio
+- premium
+- integrado
+- menos “app old”
+- consistente con Home y El Archivo
+
+7. Validar rutas activas
+Confirmar active state en:
+- `/`
+- `/closet`
+- `/closet/gallery`
+- `/outfits`
+- `/wishlist`
+- `/settings` si aplica
+
+8. Validación final:
+npm run lint
+npm run typecheck
+npm run build
+
+Reportar:
+- archivos modificados
+- qué estilo anterior se eliminó
+- cómo se ve ahora el active state
+- cómo quedó el botón Add
+- confirmación de que no se tocaron rutas, datos, APIs, Supabase, Home, Closet ni Gallery

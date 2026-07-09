@@ -695,7 +695,7 @@ header {
 
 /* ── FLOATING NAV BAR — continuous pill, active item bubbles up ──────────── */
 
-/* Outer wrapper: fixed, centered. padding-top gives room for the bubble. */
+/* Outer wrapper: fixed, centered. No padding-top needed — bubble removed (Fase 6E). */
 .nav-bar {
   position: fixed;
   bottom: calc(0.85rem + env(safe-area-inset-bottom, 0px));
@@ -703,7 +703,7 @@ header {
   transform: translateX(-50%);
   z-index: 50;
   width: min(34rem, calc(100vw - 2rem));
-  padding-top: 1.5rem;
+  padding-top: 0;
 }
 
 /* The pill track — Cromática: dark tinta */
@@ -760,32 +760,27 @@ header {
   transition: color 0.14s ease;
 }
 
-/* Active: bubble pops up, label stays at slot bottom — Cromática: bright papel */
+/* Active: full-brightness, contained within track — no overflow (Cromática Fase 6E) */
 .nav-slot.active {
-  justify-content: flex-end;
-  padding-bottom: 0.3rem;
-  color: rgba(250, 247, 240, 0.92);
+  color: rgba(250, 247, 240, 1);
 }
 
-/* The popping bubble — Cromática: papel circle with tinta icon.
-   Ring uses var(--tinta) so it blends flush with the dark track — no overlap illusion. */
-.nav-slot-bubble {
+/* Tiny dot indicator — editorial, subtle, inside the track */
+.nav-slot.active:not(.nav-slot-add)::after {
+  content: "";
   position: absolute;
-  top: -1.35rem;
+  bottom: 0.28rem;
   left: 50%;
   transform: translateX(-50%);
-  width: 3.4rem;
-  height: 3.4rem;
+  width: 0.2rem;
+  height: 0.2rem;
   border-radius: 50%;
-  background: var(--papel);
-  box-shadow:
-    0 0 0 3.5px var(--tinta),
-    0 8px 20px rgba(29, 24, 20, 0.40);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--tinta);
-  animation: bubble-in 0.24s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  background: rgba(250, 247, 240, 0.55);
+}
+
+/* Bubble removed in Cromática Fase 6E — active state is flat, contained within track */
+.nav-slot-bubble {
+  display: none;
 }
 
 .nav-slot-bubble-icon {
@@ -837,7 +832,7 @@ header {
   justify-content: center;
   flex: none;
   align-self: center;
-  box-shadow: 0 4px 16px rgba(29, 24, 20, 0.40);
+  box-shadow: 0 2px 8px rgba(29, 24, 20, 0.22);
   /* Override slot layout — no label/bubble stack */
   flex-direction: row;
   padding: 0;

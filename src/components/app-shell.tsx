@@ -83,23 +83,14 @@ function HeartIcon() {
   );
 }
 
-// ── Reusable slot pieces ───────────────────────────────────────────────────
+// ── Reusable slot content ─────────────────────────────────────────────────
+// Single component — active state is CSS-only (color + dot indicator).
+// Bubble removed in Cromática Fase 6E.
 
-function InactiveContent({ icon: Icon, label }: { icon: () => React.ReactElement; label: string }) {
+function SlotContent({ icon: Icon, label }: { icon: () => React.ReactElement; label: string }) {
   return (
     <>
       <span className="nav-slot-icon"><Icon /></span>
-      <span className="nav-slot-label">{label}</span>
-    </>
-  );
-}
-
-function ActiveContent({ icon: Icon, label }: { icon: () => React.ReactElement; label: string }) {
-  return (
-    <>
-      <span className="nav-slot-bubble" aria-hidden="true">
-        <span className="nav-slot-bubble-icon"><Icon /></span>
-      </span>
       <span className="nav-slot-label">{label}</span>
     </>
   );
@@ -166,16 +157,12 @@ export function AppShell({ children }: AppShellProps) {
 
           {/* Home */}
           <Link href="/" className={`nav-slot${isHome ? " active" : ""}`}>
-            {isHome
-              ? <ActiveContent icon={HomeIcon} label="Home" />
-              : <InactiveContent icon={HomeIcon} label="Home" />}
+            <SlotContent icon={HomeIcon} label="Home" />
           </Link>
 
           {/* Closet */}
           <Link href="/closet" className={`nav-slot${isCloset ? " active" : ""}`}>
-            {isCloset
-              ? <ActiveContent icon={ClosetIcon} label="Closet" />
-              : <InactiveContent icon={ClosetIcon} label="Closet" />}
+            <SlotContent icon={ClosetIcon} label="Closet" />
           </Link>
 
           {/* Add — button, opens action sheet */}
@@ -187,9 +174,7 @@ export function AppShell({ children }: AppShellProps) {
             aria-expanded={addOpen}
             aria-haspopup="menu"
           >
-            {addOpen
-              ? <ActiveContent icon={() => <AddIcon open={true} />} label="Add" />
-              : <InactiveContent icon={() => <AddIcon open={false} />} label="Add" />}
+            <span className="nav-slot-icon"><AddIcon open={addOpen} /></span>
 
             {/* Action sheet */}
             {addOpen && (
@@ -219,16 +204,12 @@ export function AppShell({ children }: AppShellProps) {
 
           {/* Style */}
           <Link href="/outfits" className={`nav-slot${isStyle ? " active" : ""}`}>
-            {isStyle
-              ? <ActiveContent icon={StyleIcon} label="Style" />
-              : <InactiveContent icon={StyleIcon} label="Style" />}
+            <SlotContent icon={StyleIcon} label="Style" />
           </Link>
 
           {/* Wishlist */}
           <Link href="/wishlist" className={`nav-slot${isWishlist ? " active" : ""}`}>
-            {isWishlist
-              ? <ActiveContent icon={WishlistIcon} label="Wishlist" />
-              : <InactiveContent icon={WishlistIcon} label="Wishlist" />}
+            <SlotContent icon={WishlistIcon} label="Wishlist" />
           </Link>
 
         </div>
