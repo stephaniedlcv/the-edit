@@ -1,0 +1,193 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Fase 7C Discovery ya terminó:
+- /settings ya existe y está completamente construida.
+- Tiene el perfil real de Stephanie.
+- Usa datos reales desde src/lib/style-profile.ts y profile/data.ts.
+- Supabase style_profiles existe como capa primaria con fallback hardcoded.
+- Discovery tuvo 0 cambios de código.
+- lint/typecheck/build limpios.
+
+Ahora ejecuta Fase 7C — Style Profile Cromática.
+
+Objetivo:
+Rediseñar `/settings` como Perfil de estilo editorial Cromática, sin inventar datos y sin tocar lógica/data.
+
+Decisión de ubicación:
+- Mantener ruta `/settings`.
+- NO crear `/profile`.
+- NO mover contenido.
+- NO tocar nav en esta fase.
+- El nav se decide después en Fase 7C.2.
+
+Objetivo visual:
+Convertir `/settings` en una página editorial:
+
+Eyebrow:
+PERFIL · CROMÁTICA
+
+Título:
+Tu sistema de estilo.
+
+Subcopy:
+Tus reglas de color, silueta, clima y compra para que THE EDIT recomiende con intención.
+
+Reglas:
+- Modificar preferiblemente solo:
+  - `src/app/settings/page.tsx`
+- NO tocar src/lib/style-profile.ts en esta fase.
+- NO tocar src/lib/profile/data.ts.
+- NO tocar Supabase.
+- NO tocar APIs.
+- NO tocar schema.
+- NO modificar datos.
+- NO tocar Home.
+- NO tocar Closet.
+- NO tocar Gallery.
+- NO tocar Wishlist.
+- NO tocar Outfits.
+- NO tocar nav global.
+- NO añadir dependencias.
+- NO usar any.
+- NO inventar datos.
+- NO crear ruta nueva.
+- NO cambiar lógica de lectura del perfil.
+- Solo shell editorial, copy visible y visual polish seguro.
+
+Tareas:
+
+1. Inspeccionar primero
+Leer:
+- src/app/settings/page.tsx
+- src/components/app-shell.tsx solo para confirmar nav, pero no modificarlo
+- src/lib/style-profile.ts solo para entender los datos, no modificarlo
+
+2. Header editorial
+Reemplazar PageHeader o header pre-Cromática de /settings por:
+
+Eyebrow:
+PERFIL · CROMÁTICA
+
+Title:
+Tu sistema de estilo.
+
+Subcopy:
+Tus reglas de color, silueta, clima y compra para que THE EDIT recomiende con intención.
+
+Debe sentirse alineado con:
+- Home / Portada
+- Closet / El Archivo
+- Wishlist / La Lista
+- Outfits / El Styling
+
+3. Namespace CSS
+Usar namespace local:
+st-*
+
+Ejemplos:
+- st-wrap
+- st-eyebrow
+- st-title
+- st-subcopy
+- st-section
+- st-card
+- st-grid
+- st-chip
+- st-swatch
+- st-rule
+
+Usar:
+<style href="st-cromatica" precedence="component">{ST_STYLES}</style>
+
+No contaminar globals.css.
+
+4. Traducir copy visible de la página
+Traducir títulos/eyebrows visibles sin tocar data source.
+
+Usar estas guías:
+
+- “Style Profile” → “Perfil de estilo”
+- “Your rules, your edit.” → “Tus reglas. Tu edición.”
+- “Identity” → “Identidad”
+- “Measurements” → “Medidas”
+- “Color System” → “Sistema de color”
+- “Dark Autumn palette” → “Paleta Dark Autumn”
+- “Fit Logic” → “Lógica de silueta”
+- “Bottom Hourglass rules” → “Reglas Bottom Hourglass”
+- “Shopping Discipline” → “Disciplina de compra”
+- “Wishlist rules” → “Reglas de La Lista”
+- “Climate Logic” → “Lógica climática”
+- “Puerto Rico styling rules” → “Reglas para Puerto Rico”
+- “Capsule Goals” → “Objetivos de cápsula”
+- “AI Instruction Layer” → “Instrucciones al motor de estilo”
+- “Profile Signal” → “Señal de perfil”
+
+Si la página muestra labels como:
+- Palette → Paleta
+- Silhouette → Silueta
+- Climate → Clima
+- Aesthetic → Estética
+- Bust → Busto
+- Waist → Cintura
+- Hips → Cadera
+- Glutes → Glúteos
+
+Traducirlos en la capa de render dentro de page.tsx, no en style-profile.ts.
+
+5. Mantener data real
+Usar los datos actuales existentes:
+- Dark Autumn / Warm Olive
+- Bottom Hourglass
+- Puerto Rico
+- Classic, minimal, elevated, warm, tropical-polished
+- medidas reales
+- reglas existentes
+- paleta existente
+- capsule goals existentes
+- AI rules existentes
+
+No añadir datos nuevos.
+No editar valores del perfil.
+
+6. Visual polish
+Hacer que /settings se sienta Cromática:
+- fondo ivory/cream
+- cards editoriales
+- borders cálidos
+- títulos serif
+- labels pequeños uppercase
+- swatches de color más premium
+- spacing amplio
+- esquinas sutiles tipo 3px
+- padding inferior calc(9rem + env(safe-area-inset-bottom, 0px))
+
+7. Responsive / nav
+Asegurar que bottom nav no tape contenido.
+No tocar nav en esta fase.
+
+8. Verificación
+Revisar:
+- /settings
+- /
+- /wishlist
+- /outfits
+- /closet
+
+Confirmar:
+- /settings carga bien
+- datos reales siguen renderizando
+- no hay copy importante en inglés en /settings
+- no hay regresión en Home/Wishlist/Outfits/Closet
+- nav no fue tocado
+
+Validación:
+npm run lint
+npm run typecheck
+npm run build
+
+Reportar:
+- archivos modificados
+- qué copy se tradujo
+- confirmación de que no se tocó data/profile/Supabase/APIs
+- confirmación de que nav no se tocó
+- qué queda pendiente para Fase 7C.2
