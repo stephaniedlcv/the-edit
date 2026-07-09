@@ -1,0 +1,91 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Se cerró y subió Home/Fase 5, pero el push incluyó también cambios adelantados de Closet/Gallery:
+- src/app/closet/page.tsx
+- src/app/closet/gallery/page.tsx
+- src/components/ui/closet-gallery-board.tsx
+- src/components/chroma-spine.tsx
+- next.config.ts
+- src/components/app-shell.tsx
+
+Antes de continuar con 6D.0 / 6D.1 / El Archivo, ejecuta un AUDIT técnico y visual de lo que ya se adelantó en Fase 6A/6B.
+
+NO escribas código todavía.
+
+Objetivo:
+Entender exactamente qué quedó implementado en Closet y Gallery, qué parte del plan ya se cumplió, qué parte no, y si hay riesgos antes de seguir.
+
+Inspecciona:
+- src/app/closet/page.tsx
+- src/app/closet/gallery/page.tsx
+- src/components/ui/closet-gallery-board.tsx
+- src/components/chroma-spine.tsx
+- src/components/app-shell.tsx
+- next.config.ts
+- src/lib/wardrobe/spectrum.ts
+- src/lib/wardrobe/spectrum-data.ts
+- src/lib/wardrobe/data.ts
+- src/lib/wishlist/data.ts
+
+Reporta:
+
+1. Closet / Fase 6A
+- Qué cambió en /closet
+- Si usa datos reales o mock
+- Si usa ChromaSpine
+- Si respeta colores planos por familia
+- Si hay gradientes indebidos
+- Si el header replica Home o no
+- Si hay ríos/capítulos/familias
+- Si hay wishlist ghosts o no
+- Qué falta frente al plan de El Archivo
+
+2. Gallery / Fase 6B
+- Qué cambió en /closet/gallery
+- Qué URL params soporta
+- Si soporta ?colorFamily=
+- Si soporta ?category=
+- Si soporta ?q=
+- Si los filtros son reales
+- Si el diseño visual está alineado con Cromática
+- Si respeta colores planos
+- Si hay estados empty honestos
+
+3. ChromaSpine
+- Qué cambió en src/components/chroma-spine.tsx desde Fase 4B
+- Si sigue siendo puro
+- Si todavía no importa Supabase
+- Si usa gradientes en colores de familia
+- Si conserva accesibilidad
+- Si los cambios afectan Home
+
+4. AppShell / nav
+- Qué cambió en src/components/app-shell.tsx
+- Si el nav sigue funcionando
+- Si hay riesgo de layout mobile
+- Si se cambió alguna ruta principal
+
+5. next.config.ts
+- Qué se agregó
+- Por qué
+- Si era necesario
+- Si introduce riesgo
+
+6. attached_assets
+- Listar archivos temporales agregados
+- Confirmar que deben eliminarse en un commit de limpieza antes del merge final
+
+7. Validaciones
+Correr:
+npm run lint
+npm run typecheck
+npm run build
+
+8. Conclusión
+Clasifica:
+- qué fases podemos marcar como parcialmente cerradas
+- qué necesita corrección inmediata
+- qué se debe dejar para Fase 6D.0 / 6D.1 / 6D.2
+- si recomiendas limpiar attached_assets ahora o después
+
+No modifiques archivos. Solo audit y reporte.
