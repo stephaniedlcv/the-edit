@@ -1,0 +1,97 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Fase 7C.2 ya está cerrada y subida:
+- Bottom nav cambió Wishlist → Perfil
+- /settings activa el slot Perfil
+- /wishlist sigue existiendo
+- /wishlist/add sigue existiendo
+- Add sheet intacto
+- último commit: 8312c30 Update navigation to replace wishlist with profile settings
+
+Ahora ejecuta Fase 7 Final QA.
+
+Objetivo:
+Revisar que toda Fase 7 quedó estable después de añadir Perfil al nav y mover Wishlist a acceso secundario.
+
+NO hacer rediseño.
+NO añadir features.
+NO tocar lógica.
+Solo corregir bugs pequeños si son claramente seguros.
+
+Rutas a revisar:
+/
+ /closet
+ /closet/gallery
+ /closet?mode=wishlist
+ /wishlist
+ /wishlist/add
+ /outfits
+ /outfits/saved
+ /settings
+
+Checklist:
+
+1. Bottom nav
+Confirmar:
+- nav tiene 5 slots
+- Home activa en /
+- Closet activa en /closet y /closet/gallery
+- Add abre action sheet
+- Style/Estilo activa en /outfits y /outfits/saved
+- Perfil activa en /settings
+- /wishlist no necesita slot activo propio
+- ningún ícono sobresale
+- Add sigue contenido dentro del nav
+
+2. Wishlist
+Confirmar:
+- /wishlist carga normal
+- /wishlist/add carga normal
+- Wishlist sigue accesible desde Home quick actions o Add sheet
+- no se eliminó ninguna ruta
+- cards y filtros siguen funcionando
+- copy visible en español
+
+3. Perfil
+Confirmar:
+- /settings carga desde nav
+- header PERFIL · CROMÁTICA
+- título Tu sistema de estilo.
+- datos reales renderizan bien
+- bottom nav no tapa contenido
+- no hay copy importante en inglés
+
+4. Outfits
+Confirmar:
+- /outfits carga
+- /outfits/saved carga
+- copy visible en español
+- OutfitBuilder sigue funcionando
+- OutfitEditor no tiene strings visibles en inglés pendientes
+
+5. Closet / Home
+Confirmar:
+- Home carga sin regresión
+- Closet carga sin regresión
+- /closet?mode=wishlist sigue mostrando deseos
+- ChromaSpine y capítulos siguen bien
+
+6. Technical
+Revisar consola/logs:
+- sin runtime errors
+- sin warnings importantes
+- rutas devuelven 200
+
+Validación:
+npm run lint
+npm run typecheck
+npm run build
+
+Reportar:
+- rutas revisadas
+- bugs encontrados
+- bugs corregidos, si alguno
+- archivos modificados, si alguno
+- si no hubo cambios, decir “0 cambios de código”
+- validaciones finales
+- recomendación para cerrar Fase 7
