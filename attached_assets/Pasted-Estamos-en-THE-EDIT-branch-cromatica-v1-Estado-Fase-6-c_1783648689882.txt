@@ -1,0 +1,148 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Estado:
+- Fase 6 cerrada
+- Fase 7 cerrada
+- Fase 8A cerrada: outfit-editor.tsx copy final en español
+- Fase 8B cerrada: nav + copy secundario en español
+- Último commit: 3a44ea0 Update navigation and labels to Spanish
+- lint/typecheck/build limpios
+
+Ahora ejecuta Fase 8C Discovery — Closet item detail.
+
+Objetivo:
+Auditar las rutas de detalle y edición de piezas antes de rediseñarlas con Cromática.
+
+Rutas target:
+- /closet/item/[id]
+- /closet/item/[id]/edit
+
+NO modificar código.
+NO hacer fixes.
+NO rediseñar.
+Solo inspección y reporte.
+
+Archivos a inspeccionar:
+- src/app/closet/item/[id]/page.tsx
+- src/app/closet/item/[id]/edit/page.tsx
+- cualquier componente importado por esas rutas
+- cualquier mapper/helper usado para mostrar categorías, scores, colorFamily, imágenes o metadata
+
+Revisar:
+
+1. Data flow
+Confirmar:
+- de dónde sale la pieza
+- si usa Supabase o hardcoded
+- cómo maneja pieza no encontrada
+- cómo maneja imagen
+- cómo maneja signed URLs si aplica
+- si hay fallback fake o data mock
+
+2. Copy visible
+Buscar strings visibles en inglés:
+- categorías
+- score labels
+- botones
+- estados vacíos/error
+- labels de formulario
+- placeholders
+- helpers
+- headings
+- metadata
+
+Reportar tabla:
+Archivo | String actual | Propuesta en español | Severidad
+
+3. Visual system
+Evaluar:
+- si usa masthead Cromática o PageHeader legacy
+- fondo / spacing / cards / borders / radius
+- bottom padding para nav
+- si se siente como “El Archivo”
+- si ChromaSpine o colorFamily debería aparecer
+- si los scores se presentan de forma clara
+- si imagen/pieza se ve editorial o legacy
+
+Clasificar cada ruta:
+- Cromática completa
+- funcional pero necesita polish
+- legacy
+- rota
+
+4. UX
+Revisar:
+- si la página detalle responde: ¿qué veo, qué puedo hacer?
+- si edit page es clara
+- si botones principales están visibles
+- si hay regreso a closet
+- si se entiende color, categoría, uso, scores, estado
+- si hay riesgo de confusión
+
+5. Riesgos técnicos
+Revisar:
+- imports muertos
+- any
+- server/client boundary
+- forms
+- mutaciones
+- API calls
+- manejo de errores
+- tipos
+- datos opcionales/null
+- campos que podrían romper si vienen vacíos
+
+6. Recomendación de Fase 8C implementation
+Proponer el plan exacto para rediseñar estas rutas sin romper lógica.
+
+Debe incluir:
+- Fase 8C.1: qué archivo tocar primero
+- Fase 8C.2: qué archivo tocar después
+- qué NO tocar
+- qué copy traducir
+- si conviene añadir masthead
+- si conviene usar ChromaSpine o color chip
+- si conviene traducir score chips
+- si hay que conectar algo que hoy esté mock
+
+Formato del reporte:
+
+# Fase 8C Discovery — Closet item detail
+
+## Resumen ejecutivo
+- estado general
+- riesgos
+- recomendación
+
+## Archivos inspeccionados
+
+## Data flow
+Explicar de forma clara y corta.
+
+## Copy pendiente
+Tabla:
+Archivo | String actual | Propuesta | Severidad
+
+## Visual / UX findings
+Tabla:
+Ruta | Estado actual | Problema | Recomendación
+
+## Riesgos técnicos
+Tabla:
+Riesgo | Archivo | Severidad | Recomendación
+
+## Plan recomendado para Fase 8C
+Separar:
+- 8C.1 Detail page
+- 8C.2 Edit page
+- 8C.3 QA
+
+## Validaciones
+Correr:
+npm run lint
+npm run typecheck
+npm run build
+
+Importante:
+0 cambios de código.
+Solo discovery.
