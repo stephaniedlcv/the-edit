@@ -1,0 +1,239 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Fase 6 y Fase 7 ya están cerradas visualmente.
+
+Estado actual:
+- Home editorial estable
+- Closet / El Archivo estable
+- Gallery funcional
+- Wishlist / La Lista rediseñada
+- Outfits / El Styling rediseñado
+- Outfits saved rediseñado
+- Settings / Perfil · Cromática rediseñado
+- Bottom nav actualizado: Home · Closet · + · Style · Perfil
+- Wishlist salió del nav pero sigue accesible desde Home, Add sheet y rutas directas
+- Último QA final de Fase 7: 0 cambios de código, lint/typecheck/build limpios
+
+Antes de entrar a Fase 8, ejecuta un AUDIT completo pre-Fase 8.
+
+Objetivo:
+Auditar el estado actual de Cromática para detectar:
+- inconsistencias visuales
+- copy pendiente
+- rutas huérfanas
+- deuda técnica
+- deuda de UX
+- riesgos antes de seguir a Fase 8
+- archivos temporales que deban limpiarse más adelante
+- rutas dev-only que deban eliminarse antes del merge final
+
+NO modificar código.
+NO hacer fixes.
+NO rediseñar.
+Solo inspección, análisis y reporte.
+
+Rutas principales a revisar:
+/
+ /closet
+ /closet/gallery
+ /closet?mode=owned
+ /closet?mode=wishlist
+ /wishlist
+ /wishlist/add
+ /outfits
+ /outfits/saved
+ /settings
+ /closet/add
+ /closet-health
+ /planner
+ /dev/ui
+
+Áreas a auditar:
+
+1. Navegación
+Revisar:
+- bottom nav actual
+- labels: Home / Closet / Style / Perfil
+- si conviene traducir a Inicio / Archivo / Estilo / Perfil
+- Add sheet copy:
+  “Add closet piece”
+  “Add wishlist item”
+- Home quick action “Wishlist”
+- acceso a /wishlist después de sacarlo del nav
+- active states por ruta
+- si /settings está correctamente en CROMATICA_ROUTES
+- si algún sticky header sobra o falta
+
+2. Copy / idioma
+Buscar strings visibles en inglés en:
+- Home
+- Closet
+- Gallery
+- Wishlist
+- Wishlist add
+- Outfits
+- Outfits saved
+- OutfitBuilder
+- OutfitEditor
+- Settings
+- Add sheet
+- Planner
+- Closet health
+
+Reportar:
+- string exacto
+- archivo
+- severidad
+- propuesta en español
+
+3. Visual consistency
+Revisar si las rutas principales se sienten como el mismo sistema:
+- fondo
+- tipografía
+- spacing
+- border radius
+- cards
+- headers
+- masthead
+- ChromaSpine
+- bottom padding
+- nav overlap
+- mobile layout
+
+Clasificar cada ruta:
+- Cromática completa
+- Funcional pero necesita polish
+- Pre-Cromática / huérfana
+- Dev-only / eliminar antes de merge
+
+4. Datos honestos
+Confirmar que no hay:
+- métricas falsas
+- counts hardcodeados
+- data mock donde debería ser real
+- datos duplicados entre Supabase y hardcoded sin justificación
+- “combina con N piezas” inventado
+- scores no calculados
+
+Especialmente revisar:
+- Home stats
+- Wishlist stats
+- ChromaSpine
+- OutfitBuilder
+- Settings profile data
+- saved outfits
+- closet health
+
+5. Rutas huérfanas
+Auditar:
+- /closet-health
+- /planner
+- /dev/ui
+
+Para cada una:
+- propósito actual
+- si carga
+- si está visualmente alineada
+- si debe entrar en Fase 8
+- si debe ocultarse
+- si debe borrarse antes de merge final
+
+6. Archivos temporales / cleanup
+Revisar:
+- attached_assets
+- docs/audits
+- src/app/dev/ui
+- scripts de audit temporales
+- archivos Pasted-*
+- archivos que no deben ir a main
+
+No borrar nada todavía.
+Solo listar qué limpiar en Fase 9.
+
+7. Technical health
+Revisar:
+- npm run lint
+- npm run typecheck
+- npm run build
+- warnings relevantes
+- rutas generadas
+- imports muertos obvios
+- componentes sin uso obvios
+- globals.css si aún tiene CSS legacy peligroso
+- .replit si está limpio
+
+8. Fase 8 recomendada
+Proponer el plan exacto para Fase 8.
+
+Debe responder:
+- ¿Cuál debe ser Fase 8A?
+- ¿Cuál debe ser Fase 8B?
+- ¿Qué no debemos tocar todavía?
+- ¿Qué debe esperar a Fase 9?
+- ¿Qué issues bloquean avanzar?
+- ¿Qué issues son solo polish?
+
+Formato del reporte:
+
+# Audit pre-Fase 8 — Cromática
+
+## Resumen ejecutivo
+- Estado general
+- Riesgo general
+- Recomendación principal
+
+## Score por área
+Usar:
+✅ Listo
+🟡 Polish
+🔴 Bloqueante
+⚪ No aplica
+
+Áreas:
+- Home
+- Closet
+- Gallery
+- Wishlist
+- Outfits
+- Settings / Perfil
+- Nav
+- Planner
+- Closet Health
+- Dev UI
+- Data honesty
+- Technical health
+
+## Hallazgos críticos
+Solo si hay bloqueantes.
+
+## Hallazgos de polish
+Listar por prioridad.
+
+## Copy pendiente
+Tabla:
+Archivo | String actual | Propuesta | Severidad
+
+## Rutas huérfanas
+Tabla:
+Ruta | Estado | Recomendación | Fase sugerida
+
+## Cleanup pendiente
+Tabla:
+Archivo/carpeta | Acción sugerida | Fase
+
+## Recomendación para Fase 8
+Proponer roadmap:
+- Fase 8A
+- Fase 8B
+- Fase 8C
+- Fase 8D
+
+## Validaciones
+Reportar:
+npm run lint
+npm run typecheck
+npm run build
+
+Importante:
+0 cambios de código.
+Solo audit.
