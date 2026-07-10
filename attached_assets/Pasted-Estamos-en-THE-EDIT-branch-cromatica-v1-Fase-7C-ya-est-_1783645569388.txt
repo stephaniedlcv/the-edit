@@ -1,0 +1,93 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Fase 7C ya está cerrada:
+- /settings ahora es Perfil · Cromática
+- Título: Tu sistema de estilo.
+- Datos reales intactos
+- último commit: dc388fd Apply editorial styling and translate content for the settings page
+
+Ahora ejecuta Fase 7C.2 — Nav: Wishlist → Perfil + accesos a La Lista.
+
+Objetivo:
+Actualizar el bottom nav para reflejar mejor la arquitectura actual de Cromática.
+
+Decisión:
+Unimos conceptualmente Closet + Wishlist bajo El Archivo.
+Wishlist NO se elimina.
+Wishlist sigue existiendo como `/wishlist`, pero ya no ocupa un slot principal del nav.
+El slot que antes era Wishlist ahora será Perfil y apuntará a `/settings`.
+
+Nuevo bottom nav esperado:
+- Home → /
+- Closet/Archivo → /closet
+- Add → action sheet actual
+- Estilo/Outfits → /outfits
+- Perfil → /settings
+
+Reglas:
+- Modificar preferiblemente:
+  - `src/components/app-shell.tsx`
+  - `src/app/page.tsx` si hace falta añadir acceso a La Lista desde Home
+  - `src/app/closet/page.tsx` solo si hace falta reforzar link a La Lista
+- NO eliminar /wishlist.
+- NO tocar /wishlist visualmente.
+- NO tocar APIs.
+- NO tocar Supabase.
+- NO modificar datos.
+- NO tocar WishlistCard.
+- NO tocar OutfitBuilder.
+- NO tocar Settings visual.
+- NO añadir dependencias.
+- NO usar any.
+- NO romper action sheet del Add.
+- NO cambiar rutas existentes.
+
+Tareas:
+1. Cambiar el slot Wishlist del bottom nav:
+   - label: “Perfil”
+   - href: `/settings`
+   - icono apropiado y consistente con los demás
+   - active state debe funcionar en `/settings`
+
+2. Mantener Wishlist accesible:
+   - Si Home ya tiene quick actions, añadir o confirmar link “La Lista” → `/wishlist`
+   - Si El Archivo ya tiene link claro a `/wishlist`, no duplicar innecesariamente
+   - `/wishlist` debe seguir existiendo y cargando normal
+
+3. Active route checks:
+   - `/` activa Home
+   - `/closet` y `/closet/gallery` activan Closet/Archivo
+   - `/outfits` y `/outfits/saved` activan Estilo
+   - `/settings` activa Perfil
+   - `/wishlist` puede no activar ningún slot; eso está bien
+
+4. Verificación:
+   Revisar:
+   - `/`
+   - `/closet`
+   - `/closet?mode=wishlist`
+   - `/wishlist`
+   - `/outfits`
+   - `/settings`
+
+Confirmar:
+- nav se ve balanceado con 5 slots
+- Perfil aparece en nav
+- Wishlist sigue accesible
+- Add action sheet sigue funcionando
+- bottom nav no vuelve a tener íconos sobresalientes
+- Settings carga desde nav
+- no se rompió Home/Closet/Wishlist/Outfits
+
+Validación:
+npm run lint
+npm run typecheck
+npm run build
+
+Reportar:
+- archivos modificados
+- qué slot cambió
+- cómo quedó el active state de `/settings`
+- cómo queda accesible `/wishlist`
+- confirmación de que no se eliminó `/wishlist`
+- confirmación de que no se tocó Supabase/APIs/datos

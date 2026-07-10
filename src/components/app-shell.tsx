@@ -57,10 +57,11 @@ function StyleIcon() {
   );
 }
 
-function WishlistIcon() {
+function ProfileIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.15 5.35a5.05 5.05 0 0 0-7.15 0L12 6.35l-1-1a5.05 5.05 0 1 0-7.15 7.15l1 1L12 20.65l7.15-7.15 1-1a5.05 5.05 0 0 0 0-7.15Z" />
+      <circle cx="12" cy="7.5" r="3.5" />
+      <path d="M4.5 20c0-4.14 3.36-7.5 7.5-7.5s7.5 3.36 7.5 7.5" />
     </svg>
   );
 }
@@ -126,10 +127,10 @@ export function AppShell({ children }: AppShellProps) {
 
   // Cromática-migrated routes own their full-bleed editorial masthead;
   // the shell header is suppressed so it doesn't duplicate the brand mark.
-  const CROMATICA_ROUTES = ["/", "/closet"] as const;
+  const CROMATICA_ROUTES = ["/", "/closet", "/settings"] as const;
   const isCromatica = CROMATICA_ROUTES.some((r) => pathname === r);
   const isStyle    = pathname.startsWith("/outfits");
-  const isWishlist = pathname.startsWith("/wishlist");
+  const isProfile  = pathname.startsWith("/settings");
 
   return (
     <div className="min-h-screen bg-[var(--page)]">
@@ -207,9 +208,9 @@ export function AppShell({ children }: AppShellProps) {
             <SlotContent icon={StyleIcon} label="Style" />
           </Link>
 
-          {/* Wishlist */}
-          <Link href="/wishlist" className={`nav-slot${isWishlist ? " active" : ""}`}>
-            <SlotContent icon={WishlistIcon} label="Wishlist" />
+          {/* Perfil */}
+          <Link href="/settings" className={`nav-slot${isProfile ? " active" : ""}`}>
+            <SlotContent icon={ProfileIcon} label="Perfil" />
           </Link>
 
         </div>
