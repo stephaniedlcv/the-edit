@@ -20,7 +20,7 @@ const CATEGORY_LABELS_ES: Record<WardrobeCategory, string> = {
   top:       "Top",
   bottom:    "Pantalón",
   dress:     "Vestido",
-  outerwear: "Outerwear",
+  outerwear: "Capas",
   shoes:     "Zapatos",
   bag:       "Bolso",
   accessory: "Accesorio",

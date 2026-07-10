@@ -530,7 +530,7 @@ export default async function HomePage() {
                 { label: "Clóset",        href: "/closet" },
                 { label: "Galería",       href: "/closet/gallery" },
                 { label: "Outfits",       href: "/outfits" },
-                { label: "Wishlist",      href: "/wishlist" },
+                { label: "La Lista",      href: "/wishlist" },
                 { label: "+ Añadir pieza", href: "/closet/add" },
               ] as const
             ).map(({ label, href }) => (

@@ -158,12 +158,12 @@ export function AppShell({ children }: AppShellProps) {
 
           {/* Home */}
           <Link href="/" className={`nav-slot${isHome ? " active" : ""}`}>
-            <SlotContent icon={HomeIcon} label="Home" />
+            <SlotContent icon={HomeIcon} label="Inicio" />
           </Link>
 
           {/* Closet */}
           <Link href="/closet" className={`nav-slot${isCloset ? " active" : ""}`}>
-            <SlotContent icon={ClosetIcon} label="Closet" />
+            <SlotContent icon={ClosetIcon} label="Archivo" />
           </Link>
 
           {/* Add — button, opens action sheet */}
@@ -187,7 +187,7 @@ export function AppShell({ children }: AppShellProps) {
                   role="menuitem"
                 >
                   <span className="nav-sheet-option-icon"><HangerIcon /></span>
-                  <span className="nav-sheet-option-label">Add closet piece</span>
+                  <span className="nav-sheet-option-label">Añadir al clóset</span>
                 </Link>
                 <div className="nav-sheet-divider" />
                 <Link
@@ -197,7 +197,7 @@ export function AppShell({ children }: AppShellProps) {
                   role="menuitem"
                 >
                   <span className="nav-sheet-option-icon"><HeartIcon /></span>
-                  <span className="nav-sheet-option-label">Add wishlist item</span>
+                  <span className="nav-sheet-option-label">Añadir a La Lista</span>
                 </Link>
               </div>
             )}
@@ -205,7 +205,7 @@ export function AppShell({ children }: AppShellProps) {
 
           {/* Style */}
           <Link href="/outfits" className={`nav-slot${isStyle ? " active" : ""}`}>
-            <SlotContent icon={StyleIcon} label="Style" />
+            <SlotContent icon={StyleIcon} label="Estilo" />
           </Link>
 
           {/* Perfil */}

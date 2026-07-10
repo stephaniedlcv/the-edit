@@ -1,0 +1,92 @@
+Estamos en THE EDIT, branch `cromatica-v1`.
+
+Fase 8A ya está cerrada:
+- outfit-editor.tsx sin copy visible en inglés
+- último commit: 8dc816c Update outfit editor with translated visible strings
+- lint/typecheck/build limpios
+
+Ahora ejecuta Fase 8B — Nav + copy secundario.
+
+Objetivo:
+Cerrar el copy secundario pendiente del audit pre-Fase 8, sin tocar lógica ni rediseñar.
+
+Reglas:
+- Solo copy visible.
+- No cambiar rutas.
+- No cambiar lógica.
+- No tocar Supabase.
+- No tocar APIs.
+- No modificar datos.
+- No añadir dependencias.
+- No usar any.
+- No rediseñar.
+- No tocar CSS salvo que un label traduzca y necesite ajuste mínimo de spacing.
+- No tocar Planner ni Closet Health en esta fase.
+
+Targets esperados:
+
+1. Bottom nav en `src/components/app-shell.tsx`
+Traducir labels visibles:
+- "Home" → "Inicio"
+- "Closet" → "Archivo"
+- "Style" → "Estilo"
+- "Perfil" se queda igual
+
+Mantener:
+- hrefs iguales
+- active states iguales
+- Add action sheet intacto
+- 5 slots
+- sin iconos sobresalientes
+
+2. Add sheet en `src/components/app-shell.tsx`
+Traducir:
+- "Add closet piece" → "Añadir al clóset"
+- "Add wishlist item" → "Añadir a La Lista"
+
+No cambiar href:
+- /closet/add
+- /wishlist/add
+
+3. Home quick action en `src/app/page.tsx`
+Traducir:
+- label: "Wishlist" → "La Lista"
+
+No cambiar href:
+- /wishlist
+
+4. Closet category map en `src/app/closet/page.tsx`
+Traducir:
+- outerwear: "Outerwear" → "Capas"
+
+No cambiar el key:
+- outerwear sigue siendo el key interno
+- solo cambia label visible
+
+5. Verificación
+Revisar:
+- /
+- /closet
+- /wishlist
+- /outfits
+- /settings
+- Add sheet
+
+Confirmar:
+- nav muestra Inicio · Archivo · + · Estilo · Perfil
+- active states siguen funcionando
+- Add sheet muestra Añadir al clóset / Añadir a La Lista
+- Home quick action muestra La Lista
+- Closet ya no muestra Outerwear como label visible
+- no se rompió layout del nav
+
+Validación:
+npm run lint
+npm run typecheck
+npm run build
+
+Reportar:
+- archivos modificados
+- strings cambiados
+- confirmación de que solo fue copy visible
+- confirmación de que no se tocó lógica/rutas/Supabase/APIs
