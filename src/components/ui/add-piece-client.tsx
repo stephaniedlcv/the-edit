@@ -46,7 +46,7 @@ export function AddPieceClient() {
 
       if (!res.ok) {
         const body = (await res.json()) as { error?: string };
-        setUploadError(body.error ?? "Image upload failed.");
+        setUploadError(body.error ?? "No se pudo subir la imagen.");
         setUploadStatus("error");
         setSavedItemId(newItem.id);
         return;
@@ -68,15 +68,15 @@ export function AddPieceClient() {
       <div className="add-piece-wrap">
 
         <nav className="item-d-nav">
-          <Link href="/closet/gallery" className="item-d-back">← Gallery</Link>
-          <Link href="/closet" className="item-d-back">Dashboard</Link>
+          <Link href="/closet/gallery" className="item-d-back">← Galería</Link>
+          <Link href="/closet" className="item-d-back">Archivo</Link>
         </nav>
 
         <header className="add-piece-header">
-          <p className="eyebrow mb-3">New closet piece</p>
-          <h1 className="font-display add-piece-title">Add piece</h1>
+          <p className="eyebrow mb-3">Nueva pieza</p>
+          <h1 className="font-display add-piece-title">Añadir pieza</h1>
           <p className="add-piece-sub">
-            Build your closet one clean piece at a time.
+            Construye tu clóset una pieza a la vez.
           </p>
         </header>
 
@@ -86,22 +86,22 @@ export function AddPieceClient() {
               <div
                 className="add-piece-preview"
                 style={{ backgroundImage: `url(${previewUrl})` }}
-                aria-label="Photo preview"
+                aria-label="Vista previa de foto"
               />
             ) : (
               <div className="add-piece-preview--empty">
                 <p className="font-display text-xl leading-none text-[var(--espresso)]">
-                  No photo yet
+                  Sin foto aún
                 </p>
               </div>
             )}
           </div>
 
           <div className="add-piece-upload-col">
-            <p className="eyebrow mb-2">Photo</p>
+            <p className="eyebrow mb-2">Foto</p>
 
             <label className="item-edit-upload-label">
-              <span>{previewUrl ? "Change photo" : "Choose file"}</span>
+              <span>{previewUrl ? "Cambiar foto" : "Elegir archivo"}</span>
               <input
                 type="file"
                 accept="image/*"
@@ -115,7 +115,7 @@ export function AddPieceClient() {
             </label>
 
             {uploadStatus === "uploading" ? (
-              <p className="mt-2 text-sm text-[var(--ink-soft)]">Uploading…</p>
+              <p className="mt-2 text-sm text-[var(--ink-soft)]">Subiendo…</p>
             ) : null}
             {uploadStatus === "error" ? (
               <div className="mt-2 space-y-1">
@@ -123,15 +123,14 @@ export function AddPieceClient() {
                   {uploadError}
                 </p>
                 <p className="text-sm text-[var(--ink-soft)]">
-                  Your piece was saved — only the photo failed. You can add a
-                  photo later via Edit.
+                  Tu pieza fue guardada — solo falló la foto. Puedes agregar una foto después desde Editar.
                 </p>
                 {savedItemId ? (
                   <Link
                     href={`/closet/item/${savedItemId}`}
                     className="inline-block mt-1 text-sm underline text-[var(--espresso)]"
                   >
-                    View saved piece →
+                    Ver pieza guardada →
                   </Link>
                 ) : null}
               </div>
@@ -139,7 +138,7 @@ export function AddPieceClient() {
 
             <div className="add-piece-ai-placeholder">
               <p className="add-piece-ai-label">AI Catalog Clean-Up</p>
-              <p className="add-piece-ai-note">Clean the background, center the item, and keep the garment true to life.</p>
+              <p className="add-piece-ai-note">Limpia el fondo, centra la prenda y mantenla fiel a la realidad.</p>
             </div>
           </div>
         </div>
