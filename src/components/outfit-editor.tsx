@@ -90,21 +90,21 @@ function getSlotForItem(item: WardrobeItem): SlotId | null {
 }
 
 const slots: SlotConfig[] = [
-  { id: "outerwear", label: "Layer", optional: true, filter: (item) => getSlotForItem(item) === "outerwear" },
-  { id: "dress", label: "Dress / Jumpsuit", optional: true, filter: (item) => getSlotForItem(item) === "dress" },
+  { id: "outerwear", label: "Capa", optional: true, filter: (item) => getSlotForItem(item) === "outerwear" },
+  { id: "dress", label: "Vestido / Jumpsuit", optional: true, filter: (item) => getSlotForItem(item) === "dress" },
   { id: "top", label: "Top", optional: true, filter: (item) => getSlotForItem(item) === "top" },
-  { id: "bottom", label: "Bottom", optional: true, filter: (item) => getSlotForItem(item) === "bottom" },
-  { id: "shoes", label: "Shoes", optional: true, filter: (item) => getSlotForItem(item) === "shoes" },
-  { id: "bag", label: "Bag", optional: true, filter: (item) => getSlotForItem(item) === "bag" },
-  { id: "belt", label: "Belt", optional: true, filter: (item) => getSlotForItem(item) === "belt" },
-  { id: "eyewear", label: "Eyewear / Sunglasses", optional: true, filter: (item) => getSlotForItem(item) === "eyewear" },
-  { id: "earrings", label: "Earrings", optional: true, filter: (item) => getSlotForItem(item) === "earrings" },
-  { id: "necklace", label: "Necklace", optional: true, filter: (item) => getSlotForItem(item) === "necklace" },
-  { id: "rings", label: "Rings", optional: true, multiple: true, filter: (item) => getSlotForItem(item) === "rings" },
-  { id: "bracelets", label: "Bracelets", optional: true, multiple: true, filter: (item) => getSlotForItem(item) === "bracelets" },
-  { id: "watch", label: "Watch", optional: true, filter: (item) => getSlotForItem(item) === "watch" },
-  { id: "hairAccessory", label: "Hair accessory", optional: true, filter: (item) => getSlotForItem(item) === "hairAccessory" },
-  { id: "otherAccessory", label: "Other accessory", optional: true, multiple: true, filter: (item) => getSlotForItem(item) === "otherAccessory" },
+  { id: "bottom", label: "Parte de abajo", optional: true, filter: (item) => getSlotForItem(item) === "bottom" },
+  { id: "shoes", label: "Zapatos", optional: true, filter: (item) => getSlotForItem(item) === "shoes" },
+  { id: "bag", label: "Bolso", optional: true, filter: (item) => getSlotForItem(item) === "bag" },
+  { id: "belt", label: "Cinturón", optional: true, filter: (item) => getSlotForItem(item) === "belt" },
+  { id: "eyewear", label: "Lentes", optional: true, filter: (item) => getSlotForItem(item) === "eyewear" },
+  { id: "earrings", label: "Aretes", optional: true, filter: (item) => getSlotForItem(item) === "earrings" },
+  { id: "necklace", label: "Collar", optional: true, filter: (item) => getSlotForItem(item) === "necklace" },
+  { id: "rings", label: "Anillos", optional: true, multiple: true, filter: (item) => getSlotForItem(item) === "rings" },
+  { id: "bracelets", label: "Pulseras", optional: true, multiple: true, filter: (item) => getSlotForItem(item) === "bracelets" },
+  { id: "watch", label: "Reloj", optional: true, filter: (item) => getSlotForItem(item) === "watch" },
+  { id: "hairAccessory", label: "Accesorio de cabello", optional: true, filter: (item) => getSlotForItem(item) === "hairAccessory" },
+  { id: "otherAccessory", label: "Otro accesorio", optional: true, multiple: true, filter: (item) => getSlotForItem(item) === "otherAccessory" },
 ];
 
 function findSlot(slotId: SlotId) {
@@ -339,7 +339,7 @@ export function OutfitEditor({ items, closetItems, lookMetadata }: OutfitEditorP
       <div className="mb-5 rounded-[6px] border border-[var(--line)] bg-[var(--paper-2)] p-4">
         <details>
           <summary className="cursor-pointer text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-[var(--coffee)]">
-            Edit look
+            Editar look
           </summary>
 
           <div className="mt-4 grid gap-3 md:grid-cols-2">
@@ -412,7 +412,7 @@ export function OutfitEditor({ items, closetItems, lookMetadata }: OutfitEditorP
               onClick={saveChanges}
               className="rounded-full border border-[var(--espresso)] px-4 py-2 text-[0.55rem] font-semibold uppercase tracking-[0.18em] text-[var(--espresso)]"
             >
-              {saveStatus === "saving" ? "Saving..." : "Save changes"}
+              {saveStatus === "saving" ? "Guardando..." : "Guardar cambios"}
             </button>
 
             <button
@@ -420,7 +420,7 @@ export function OutfitEditor({ items, closetItems, lookMetadata }: OutfitEditorP
               onClick={resetChanges}
               className="rounded-full border border-[var(--line)] px-4 py-2 text-[0.55rem] font-semibold uppercase tracking-[0.18em] text-[var(--coffee)]"
             >
-              Reset to generated
+              Restablecer
             </button>
 
             {saveStatus !== "idle" ? (
@@ -445,10 +445,10 @@ export function OutfitEditor({ items, closetItems, lookMetadata }: OutfitEditorP
 
         <div className="mt-4 rounded-[4px] border border-[var(--line)] bg-[var(--paper)] p-4">
           <p className="text-[0.55rem] font-semibold uppercase tracking-[0.2em] text-[var(--caramel)]">
-            Current edited pieces
+            Piezas seleccionadas
           </p>
           <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">
-            {editedPieceText || "No pieces selected."}
+            {editedPieceText || "Ninguna pieza seleccionada."}
           </p>
         </div>
       </div>
