@@ -170,7 +170,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
 
     if (!response.ok || !result.ok) {
       setSaveStatus("error");
-      setErrorMessage(result.error ?? "Could not save this closet item.");
+      setErrorMessage(result.error ?? "No se pudo guardar la pieza.");
       return;
     }
 
@@ -214,12 +214,12 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
     <section className={isCreateMode ? "add-piece-form-wrap" : "rounded-[4px] border border-[var(--line)] bg-[var(--paper-2)] p-7"}>
       {!isCreateMode ? (
         <>
-          <p className="eyebrow mb-3">Edit item</p>
+          <p className="eyebrow mb-3">Editar pieza</p>
           <h2 className="font-display text-4xl leading-none text-[var(--espresso)]">
             {item.name}
           </h2>
           <p className="mt-4 text-sm leading-7 text-[var(--ink-soft)]">
-            Use this form to correct color, category, size, brand, purchase info, scores, and styling notes.
+            Corrige color, categoría, talla, marca, información de compra, scores y notas de estilo.
           </p>
         </>
       ) : null}
@@ -232,11 +232,11 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
 
       <form action={handleSubmit} className={isCreateMode ? "add-piece-form-grid" : "mt-8 grid gap-5"}>
         <div className={isCreateMode ? "ap-card-main" : ""}>
-        {isCreateMode ? <p className="cf-group-label">Essential details</p> : null}
+        {isCreateMode ? <p className="cf-group-label">Detalles esenciales</p> : null}
 
         <label className="grid gap-2">
           <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-            Name
+            Nombre
           </span>
           <input
             name="name"
@@ -249,7 +249,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
         <div className="grid gap-5 md:grid-cols-2">
           <label className="grid gap-2">
             <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-              Category
+              Categoría
             </span>
             <select
               name="category"
@@ -269,7 +269,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
 
           <label className="grid gap-2">
             <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-              Type
+              Tipo
             </span>
             <select
               name="subcategory"
@@ -277,7 +277,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
               onChange={(event) => setSubcategory(event.target.value)}
               className="rounded-[3px] border border-[var(--line)] bg-[var(--paper)] px-4 py-3 text-sm text-[var(--espresso)] outline-none focus:border-[var(--coffee)]"
             >
-              <option value="">Not set</option>
+              <option value="">Sin definir</option>
               {subcategoryOptions.map((option) => (
                 <option key={option} value={option}>
                   {option}
@@ -288,14 +288,14 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
 
           <label className="grid gap-2">
             <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-              Size
+              Talla
             </span>
             <select
               name="size"
               defaultValue={item.size ?? "One Size"}
               className="rounded-[3px] border border-[var(--line)] bg-[var(--paper)] px-4 py-3 text-sm text-[var(--espresso)] outline-none focus:border-[var(--coffee)]"
             >
-              <option value="">Not set</option>
+              <option value="">Sin definir</option>
               {sizeOptions.map((size) => (
                 <option key={size} value={size}>
                   {size}
@@ -308,7 +308,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
         <div className="grid gap-5 md:grid-cols-2">
           <label className="grid gap-2">
             <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-              Color family
+              Familia de color
             </span>
             <select
               name="colorFamily"
@@ -328,7 +328,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
 
           <label className="grid gap-2">
             <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-              Color name
+              Nombre de color
             </span>
             <select
               name="colorName"
@@ -349,7 +349,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
         <div className="grid gap-5 md:grid-cols-2">
           <label className="grid gap-2">
             <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-              Pattern type
+              Tipo de estampado
             </span>
             <select
               name="patternType"
@@ -369,7 +369,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
 
           <label className="grid gap-2">
             <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-              Pattern subtype
+              Subtipo de estampado
             </span>
             <select
               name="patternSubtype"
@@ -379,7 +379,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
               className="rounded-[3px] border border-[var(--line)] bg-[var(--paper)] px-4 py-3 text-sm text-[var(--espresso)] outline-none focus:border-[var(--coffee)] disabled:opacity-45"
             >
               <option value="">
-                {!patternType ? "Choose pattern type first" : "Not set"}
+                {!patternType ? "Elige tipo de estampado primero" : "Sin definir"}
               </option>
               {patternSubtypeOptions.map((option) => (
                 <option key={option} value={option}>
@@ -392,7 +392,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
 
         <label className="grid gap-2">
           <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-            Brand
+            Marca
           </span>
           <input
             name="brand"
@@ -401,7 +401,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
           />
         </label>
 
-        {isCreateMode ? <p className="cf-group-label">Style tags</p> : null}
+        {isCreateMode ? <p className="cf-group-label">Etiquetas de estilo</p> : null}
         <fieldset className="grid gap-3 rounded-[3px] border border-[var(--line)] bg-[var(--paper)] p-4">
           <legend className="px-2 text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
             Vibes
@@ -426,10 +426,10 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
         </div>
 
         <div className={isCreateMode ? "ap-card-secondary" : ""}>
-        {isCreateMode ? <p className="cf-group-label">Optional details</p> : null}
+        {isCreateMode ? <p className="cf-group-label">Detalles opcionales</p> : null}
         <label className="grid gap-2">
           <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-            Product URL
+            URL del producto
           </span>
           <input
             name="productUrl"
@@ -443,36 +443,36 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
 
         <fieldset className="rounded-[4px] border border-[var(--line)] p-4">
           <legend className="px-2 text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-            Item status
+            Estado
           </legend>
 
           <label className="mt-3 grid gap-2">
             <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-              Status
+              Estado
             </span>
             <select
               name="itemStatus"
               defaultValue={item.itemStatus ?? "active"}
               className="rounded-[3px] border border-[var(--line)] bg-[var(--paper)] px-3 py-2.5 text-sm text-[var(--espresso)] outline-none focus:border-[var(--coffee)]"
             >
-              <option value="active">Active</option>
-              <option value="archived">Archived</option>
-              <option value="donated">Donated</option>
-              <option value="sold">Sold</option>
-              <option value="damaged">Damaged</option>
+              <option value="active">Activo</option>
+              <option value="archived">Archivado</option>
+              <option value="donated">Donado</option>
+              <option value="sold">Vendido</option>
+              <option value="damaged">Dañado</option>
             </select>
           </label>
         </fieldset>
 
         <fieldset className="rounded-[4px] border border-[var(--line)] p-4">
           <legend className="px-2 text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-            Purchase info
+            Información de compra
           </legend>
 
           <div className="mt-3 grid gap-4 md:grid-cols-3">
             <label className="grid gap-2">
               <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-                Paid price
+                Precio pagado
               </span>
               <input
                 name="paidPrice"
@@ -487,7 +487,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
 
             <label className="grid gap-2">
               <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-                Purchase source
+                Tienda
               </span>
               <input
                 name="purchaseSource"
@@ -500,7 +500,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
 
             <label className="grid gap-2">
               <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-                Purchase date
+                Fecha de compra
               </span>
               <input
                 name="purchaseDate"
@@ -515,13 +515,13 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
         {isCreateMode ? <p className="cf-group-label">Scores</p> : null}
         <fieldset className="grid gap-4 rounded-[3px] border border-[var(--line)] bg-[var(--paper)] p-4">
           <legend className="px-2 text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-            Closet scores
+            Scores del clóset
           </legend>
 
           <div className="grid gap-4 md:grid-cols-4">
             <label className="grid gap-2">
               <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ink-soft)]">
-                Love
+                Amor
               </span>
               <input
                 name="loveScore"
@@ -536,7 +536,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
 
             <label className="grid gap-2">
               <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ink-soft)]">
-                Versatility
+                Versatilidad
               </span>
               <input
                 name="versatilityScore"
@@ -566,7 +566,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
 
             <label className="grid gap-2">
               <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ink-soft)]">
-                Capsule
+                Cápsula
               </span>
               <input
                 name="capsuleValueScore"
@@ -581,10 +581,10 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
           </div>
         </fieldset>
 
-        {isCreateMode ? <p className="cf-group-label">Notes</p> : null}
+        {isCreateMode ? <p className="cf-group-label">Notas</p> : null}
         <label className="grid gap-2">
           <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-            Notes
+            Notas
           </span>
           <textarea
             name="notes"
@@ -596,7 +596,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
 
         <label className="grid gap-2">
           <span className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-[var(--caramel)]">
-            Stylist notes
+            Notas de estilo
           </span>
           <textarea
             name="stylingNotes"
@@ -612,7 +612,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
             type="submit"
             className="rounded-full border border-[var(--espresso)] bg-[var(--espresso)] px-5 py-3 text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-white"
           >
-            {saveStatus === "saving" ? "Saving..." : isCreateMode ? "Create piece" : "Save changes"}
+            {saveStatus === "saving" ? "Guardando..." : isCreateMode ? "Crear pieza" : "Guardar cambios"}
           </button>
 
           <button
@@ -620,7 +620,7 @@ export function ClosetItemEditForm({ item, onSaved, onCancel, mode = "edit" }: C
             onClick={onCancel}
             className="rounded-full border border-[var(--line)] px-5 py-3 text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-[var(--coffee)]"
           >
-            Cancel
+            Cancelar
           </button>
         </div>
       </form>

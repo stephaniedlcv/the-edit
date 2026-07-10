@@ -15,8 +15,8 @@ export function ClosetItemLifecycleAction({ item }: Props) {
 
   const isArchived = (item.itemStatus ?? "active") === "archived";
   const nextStatus = isArchived ? "active" : "archived";
-  const label = isArchived ? "Restore piece" : "Archive piece";
-  const loadingLabel = isArchived ? "Restoring…" : "Archiving…";
+  const label = isArchived ? "Restaurar" : "Archivar";
+  const loadingLabel = isArchived ? "Restaurando…" : "Archivando…";
 
   async function handleClick() {
     setLoading(true);
@@ -32,13 +32,13 @@ export function ClosetItemLifecycleAction({ item }: Props) {
       const result = (await response.json()) as { ok?: boolean; error?: string };
 
       if (!response.ok || !result.ok) {
-        setError(result.error ?? "Something went wrong. Please try again.");
+        setError(result.error ?? "Algo salió mal. Intenta de nuevo.");
         return;
       }
 
       router.refresh();
     } catch {
-      setError("Network error. Please try again.");
+      setError("Error de red. Intenta de nuevo.");
     } finally {
       setLoading(false);
     }

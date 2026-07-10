@@ -33,7 +33,7 @@ export function ClosetItemEditClient({ item }: Props) {
     } else {
       setImageUploadStatus("error");
       const data = (await res.json()) as { error?: string };
-      setImageUploadError(data.error ?? "Upload failed.");
+      setImageUploadError(data.error ?? "Error al subir la foto.");
     }
   }
 
@@ -54,11 +54,11 @@ export function ClosetItemEditClient({ item }: Props) {
           ← {item.name}
         </Link>
         <Link href="/closet/gallery" className="item-d-back">
-          Gallery
+          Galería
         </Link>
       </nav>
 
-      <p className="eyebrow mb-3">Edit piece</p>
+      <p className="eyebrow mb-3">Editar pieza</p>
       <h1 className="font-display mb-6 text-[3rem] leading-[0.88] tracking-[-0.03em] text-[var(--espresso)] md:text-[4rem]">
         {item.name}
       </h1>
@@ -74,7 +74,7 @@ export function ClosetItemEditClient({ item }: Props) {
           ) : (
             <div className="item-edit-preview item-edit-preview--empty">
               <p className="font-display text-xl leading-none text-[var(--espresso)]">
-                No photo yet
+                Sin foto aún
               </p>
             </div>
           )}
@@ -82,10 +82,10 @@ export function ClosetItemEditClient({ item }: Props) {
 
         <div className="item-edit-upload-wrap">
           <p className="eyebrow mb-3">
-            {item.imageUrl ? "Replace photo" : "Upload photo"}
+            {item.imageUrl ? "Reemplazar foto" : "Subir foto"}
           </p>
           <label className="item-edit-upload-label">
-            <span>Choose file</span>
+            <span>Elegir archivo</span>
             <input
               type="file"
               accept="image/*"
@@ -99,11 +99,11 @@ export function ClosetItemEditClient({ item }: Props) {
             />
           </label>
           {imageUploadStatus === "uploading" ? (
-            <p className="mt-3 text-sm text-[var(--ink-soft)]">Uploading…</p>
+            <p className="mt-3 text-sm text-[var(--ink-soft)]">Subiendo…</p>
           ) : null}
           {imageUploadStatus === "saved" ? (
             <p className="mt-3 text-sm font-semibold text-[var(--olive)]">
-              Photo updated. Visible on next load.
+              Foto actualizada. Visible al recargar.
             </p>
           ) : null}
           {imageUploadStatus === "error" ? (

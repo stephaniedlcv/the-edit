@@ -7,14 +7,22 @@ import type { WardrobeItem } from "@/types/wardrobe";
 import { ClosetItemLifecycleAction } from "@/components/ui/closet-item-lifecycle-action";
 
 const CATEGORY_LABELS: Record<string, string> = {
-  outerwear: "Outerwear",
-  top: "Tops",
-  bottom: "Bottoms",
-  dress: "Dresses",
-  shoes: "Shoes",
-  bag: "Bags",
-  accessory: "Accessories",
-  jewelry: "Jewelry",
+  outerwear: "Capas",
+  top:       "Tops",
+  bottom:    "Parte de abajo",
+  dress:     "Vestidos",
+  shoes:     "Zapatos",
+  bag:       "Bolsos",
+  accessory: "Accesorios",
+  jewelry:   "Joyería",
+};
+
+const STATUS_LABELS: Record<string, string> = {
+  active:   "Activo",
+  archived: "Archivado",
+  donated:  "Donado",
+  sold:     "Vendido",
+  damaged:  "Dañado",
 };
 
 function getAverageScore(item: WardrobeItem) {
@@ -71,13 +79,15 @@ export default async function ClosetItemPage({ params }: Props) {
       <div className="item-d-wrap">
 
         <nav className="item-d-nav">
-          <Link href="/closet/gallery" className="item-d-back">← Gallery</Link>
-          <Link href="/closet" className="item-d-back">Dashboard</Link>
+          <Link href="/closet/gallery" className="item-d-back">← Galería</Link>
+          <Link href="/closet" className="item-d-back">Archivo</Link>
         </nav>
 
         <header className="item-d-identity">
           {item.itemStatus && item.itemStatus !== "active" ? (
-            <span className="item-d-status-badge">{item.itemStatus}</span>
+            <span className="item-d-status-badge">
+              {STATUS_LABELS[item.itemStatus] ?? item.itemStatus}
+            </span>
           ) : null}
           <h1 className="font-display item-d-name">{item.name}</h1>
           <p className="item-d-sub">
@@ -119,16 +129,16 @@ export default async function ClosetItemPage({ params }: Props) {
 
         <div className="item-d-actions">
           <Link href={`/closet/item/${item.id}/edit`} className="item-d-btn primary">
-            Edit piece
+            Editar
           </Link>
           <Link href={`/outfits?pieceId=${item.id}`} className="item-d-btn">
-            Style it
+            Crear look
           </Link>
         </div>
 
         {hasStyleNotes ? (
           <section className="item-d-panel">
-            <p className="item-d-panel-label">Styling notes</p>
+            <p className="item-d-panel-label">Notas de estilo</p>
             {item.stylingNotes ? (
               <p className="item-d-note">{item.stylingNotes}</p>
             ) : null}
@@ -142,39 +152,39 @@ export default async function ClosetItemPage({ params }: Props) {
           <section className="item-d-panel">
             <p className="item-d-panel-label">Scores</p>
             <div className="item-d-scores">
-              <ScoreChip label="Love" value={item.loveScore} />
-              <ScoreChip label="Vers" value={item.versatilityScore} />
+              <ScoreChip label="Amor" value={item.loveScore} />
+              <ScoreChip label="Versatilidad" value={item.versatilityScore} />
               <ScoreChip label="Fit" value={item.fitConfidenceScore} />
-              <ScoreChip label="Capsule" value={item.capsuleValueScore} />
+              <ScoreChip label="Cápsula" value={item.capsuleValueScore} />
             </div>
           </section>
         ) : null}
 
         {hasDetails ? (
           <section className="item-d-panel">
-            <p className="item-d-panel-label">Piece info</p>
+            <p className="item-d-panel-label">Información</p>
             <dl className="item-d-dl">
               {item.brand ? (
                 <div className="item-d-dl-row">
-                  <dt>Brand</dt>
+                  <dt>Marca</dt>
                   <dd>{item.brand}</dd>
                 </div>
               ) : null}
               {item.purchaseSource ? (
                 <div className="item-d-dl-row">
-                  <dt>Source</dt>
+                  <dt>Tienda</dt>
                   <dd>{item.purchaseSource}</dd>
                 </div>
               ) : null}
               {item.paidPrice !== undefined && item.paidPrice !== null ? (
                 <div className="item-d-dl-row">
-                  <dt>Paid</dt>
+                  <dt>Precio pagado</dt>
                   <dd>${item.paidPrice.toFixed(2)}</dd>
                 </div>
               ) : null}
               {item.purchaseDate ? (
                 <div className="item-d-dl-row">
-                  <dt>Date</dt>
+                  <dt>Fecha</dt>
                   <dd>{item.purchaseDate}</dd>
                 </div>
               ) : null}
@@ -186,7 +196,7 @@ export default async function ClosetItemPage({ params }: Props) {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                View product →
+                Ver producto →
               </a>
             ) : null}
           </section>
